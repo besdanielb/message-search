@@ -1,1 +1,22 @@
-{}
+[
+  {
+    "sermonDate": "2012-04-23T18:25:43.511Z",
+    "paragraph": "This is the first result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
+    "sermonTitle": "Message 1"
+  },
+  {
+    "sermonDate": "2012-05-28T18:25:43.511Z",
+    "paragraph": "This is the second result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
+    "sermonTitle": "Message 2"
+  },
+  {
+    "sermonDate": "2016-02-12T18:25:43.511Z",
+    "paragraph": "This is the third result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
+    "sermonTitle": "Message 3"
+  },
+  {
+    "sermonDate": "2014-05-29T18:25:43.511Z",
+    "paragraph": "This is the fourth result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
+    "sermonTitle": "Message 4"
+  }
+]
