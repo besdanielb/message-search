@@ -23,6 +23,7 @@ export default function Search() {
   };
 
   const onSearchInputValueChange = (event) => {
+    setSearchResults([]);
     setSearchTerm(event.target.value);
   };
 
@@ -34,39 +35,16 @@ export default function Search() {
   };
 
   return (
-    /* <section className="search__container">
-      <h2>Search for a Message</h2>
-      <form className="search__form">
-        <input
-          type="text"
-          className="search__input"
-          placeholder="Enter Search"
-          value={searchTerm}
-          onChange={onSearchInputValueChange}
-        ></input>
-        <button
-          className="search__button"
-          type="submit"
-          onClick={onSearch}
-          disabled={!searchTerm}
-        >
-          <i className="fa fa-search"></i>
-        </button>
-      </form>
-      <ul>
-        {searchResults.map((result, index) => (
-          <li key={index} onClick={() => onReadMessage(result.sermonDate)}>
-            {result.sermonDate} | {result.sermonTitle} | {result.paragraph}
-          </li>
-        ))}
-      </ul>
-    </section> */
     <div className="container">
       <div className="search__container">
-        <h2>Search for a Message</h2>
+        {searchResults?.length > 0 ? (
+          <span></span>
+        ) : (
+          <h2>Search for a Message</h2>
+        )}
         <form className="search__form">
           <input
-            type="text"
+            type="search"
             className="search__input"
             placeholder="Enter Search"
             value={searchTerm}
@@ -82,11 +60,21 @@ export default function Search() {
           </button>
         </form>
         <ul>
-          {searchResults.map((result, index) => (
-            <p key={index} onClick={() => onReadMessage(result.sermonDate)}>
-              {result.sermonDate} | {result.sermonTitle} | {result.paragraph}
-            </p>
-          ))}
+          {searchTerm && searchResults.length > 0 ? (
+            searchResults.map((result, index) => (
+              <li key={index}>
+                <p
+                  className="message-title"
+                  onClick={() => onReadMessage(result.sermonDate)}
+                >
+                  {result.sermonDate} | {result.sermonTitle}
+                </p>
+                <p>{result.paragraph}</p>
+              </li>
+            ))
+          ) : (
+            <></>
+          )}
         </ul>
       </div>
     </div>

@@ -1,14 +1,23 @@
 import "./App.scss";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Redirect,
+} from "react-router-dom";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
-
-//use state to get the active link to apply css class
 
 function App() {
   return (
     <Router>
-      <div className="menu">
+      <div id="menu" className="menu">
+        <div className="menu__icon--mobile">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
         <nav className="nav-bar">
           <ul>
             <li className="nav-bar__link">
@@ -19,9 +28,11 @@ function App() {
             </li>
           </ul>
         </nav>
+        <div className="menu__icon--desktop">&#9655;</div>
       </div>
       <Route exact path="/search" component={Search} />
       <Route exact path="/read" component={Read} />
+      <Redirect to="/search"></Redirect>
     </Router>
   );
 }
