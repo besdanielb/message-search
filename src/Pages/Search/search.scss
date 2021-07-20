@@ -1,0 +1,66 @@
+$input-height: 2.5em;
+$input-height-desktop: 3em;
+
+.search {
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: calc(100vh - 9em);
+  }
+
+  &__input {
+    width: calc(min(80%, 50em));
+    height: $input-height;
+    padding-left: 15px;
+    border-width: 1px;
+    border-radius: 20px;
+    outline: none;
+  }
+
+  &__input:focus {
+    box-shadow: 0 0 1pt 1pt cornflowerblue;
+    border: none;
+    transition: 0.4s;
+  }
+
+  &__button {
+    height: $input-height;
+    width: $input-height;
+    border: 0px;
+    background-color: unset;
+    margin-left: -40px;
+  }
+
+  &__form {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+h2 {
+  margin-bottom: 0.5rem;
+  font-weight: 400;
+  font-size: 2ch;
+}
+
+@media (min-width: 500px) {
+  h2 {
+    font-size: 3ch;
+    margin-bottom: 1rem;
+  }
+
+  .search {
+    &__input {
+      height: $input-height-desktop;
+    }
+
+    &__button {
+      height: $input-height-desktop;
+      width: $input-height-desktop;
+      margin-left: -50px;
+    }
+  }
+}

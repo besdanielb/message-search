@@ -14,10 +14,10 @@ import Read from "./Pages/Read/read";
 function App() {
   return (
     <Router>
-      <div>
+      <div className="app-container">
         <nav className="nav-bar">
           <ul>
-            <li className="nav-bar__link active">
+            <li className="nav-bar__link">
               <Link to="/search">Search</Link>
             </li>
             <li className="nav-bar__link">
@@ -27,10 +27,10 @@ function App() {
         </nav>
 
         <Switch>
-          <Route exact path="/search">
+          <Route path="/search">
             <Search />
           </Route>
-          <Route exact path="/read">
+          <Route path="/read">
             <Read />
           </Route>
           <Redirect to="/search"></Redirect>

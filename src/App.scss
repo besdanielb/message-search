@@ -4,13 +4,14 @@
   align-items: center;
   margin: 0 auto;
   width: 100%;
-  padding: 0;
-  background-color: rgb(32, 32, 32);
+  padding: 1rem 0;
+  background-color: rgba(32, 32, 32, 0.1);
   text-decoration: none;
   list-style: none;
+  height: 3rem;
 
   a {
-    color: white;
+    color: black;
   }
 
   .active > a {
@@ -23,6 +24,7 @@
 
   a:hover {
     border-bottom: 1px solid grey;
+    color: rgb(55, 73, 107);
   }
 
   li {
@@ -30,4 +32,7 @@
     display: inline;
     margin: 0 10px;
   }
+}
+ul {
+  padding-inline-start: 0;
 }

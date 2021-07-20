@@ -13,6 +13,7 @@ export default function Search() {
       .then((response) => response.json())
       .then(
         (results) => {
+          console.log(results);
           setSearchResults(results);
         },
         (error) => {
@@ -33,17 +34,25 @@ export default function Search() {
   };
 
   return (
-    <>
-      <div>Search for a message:</div>
-      <input
-        type="text"
-        placeholder="Enter Search"
-        value={searchTerm}
-        onChange={onSearchInputValueChange}
-      />
-      <button onClick={onSearch} disabled={!searchTerm}>
-        <i className="fa fa-search"></i>
-      </button>
+    <section className="search__container">
+      <h2>Search for a Message</h2>
+      <form className="search__form">
+        <input
+          type="text"
+          className="search__input"
+          placeholder="Enter Search"
+          value={searchTerm}
+          onChange={onSearchInputValueChange}
+        ></input>
+        <button
+          className="search__button"
+          type="submit"
+          onClick={onSearch}
+          disabled={!searchTerm}
+        >
+          <i className="fa fa-search"></i>
+        </button>
+      </form>
       <ul>
         {searchResults.map((result, index) => (
           <li key={index} onClick={() => onReadMessage(result.sermonDate)}>
@@ -51,6 +60,6 @@ export default function Search() {
           </li>
         ))}
       </ul>
-    </>
+    </section>
   );
 }
