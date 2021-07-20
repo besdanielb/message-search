@@ -30,15 +30,17 @@ export default function Read(props) {
 
   if (messageToRead) {
     return (
-      <>
-        <div>Message {messageToRead.sermonTitle}</div>
-        <ul>
-          {messageToRead?.paragraphs.map((paragraph, index) => (
-            <li key={index}>{paragraph}</li>
-          ))}
-        </ul>
-        <button onClick={goBackToSearch}>Go back to search</button>
-      </>
+      <section className="container">
+        <div className="content">
+          <div>Message {messageToRead.sermonTitle}</div>
+          <ul>
+            {messageToRead?.paragraphs.map((paragraph, index) => (
+              <li key={index}>{paragraph}</li>
+            ))}
+          </ul>
+          <button onClick={goBackToSearch}>Go back to search</button>
+        </div>
+      </section>
     );
   } else {
     return <div>Read Messages For Free</div>;

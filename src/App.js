@@ -1,11 +1,5 @@
 import "./App.scss";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
 
@@ -14,7 +8,7 @@ import Read from "./Pages/Read/read";
 function App() {
   return (
     <Router>
-      <div className="app-container">
+      <div className="menu">
         <nav className="nav-bar">
           <ul>
             <li className="nav-bar__link">
@@ -25,18 +19,9 @@ function App() {
             </li>
           </ul>
         </nav>
-
-        <Switch>
-          <Route path="/search">
-            <Search />
-          </Route>
-          <Route path="/read">
-            <Read />
-          </Route>
-          <Redirect to="/search"></Redirect>
-          <Route component={Search} />
-        </Switch>
       </div>
+      <Route exact path="/search" component={Search} />
+      <Route exact path="/read" component={Read} />
     </Router>
   );
 }

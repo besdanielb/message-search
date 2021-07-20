@@ -7,13 +7,13 @@ export default function Search() {
   const [searchResults, setSearchResults] = React.useState([]);
   const history = useHistory();
 
-  const onSearch = () => {
+  const onSearch = (event) => {
+    event.preventDefault();
     const url = "http://localhost:3001/search?title=" + searchTerm;
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
-          console.log(results);
           setSearchResults(results);
         },
         (error) => {
@@ -34,7 +34,7 @@ export default function Search() {
   };
 
   return (
-    <section className="search__container">
+    /* <section className="search__container">
       <h2>Search for a Message</h2>
       <form className="search__form">
         <input
@@ -60,6 +60,35 @@ export default function Search() {
           </li>
         ))}
       </ul>
-    </section>
+    </section> */
+    <div className="container">
+      <div className="search__container">
+        <h2>Search for a Message</h2>
+        <form className="search__form">
+          <input
+            type="text"
+            className="search__input"
+            placeholder="Enter Search"
+            value={searchTerm}
+            onChange={onSearchInputValueChange}
+          ></input>
+          <button
+            className="search__button"
+            type="submit"
+            onClick={onSearch}
+            disabled={!searchTerm}
+          >
+            <i className="fa fa-search"></i>
+          </button>
+        </form>
+        <ul>
+          {searchResults.map((result, index) => (
+            <p key={index} onClick={() => onReadMessage(result.sermonDate)}>
+              {result.sermonDate} | {result.sermonTitle} | {result.paragraph}
+            </p>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }

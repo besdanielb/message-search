@@ -7,11 +7,11 @@ $input-height-desktop: 3em;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: calc(100vh - 9em);
+    width: calc(min(55%, 70em));
   }
 
   &__input {
-    width: calc(min(80%, 50em));
+    width: 100%;
     height: $input-height;
     padding-left: 15px;
     border-width: 1px;
@@ -42,7 +42,7 @@ $input-height-desktop: 3em;
 
 h2 {
   margin-bottom: 0.5rem;
-  font-weight: 400;
+  font-weight: 800;
   font-size: 2ch;
 }
 
