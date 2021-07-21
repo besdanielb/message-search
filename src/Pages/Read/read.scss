@@ -1,0 +1,14 @@
+.read {
+  &__container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    width: calc(min(60%, 60rem));
+    margin-top: 3.5em;
+  }
+}
+
+.index {
+  font-weight: bold;
+}
