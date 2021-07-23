@@ -6,15 +6,24 @@ body {
 .menu {
   position: fixed;
   height: 100vh;
-  background: #f9d401;
+  background: var(--yellow-color);
   width: 10vw;
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.2);
   transition: 1s;
+
+  &__icon--desktop {
+    display: flex;
+    justify-content: center;
+    color: white;
+    font-size: 10vw;
+    transition: 0.5s ease-in-out;
+  }
+
   &:hover {
     width: 22vw;
   }
   &:hover ~ .container {
-    transform: perspective(70vw) rotateY(5deg) translateX(15vw) scaleY(1.2);
+    transform: translateX(15vw);
   }
 
   &:hover {
@@ -24,12 +33,12 @@ body {
   }
 
   &:hover nav {
-    left: 20%;
+    left: 13%;
   }
 }
 
 .container {
-  width: 90%;
+  width: 90vw;
   margin-left: 10vw;
   background: #fdfdfd;
   transition: 1s;
@@ -77,55 +86,49 @@ h2 {
   color: #bbb;
 }
 
-@media (min-width: 801px) {
+@media (max-width: 760px) {
   .menu {
-    &__icon--desktop {
-      display: flex;
-      justify-content: center;
-      color: white;
-      width: 100%;
-      font-size: 100px;
-      transition: 0.5s ease-in-out;
-    }
-  }
-}
-
-@media (max-width: 800px) {
-  .menu {
-    &:hover {
-      width: 30vw;
-    }
-    &:hover ~ .container {
-      transform: translateX(25vw);
-    }
+    position: fixed;
+    height: 3em;
+    width: 100vw;
+    bottom: 0;
 
     &__icon--desktop {
       display: none;
     }
 
-    &__icon--mobile {
-      margin-top: 1em;
-      & > div {
-        width: 25px;
-        height: 3px;
-        background-color: white;
-        margin: 6px 6px;
-      }
+    &:hover {
+      width: 100%;
+    }
+
+    &:hover ~ .container {
+      transform: unset;
     }
   }
 
+  .container {
+    width: 100%;
+    margin-left: 0px;
+  }
+
   nav {
-    margin-top: 100%;
-    top: 50px;
+    position: unset;
+    transition: unset;
+    width: 100%;
+    height: 100%;
+    margin-top: 8px;
+
     a {
       font-size: 100%;
-      text-decoration: none;
-      color: white;
-      font-weight: 600;
     }
+
     li {
-      line-height: 1.5em;
       letter-spacing: 0.2em;
+    }
+
+    ul {
+      display: flex;
+      justify-content: space-evenly;
     }
   }
 }

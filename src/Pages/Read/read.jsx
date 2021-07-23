@@ -1,9 +1,18 @@
 import "./read.scss";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function Read(props) {
   const [messageToRead, setMessageToRead] = React.useState();
+  let refs = useRef([
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+    React.createRef(),
+  ]);
   const location = useLocation();
 
   useEffect(() => {
@@ -16,6 +25,7 @@ export default function Read(props) {
           (results) => {
             if (isMounted) {
               setMessageToRead(results);
+              executeScroll(location?.state?.ref);
             }
           },
           (error) => {
@@ -28,6 +38,13 @@ export default function Read(props) {
     };
   }, [location?.state?.date]);
 
+  const executeScroll = (i) => {
+    refs.current[i].current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
   if (messageToRead) {
     return (
       <section className="container">
@@ -35,7 +52,7 @@ export default function Read(props) {
           <h2 className="message-title">{messageToRead.sermonTitle}</h2>
           <ul>
             {messageToRead?.paragraphs.map((paragraph, index) => (
-              <li key={index}>
+              <li key={index} ref={refs.current[index]}>
                 <p>
                   <span className="index">{index}</span> {paragraph}
                 </p>

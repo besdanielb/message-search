@@ -13,11 +13,6 @@ function App() {
   return (
     <Router>
       <div id="menu" className="menu">
-        <div className="menu__icon--mobile">
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
         <nav className="nav-bar">
           <ul>
             <li className="nav-bar__link">

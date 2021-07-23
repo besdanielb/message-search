@@ -5,11 +5,13 @@ import { useHistory } from "react-router-dom";
 export default function Search() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState([]);
+  const [active, setActive] = React.useState(false);
   const history = useHistory();
 
   const onSearch = (event) => {
     event.preventDefault();
     const url = "http://localhost:3001/search?title=" + searchTerm;
+    setActive(true);
     fetch(url)
       .then((response) => response.json())
       .then(
@@ -27,10 +29,10 @@ export default function Search() {
     setSearchTerm(event.target.value);
   };
 
-  const onReadMessage = (messageDate) => {
+  const onReadMessage = (messageDate, index) => {
     history.push({
       pathname: "/read",
-      state: { date: messageDate },
+      state: { date: messageDate, ref: index },
     });
   };
 
@@ -59,14 +61,16 @@ export default function Search() {
             <i className="fa fa-search"></i>
           </button>
         </form>
-        <ul>
+        <ul className={active ? "transition" : ""}>
           {searchTerm && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
-              <li key={index}>
-                <p
-                  className="message-title"
-                  onClick={() => onReadMessage(result.sermonDate)}
-                >
+              <li
+                key={index}
+                onClick={() =>
+                  onReadMessage(result.sermonDate, result.paragraphNumber)
+                }
+              >
+                <p className="message-title">
                   {result.sermonDate} | {result.sermonTitle}
                 </p>
                 <p>{result.paragraph}</p>
