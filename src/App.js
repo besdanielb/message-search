@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
+import ReadAll from "./Pages/Read/read-all";
 
 function App() {
   return (
@@ -19,7 +20,7 @@ function App() {
               <Link to="/search">Search</Link>
             </li>
             <li className="nav-bar__link">
-              <Link to="/read">Read</Link>
+              <Link to="/read-all">Read</Link>
             </li>
           </ul>
         </nav>
@@ -27,6 +28,7 @@ function App() {
       </div>
       <Route exact path="/search" component={Search} />
       <Route exact path="/read" component={Read} />
+      <Route exact path="/read-all" component={ReadAll} />
       <Redirect to="/search"></Redirect>
     </Router>
   );

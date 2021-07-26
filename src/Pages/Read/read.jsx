@@ -1,18 +1,9 @@
 import "./read.scss";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-export default function Read(props) {
+export default function Read() {
   const [messageToRead, setMessageToRead] = React.useState();
-  let refs = useRef([
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-  ]);
   const location = useLocation();
 
   useEffect(() => {
@@ -36,40 +27,34 @@ export default function Read(props) {
     return () => {
       isMounted = false;
     };
-  }, [location?.state?.date]);
+  }, [location?.state?.date, location?.state?.ref]);
 
   const executeScroll = (i) => {
-    refs.current[i].current.scrollIntoView({
+    let element = document.getElementById(i);
+    element.scrollIntoView({
       behavior: "smooth",
-      block: "start",
+      block: "center",
     });
   };
 
-  if (messageToRead) {
-    return (
-      <section className="container">
-        <div className="read__container">
-          <h2 className="message-title">{messageToRead.sermonTitle}</h2>
-          <ul>
-            {messageToRead?.paragraphs.map((paragraph, index) => (
-              <li key={index} ref={refs.current[index]}>
-                <p>
-                  <span className="index">{index}</span> {paragraph}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    );
-  } else {
-    return (
-      <section className="container">
-        <div className="read__container">
-          <h2>Read Messages For Free</h2>
-          <p>Table with list of messages</p>
-        </div>
-      </section>
-    );
-  }
+  return (
+    <section className="container">
+      <div className="read__container">
+        <h2 className="message-title">{messageToRead?.sermonTitle}</h2>
+        <ul>
+          {messageToRead?.paragraphs.map((paragraph, index) => (
+            <li
+              key={index}
+              id={index}
+              className={location?.state?.ref === index ? "highlight" : ""}
+            >
+              <p>
+                <span className="index">{index}</span> {paragraph}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
 }

@@ -1,22 +1,29 @@
 import "./search.scss";
 import React from "react";
 import { useHistory } from "react-router-dom";
+import SearchInput from "../../Components/search-input";
+import LoadingSpinner from "../../Components/loader";
 
 export default function Search() {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState([]);
+  const [search, setSearch] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const history = useHistory();
 
   const onSearch = (event) => {
     event.preventDefault();
+    setSearch(true);
     const url = "http://localhost:3001/search?title=" + searchTerm;
-    setActive(true);
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
-          setSearchResults(results);
+          setTimeout(() => {
+            setActive(true);
+            setSearchResults(results);
+            setSearch(false);
+          }, 3000);
         },
         (error) => {
           console.log("error: " + error);
@@ -39,28 +46,17 @@ export default function Search() {
   return (
     <div className="container">
       <div className="search__container">
-        {searchResults?.length > 0 ? (
+        {search || searchResults?.length > 0 ? (
           <span></span>
         ) : (
-          <h2>Search for a Message</h2>
+          <h1>Message Search</h1>
         )}
-        <form className="search__form">
-          <input
-            type="search"
-            className="search__input"
-            placeholder="Enter Search"
-            value={searchTerm}
-            onChange={onSearchInputValueChange}
-          ></input>
-          <button
-            className="search__button"
-            type="submit"
-            onClick={onSearch}
-            disabled={!searchTerm}
-          >
-            <i className="fa fa-search"></i>
-          </button>
-        </form>
+        <SearchInput
+          onSearch={onSearch}
+          onSearchInputValueChange={onSearchInputValueChange}
+          searchTerm={searchTerm}
+        ></SearchInput>
+        {search ? <LoadingSpinner></LoadingSpinner> : <></>}
         <ul className={active ? "transition" : ""}>
           {searchTerm && searchResults.length > 0 ? (
             searchResults.map((result, index) => (

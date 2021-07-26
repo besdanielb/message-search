@@ -4,12 +4,16 @@
     justify-content: flex-start;
     align-items: center;
     flex-direction: column;
-    width: calc(min(60%, 60rem));
+    width: calc(min(80%, 110ch));
     margin-top: 3.5em;
 
     ul {
       list-style-type: none;
       padding-inline-start: unset;
+
+      &:last-child {
+        margin-bottom: 2.5em;
+      }
 
       li {
         padding: 1em 1.3em;
@@ -17,14 +21,30 @@
 
       p {
         &:not(:first-child) {
-          margin-top: 1em;
+          margin-top: 1.5em;
         }
         color: rgba(0, 0, 0, 0.7);
       }
+    }
+
+    .highlight {
+      border-radius: 10px;
+      animation-duration: 0.25s;
+      border-left: 8px solid var(--yellow-color);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
+        0 10px 10px rgba(0, 0, 0, 0.22);
     }
   }
 }
 
 .index {
   font-weight: bold;
+}
+
+@media (max-width: 770px) {
+  .read__container {
+    ul:last-child {
+      margin-bottom: 5em;
+    }
+  }
 }

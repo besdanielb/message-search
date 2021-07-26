@@ -16,6 +16,7 @@ app.use(
 
 app.get("/search", replyFile(`./responses/searchResults.json`));
 app.get("/message/:date", replyFile(`./responses/message.json`));
+app.get("/all-messages", replyFile(`./responses/all-messages.json`));
 app.get("/", replyJson("This is working"));
 
 function replyFile(file) {
