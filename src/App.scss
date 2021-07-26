@@ -86,6 +86,12 @@ h2 {
   color: #bbb;
 }
 
+h1 {
+  margin-bottom: 0.4em;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 3ch;
+}
+
 @media (max-width: 760px) {
   .menu {
     position: fixed;

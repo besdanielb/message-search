@@ -30,7 +30,12 @@ export default function Read() {
   }, [location?.state?.date, location?.state?.ref]);
 
   const executeScroll = (i) => {
-    let element = document.getElementById(i);
+    let element;
+    if (i) {
+      element = document.getElementById(i);
+    } else {
+      element = document.getElementById(0);
+    }
     element.scrollIntoView({
       behavior: "smooth",
       block: "center",
@@ -40,7 +45,7 @@ export default function Read() {
   return (
     <section className="container">
       <div className="read__container">
-        <h2 className="message-title">{messageToRead?.sermonTitle}</h2>
+        <h1 className="message-title">{messageToRead?.sermonTitle}</h1>
         <ul>
           {messageToRead?.paragraphs.map((paragraph, index) => (
             <li

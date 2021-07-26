@@ -1,4 +1,4 @@
-import "./read.scss";
+import "./read-all.scss";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
@@ -54,32 +54,32 @@ export default function ReadAll(props) {
 
   return (
     <div className="container">
-      <div className="search__container"></div>
-      {messages?.length > 0 ? <span></span> : <h2>Search for a Message</h2>}
-      <SearchInput
-        onSearch={onSearch}
-        onSearchInputValueChange={onSearchInputValueChange}
-        searchTerm={searchTerm}
-      ></SearchInput>
-      <ul>
-        {messages?.length > 0 ? (
-          messages.map((result, index) => (
-            <li
-              key={index}
-              onClick={() =>
-                onReadMessage(result.sermonDate, result.paragraphNumber)
-              }
-            >
-              <p className="message-title">
-                {result.sermonDate} | {result.sermonTitle}
-              </p>
-              <p>{result.paragraph}</p>
-            </li>
-          ))
-        ) : (
-          <></>
-        )}
-      </ul>
+      <div className="search__container margin-top">
+        <h1>Read</h1>
+        <SearchInput
+          onSearch={onSearch}
+          onSearchInputValueChange={onSearchInputValueChange}
+          searchTerm={searchTerm}
+        ></SearchInput>
+        <ul className="message-list">
+          {messages?.length > 0 ? (
+            messages.map((result, index) => (
+              <li
+                key={index}
+                onClick={() =>
+                  onReadMessage(result.sermonDate, result.paragraphNumber)
+                }
+              >
+                <p className="message-title">
+                  {result.sermonDate} | {result.sermonTitle}
+                </p>
+              </li>
+            ))
+          ) : (
+            <></>
+          )}
+        </ul>
+      </div>
     </div>
   );
 }
