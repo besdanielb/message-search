@@ -5,3 +5,27 @@
 .margin-top {
   margin-top: 2em;
 }
+
+.center {
+  align-items: center;
+  padding-left: 2.5em;
+  padding-right: 2.5em;
+}
+
+.MuiDataGrid-root {
+  box-shadow: 0px 1px 7px rgba(0, 0, 0, 0.5);
+}
+
+.MuiIconButton-root {
+  color: black !important;
+}
+
+.table {
+  height: 85vh;
+}
+
+@media (max-width: 770px) {
+  .table {
+    width: max-content;
+  }
+}

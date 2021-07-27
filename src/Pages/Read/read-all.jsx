@@ -1,12 +1,56 @@
 import "./read-all.scss";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import SearchInput from "../../Components/search-input";
+import MenuBookIcon from "@material-ui/icons/MenuBook";
+import IconButton from "@material-ui/core/IconButton";
+import { DataGrid } from "@material-ui/data-grid";
 
-export default function ReadAll(props) {
-  const [searchTerm, setSearchTerm] = React.useState("");
+export default function ReadAll() {
   const [messages, setMessages] = React.useState([]);
+  const [rows, setRows] = React.useState([]);
+  const isDataFetched = messages.length > 0;
   const history = useHistory();
+  const TABLE_COLUMNS = [
+    {
+      field: "title",
+      headerName: "Title",
+      sortable: true,
+      flex: 2,
+    },
+    {
+      field: "date",
+      headerName: "Date",
+      sortable: true,
+      flex: 1,
+    },
+    {
+      field: "location",
+      headerName: "Location",
+      sortable: true,
+      flex: 1,
+    },
+    {
+      field: "read",
+      headerName: " ",
+      sortable: false,
+      width: 70,
+      disableColumnMenu: true,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        return (
+          <IconButton
+            aria-label="read"
+            color="default"
+            onClick={() => {
+              onReadMessage(params);
+            }}
+          >
+            <MenuBookIcon />
+          </IconButton>
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     let isMounted = true;
@@ -17,7 +61,18 @@ export default function ReadAll(props) {
         .then(
           (messages) => {
             if (isMounted) {
-              setMessages(messages);
+              setTimeout(() => {
+                setMessages(messages);
+                let tableData = messages.map((message, index) => {
+                  return {
+                    id: index,
+                    title: message.sermonTitle,
+                    date: message.sermonDate,
+                    location: message.location,
+                  };
+                });
+                setRows(tableData);
+              }, 2000);
             }
           },
           (error) => {
@@ -28,58 +83,26 @@ export default function ReadAll(props) {
     return () => {
       isMounted = false;
     };
-  }, [messages]);
+  }, []);
 
-  const onSearch = (event) => {
-    event.preventDefault();
-  };
-
-  const onSearchInputValueChange = (event) => {
-    setSearchTerm(event.target.value);
-    const results = messages.filter((message) =>
-      message.sermonTitle
-        .toLowerCase()
-        .includes(event.target.value.toLowerCase())
-    );
-    setMessages(results);
-  };
-
-  const onReadMessage = (messageDate) => {
+  const onReadMessage = (params) => {
     history.push({
       pathname: "/read",
-      state: { date: messageDate },
+      state: { date: params.row?.date },
       // TODO READ PAGE WITHOUT REF
     });
   };
 
   return (
-    <div className="container">
-      <div className="search__container margin-top">
-        <h1>Read</h1>
-        <SearchInput
-          onSearch={onSearch}
-          onSearchInputValueChange={onSearchInputValueChange}
-          searchTerm={searchTerm}
-        ></SearchInput>
-        <ul className="message-list">
-          {messages?.length > 0 ? (
-            messages.map((result, index) => (
-              <li
-                key={index}
-                onClick={() =>
-                  onReadMessage(result.sermonDate, result.paragraphNumber)
-                }
-              >
-                <p className="message-title">
-                  {result.sermonDate} | {result.sermonTitle}
-                </p>
-              </li>
-            ))
-          ) : (
-            <></>
-          )}
-        </ul>
-      </div>
+    <div className="container center">
+      <DataGrid
+        className="table"
+        rows={rows}
+        columns={TABLE_COLUMNS}
+        disableSelectionOnClick
+        pageSize={14}
+        loading={messages.length === 0}
+      />
     </div>
   );
 }
