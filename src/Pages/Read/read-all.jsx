@@ -89,13 +89,13 @@ export default function ReadAll() {
     history.push({
       pathname: "/read",
       state: { date: params.row?.date },
-      // TODO READ PAGE WITHOUT REF
     });
   };
 
   return (
     <div className="container center">
       <DataGrid
+        style={{ height: "85vh" }}
         className="table"
         rows={rows}
         columns={TABLE_COLUMNS}
