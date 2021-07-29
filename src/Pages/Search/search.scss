@@ -7,7 +7,6 @@ $input-height-desktop: 3em;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 85%;
 
     ul {
       list-style-type: none;
@@ -15,11 +14,12 @@ $input-height-desktop: 3em;
       opacity: 0;
 
       li {
-        margin-top: 15px;
+        margin: 2.5em 15px;
         padding: 1em 1.3em;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         border-left: 8px solid transparent;
         border-radius: 10px;
+        background-color: var(--gray-color);
 
         &:first-child {
           margin-top: 1.5em;
@@ -45,11 +45,18 @@ $input-height-desktop: 3em;
         }
         color: rgba(0, 0, 0, 0.7);
       }
+
+      .underline {
+        width: 4em;
+        margin-top: 10px;
+        border-bottom: 4px solid var(--yellow-color);
+      }
     }
   }
 
   &__input {
     width: 100%;
+    background-color: white;
     height: $input-height;
     margin-top: 1em;
     padding-left: 15px;
@@ -96,11 +103,11 @@ $input-height-desktop: 3em;
 
 .message-title {
   font-weight: bold;
+  font-size: 21px;
 }
 
 @media (min-width: 770px) {
   h1 {
-    font-size: 7ch;
     letter-spacing: 7px;
     margin-bottom: 1rem;
   }

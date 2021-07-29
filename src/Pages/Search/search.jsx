@@ -69,6 +69,7 @@ export default function Search() {
                 <p className="message-title">
                   {result.sermonDate} | {result.sermonTitle}
                 </p>
+                <div className="underline"></div>
                 <p>{result.paragraph}</p>
               </li>
             ))
