@@ -3,6 +3,7 @@ import React from "react";
 import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
+import Button from "@material-ui/core/Button";
 
 export default function Search() {
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -66,16 +67,17 @@ export default function Search() {
                   onReadMessage(result.sermonDate, result.paragraphNumber)
                 }
               >
-                <p className="message-title">
+                <h5 className="message-title">
                   {result.sermonDate} | {result.sermonTitle}
-                </p>
+                </h5>
                 <div className="underline"></div>
-                <p>{result.paragraph}</p>
+                <p className="paragraph-text">{result.paragraph}</p>
               </li>
             ))
           ) : (
             <></>
           )}
+          <Button variant="outlined">Load more...</Button>
         </ul>
       </div>
     </div>

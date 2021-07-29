@@ -8,7 +8,6 @@ import { DataGrid } from "@material-ui/data-grid";
 export default function ReadAll() {
   const [messages, setMessages] = React.useState([]);
   const [rows, setRows] = React.useState([]);
-  const isDataFetched = messages.length > 0;
   const history = useHistory();
   const TABLE_COLUMNS = [
     {
@@ -83,7 +82,7 @@ export default function ReadAll() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [messages?.length]);
 
   const onReadMessage = (params) => {
     history.push({
@@ -94,13 +93,19 @@ export default function ReadAll() {
 
   return (
     <div className="container center">
+      <div className="title">
+        <h1>Read a Message</h1>
+        <p>
+          Here you can search and sort for a message Lorem Ipsum Dolor sit amet
+          Lorem Ipsum Dolor sit amet.
+        </p>
+      </div>
       <DataGrid
-        style={{ height: "85vh" }}
-        className="table"
         rows={rows}
         columns={TABLE_COLUMNS}
         disableSelectionOnClick
-        pageSize={14}
+        pageSize={15}
+        autoHeight
         loading={messages.length === 0}
       />
     </div>
