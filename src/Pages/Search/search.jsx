@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
 import Button from "@material-ui/core/Button";
+import GetAppIcon from "@material-ui/icons/GetApp";
 
 export default function Search() {
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -37,11 +38,36 @@ export default function Search() {
     setSearchTerm(event.target.value);
   };
 
+  const onClearInput = () => {
+    setSearchResults([]);
+    setSearchTerm("");
+    setActive(false);
+  };
+
   const onReadMessage = (messageDate, index) => {
     history.push({
       pathname: "/read",
       state: { date: messageDate, ref: index },
     });
+  };
+
+  const onLoadMore = (event) => {
+    event.preventDefault();
+    setSearch(true);
+    const url = "http://localhost:3001/search/load-more";
+    fetch(url)
+      .then((response) => response.json())
+      .then(
+        (results) => {
+          setTimeout(() => {
+            setSearchResults(results);
+            setSearch(false);
+          }, 1000);
+        },
+        (error) => {
+          console.log("error: " + error);
+        }
+      );
   };
 
   return (
@@ -55,6 +81,7 @@ export default function Search() {
         <SearchInput
           onSearch={onSearch}
           onSearchInputValueChange={onSearchInputValueChange}
+          onClearInput={onClearInput}
           searchTerm={searchTerm}
         ></SearchInput>
         {search ? <LoadingSpinner></LoadingSpinner> : <></>}
@@ -77,7 +104,19 @@ export default function Search() {
           ) : (
             <></>
           )}
-          <Button variant="outlined">Load more...</Button>
+          {searchTerm && searchResults.length > 0 ? (
+            <Button
+              style={{ display: "flex", margin: "5em auto" }}
+              size="medium"
+              variant="outlined"
+              onClick={onLoadMore}
+              endIcon={<GetAppIcon></GetAppIcon>}
+            >
+              Load more
+            </Button>
+          ) : (
+            <></>
+          )}
         </ul>
       </div>
     </div>

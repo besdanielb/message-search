@@ -1,5 +1,4 @@
-$input-height: 2.5em;
-$input-height-desktop: 3em;
+$input-height: 3em;
 
 .search {
   &__container {
@@ -65,14 +64,6 @@ $input-height-desktop: 3em;
     outline: none;
   }
 
-  &__input[type="search"]::-webkit-search-cancel-button {
-    -webkit-appearance: searchfield-cancel-button;
-    position: absolute;
-    right: 40px;
-    font-size: 1.3em;
-    background: black;
-  }
-
   &__input:hover,
   &__input:focus {
     box-shadow: 0 0pt 1pt 1pt rgba(0, 0, 0, 0.35);
@@ -81,19 +72,32 @@ $input-height-desktop: 3em;
   }
 
   &__button {
-    height: $input-height;
-    width: $input-height;
+    height: 2em;
+    width: 2em;
     border: 0px;
     background-color: unset;
-    margin-left: -40px;
-    margin-top: 1.03em;
+    margin-top: 1.4em;
+    margin-right: 8px;
+    position: absolute;
+    display: flex;
+    align-items: center;
+
+    &:hover:enabled,
+    &:focus {
+      background-color: var(--gray-color);
+      border-radius: 50%;
+    }
   }
 
   &__form {
     display: flex;
     width: 100%;
-    justify-content: center;
+    justify-content: flex-end;
   }
+}
+
+.MuiButton-outlined {
+  border: 3px solid var(--dark-color) !important;
 }
 
 .transition {
@@ -114,21 +118,6 @@ $input-height-desktop: 3em;
   .search {
     &__container {
       width: calc(min(55%, 70em));
-    }
-
-    &__input {
-      height: $input-height-desktop;
-    }
-
-    &__input[type="search"]::-webkit-search-cancel-button {
-      right: 43px;
-    }
-
-    &__button {
-      height: $input-height-desktop;
-      width: $input-height-desktop;
-      margin-left: -50px;
-      margin-top: 1.04em;
     }
   }
 }

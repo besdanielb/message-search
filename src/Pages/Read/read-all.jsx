@@ -101,11 +101,11 @@ export default function ReadAll() {
         </p>
       </div>
       <DataGrid
+        style={{ height: "60vh" }}
         rows={rows}
         columns={TABLE_COLUMNS}
         disableSelectionOnClick
-        pageSize={15}
-        autoHeight
+        pageSize={10}
         loading={messages.length === 0}
       />
     </div>

@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const pino = require("express-pino-logger")();
+const searchResults = require("./responses/searchResults.json");
+const results = searchResults;
 
 const cors = require("cors");
 
@@ -15,6 +17,10 @@ app.use(
 );
 
 app.get("/search", replyFile(`./responses/searchResults.json`));
+app.get("/search/load-more", (req, res) => {
+  const loadMoreResults = results.concat(searchResults);
+  return res.status(200).jsonp(loadMoreResults);
+});
 app.get("/message/:date", replyFile(`./responses/message.json`));
 app.get("/all-messages", replyFile(`./responses/all-messages.json`));
 app.get("/", replyJson("This is working"));

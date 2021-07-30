@@ -18,15 +18,15 @@ ReactDOM.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
-// ######### TODO ###########3
+// ######### TODO ###########
 
 // Search page:
-// Handle input clear button - set active flag to false
-// Handle Load more event
 // Handle max title size to not mess with card width
+// Loading gif size on mobile
 
-// Read page:
-// Check Read page title size
+// Read all page:
+// only title column on mobile
+// Add search input on table
 
 // All site:
 // Add production build
