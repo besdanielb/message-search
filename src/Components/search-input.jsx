@@ -18,6 +18,7 @@ export default function SearchInput(props) {
   return (
     <form className="search__form">
       <input
+        type="text"
         className="search__input"
         style={{ position: "relative" }}
         placeholder="Enter Search"

@@ -15,9 +15,7 @@ reportWebVitals();
 
 // ######### TODO ###########
 
-// Read all page:
-// Add search input on table
-
 // All site:
+// Add redux to keep state
 // Add production build
 // check reponsiveness

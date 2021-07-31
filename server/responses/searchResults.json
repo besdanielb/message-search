@@ -1,35 +1,35 @@
 [
   {
     "sermonDate": "2012-04-23T18:25:43.511Z",
-    "paragraphNumber": 4,
+    "paragraphNumber": 7,
     "paragraph": "This is the first result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
     "sermonTitle": "Message 1 Lorem ipsum dolor sit amet",
     "location": "New Mexico"
   },
   {
     "sermonDate": "2012-05-28T18:25:43.511Z",
-    "paragraphNumber": 2,
+    "paragraphNumber": 7,
     "paragraph": "This is the second result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
     "sermonTitle": "Message 2 Lorem ipsum dolor sit amet testing test 123",
     "location": "Lisbon"
   },
   {
     "sermonDate": "2016-02-12T18:25:43.511Z",
-    "paragraphNumber": 1,
+    "paragraphNumber": 7,
     "paragraph": "This is the third result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
     "sermonTitle": "Message 3 Lorem ipsum dolor sit amet",
     "location": "New York"
   },
   {
     "sermonDate": "2014-05-29T18:25:43.511Z",
-    "paragraphNumber": 5,
+    "paragraphNumber": 7,
     "paragraph": "This is the fourth result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
     "sermonTitle": "Message 4 Lorem ipsum dolor sit amet",
     "location": "New York"
   },
   {
     "sermonDate": "2014-05-29T18:25:43.511Z",
-    "paragraphNumber": 3,
+    "paragraphNumber": 7,
     "paragraph": "This is the fourth result, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras in massa id felis lobortis scelerisque. Vestibulum non lorem pretium, rhoncus nisl sit amet, lacinia dui.\nAenean eget mollis nisi. Pellentesque sodales venenatis diam at convallis.\nCurabitur posuere sem eget nisl dictum, vitae pellentesque purus gravida. Morbi sed mollis velit.\nAliquam faucibus, sapien volutpat convallis molestie, diam justo consequat leo, a egestas purus metus in felis.",
     "sermonTitle": "Message 5 Lorem ipsum dolor sit amet",
     "location": "New York"
