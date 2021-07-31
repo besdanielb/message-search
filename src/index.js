@@ -6,12 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import "typeface-roboto";
 import "typeface-merriweather";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
+ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
@@ -21,7 +16,6 @@ reportWebVitals();
 // ######### TODO ###########
 
 // Read all page:
-// Landscape view - Improve table height
 // Add search input on table
 
 // All site:

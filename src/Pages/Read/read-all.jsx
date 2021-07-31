@@ -3,12 +3,15 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import IconButton from "@material-ui/core/IconButton";
-import { DataGrid } from "@material-ui/data-grid";
+import { DataGrid, escapeRegExp } from "@material-ui/data-grid";
+import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 
 export default function ReadAll() {
   const [messages, setMessages] = React.useState([]);
   const [rows, setRows] = React.useState([]);
+  const [rowsCopy, setRowsCopy] = React.useState(rows);
   const [width, setWidth] = React.useState(window.innerWidth);
+  const [searchText, setSearchText] = React.useState("");
   let isMobile = width <= 768;
   const history = useHistory();
   const TABLE_COLUMNS = [
@@ -106,6 +109,21 @@ export default function ReadAll() {
     });
   };
 
+  const requestSearch = (searchValue) => {
+    setSearchText(searchValue);
+    const searchRegex = new RegExp(escapeRegExp(searchValue), "i");
+    const filteredRows = rows.filter((row) => {
+      return Object.keys(row).some((field) => {
+        return searchRegex.test(row[field].toString());
+      });
+    });
+    setRowsCopy(filteredRows);
+  };
+
+  useEffect(() => {
+    setRowsCopy(rows);
+  }, [rows]);
+
   return (
     <div className="container center">
       <div className="title">
@@ -116,10 +134,18 @@ export default function ReadAll() {
         </p>
       </div>
       <DataGrid
-        rows={rows}
+        rows={rowsCopy}
         columns={TABLE_COLUMNS}
         disableSelectionOnClick
         loading={messages.length === 0}
+        components={{ Toolbar: QuickSearchToolbar }}
+        componentsProps={{
+          toolbar: {
+            value: searchText,
+            onChange: (event) => requestSearch(event.target.value),
+            clearSearch: () => requestSearch(""),
+          },
+        }}
       />
     </div>
   );
