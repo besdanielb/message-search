@@ -20,10 +20,6 @@ reportWebVitals();
 
 // ######### TODO ###########
 
-// Search page:
-// Handle max title size to not mess with card width
-// Loading gif size on mobile
-
 // Read all page:
 // only title column on mobile
 // Add search input on table

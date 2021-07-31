@@ -32,8 +32,10 @@
 @media (max-width: 660px) {
   .loader {
     #loading {
-      width: 55vw;
-      height: 55vw;
+      width: 50vw;
+      max-width: 160px;
+      height: 50vw;
+      max-height: 160px;
     }
   }
 }

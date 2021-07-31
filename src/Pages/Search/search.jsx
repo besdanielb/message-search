@@ -76,7 +76,7 @@ export default function Search() {
         {search || searchResults?.length > 0 ? (
           <span></span>
         ) : (
-          <h1>Message Search</h1>
+          <h1 className="search__container__label">Message Search</h1>
         )}
         <SearchInput
           onSearch={onSearch}
