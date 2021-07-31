@@ -8,6 +8,8 @@ import { DataGrid } from "@material-ui/data-grid";
 export default function ReadAll() {
   const [messages, setMessages] = React.useState([]);
   const [rows, setRows] = React.useState([]);
+  const [width, setWidth] = React.useState(window.innerWidth);
+  let isMobile = width <= 768;
   const history = useHistory();
   const TABLE_COLUMNS = [
     {
@@ -20,19 +22,21 @@ export default function ReadAll() {
       field: "date",
       headerName: "Date",
       sortable: true,
+      hide: isMobile,
       flex: 1,
     },
     {
       field: "location",
       headerName: "Location",
       sortable: true,
+      hide: isMobile,
       flex: 1,
     },
     {
       field: "read",
       headerName: " ",
       sortable: false,
-      width: 70,
+      width: 60,
       disableColumnMenu: true,
       disableClickEventBubbling: true,
       renderCell: (params) => {
@@ -50,6 +54,13 @@ export default function ReadAll() {
       },
     },
   ];
+
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowSizeChange);
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,6 +95,10 @@ export default function ReadAll() {
     };
   }, [messages?.length]);
 
+  const handleWindowSizeChange = () => {
+    setWidth(window.innerWidth);
+  };
+
   const onReadMessage = (params) => {
     history.push({
       pathname: "/read",
@@ -101,11 +116,9 @@ export default function ReadAll() {
         </p>
       </div>
       <DataGrid
-        style={{ height: "60vh" }}
         rows={rows}
         columns={TABLE_COLUMNS}
         disableSelectionOnClick
-        pageSize={10}
         loading={messages.length === 0}
       />
     </div>

@@ -116,7 +116,7 @@ $input-height: 3em;
   font-weight: bold;
 }
 
-@media (min-width: 770px) {
+@media only screen and (min-width: 770px) {
   h1 {
     letter-spacing: 7px;
     margin-bottom: 1rem;

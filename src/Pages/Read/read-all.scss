@@ -11,6 +11,8 @@
 
   h1 {
     margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    text-align: center;
   }
 
   p {
@@ -22,12 +24,17 @@
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
 }
 
+.MuiDataGrid-main {
+  height: 60vh;
+}
+
 .MuiIconButton-root {
   color: black !important;
 }
 
-@media (max-width: 770px) {
-  .table {
-    width: max-content;
+@media only screen and (max-width: 770px),
+  (orientation: landscape) and (max-width: 1300px) {
+  .MuiDataGrid-main {
+    height: 60vmax;
   }
 }

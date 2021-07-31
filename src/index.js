@@ -21,7 +21,7 @@ reportWebVitals();
 // ######### TODO ###########
 
 // Read all page:
-// only title column on mobile
+// Landscape view - Improve table height
 // Add search input on table
 
 // All site:
