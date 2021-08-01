@@ -5,6 +5,7 @@ import MenuBookIcon from "@material-ui/icons/MenuBook";
 import IconButton from "@material-ui/core/IconButton";
 import { DataGrid, escapeRegExp } from "@material-ui/data-grid";
 import QuickSearchToolbar from "../../Components/quick-search-toolbar";
+import { saveState, getState } from "../../Providers/localStorageProvider";
 
 export default function ReadAll() {
   const [messages, setMessages] = React.useState([]);
@@ -12,8 +13,10 @@ export default function ReadAll() {
   const [rowsCopy, setRowsCopy] = React.useState(rows);
   const [width, setWidth] = React.useState(window.innerWidth);
   const [searchText, setSearchText] = React.useState("");
+  const [hasCache, setHasCache] = React.useState();
   let isMobile = width <= 768;
   const history = useHistory();
+  const MESSAGES_STATE_NAME = "messages";
   const TABLE_COLUMNS = [
     {
       field: "title",
@@ -59,32 +62,47 @@ export default function ReadAll() {
   ];
 
   useEffect(() => {
+    setRowsCopy(rows);
+  }, [rows]);
+
+  useEffect(() => {
     window.addEventListener("resize", handleWindowSizeChange);
+    if (getState(MESSAGES_STATE_NAME)?.length > 0) {
+      setHasCache(true);
+      setMessages(getState(MESSAGES_STATE_NAME));
+    }
     return () => {
       window.removeEventListener("resize", handleWindowSizeChange);
     };
   }, []);
 
   useEffect(() => {
+    saveState(MESSAGES_STATE_NAME, messages);
+    setHasCache(true);
+    let tableData = messages.map((message, index) => {
+      return {
+        id: index,
+        title: message.sermonTitle,
+        date: message.sermonDate,
+        location: message.location,
+      };
+    });
+    setRows(tableData);
+  }, [messages]);
+
+  useEffect(() => {
     let isMounted = true;
     const url = "http://localhost:3001/all-messages";
-    if (messages?.length === 0) {
+
+    if (messages?.length === 0 && !hasCache) {
       fetch(url)
         .then((response) => response.json())
         .then(
-          (messages) => {
+          (result) => {
             if (isMounted) {
               setTimeout(() => {
-                setMessages(messages);
-                let tableData = messages.map((message, index) => {
-                  return {
-                    id: index,
-                    title: message.sermonTitle,
-                    date: message.sermonDate,
-                    location: message.location,
-                  };
-                });
-                setRows(tableData);
+                console.log(444);
+                setMessages(result);
               }, 2000);
             }
           },
@@ -96,11 +114,8 @@ export default function ReadAll() {
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line
   }, [messages?.length]);
-
-  const handleWindowSizeChange = () => {
-    setWidth(window.innerWidth);
-  };
 
   const onReadMessage = (params) => {
     history.push({
@@ -120,9 +135,9 @@ export default function ReadAll() {
     setRowsCopy(filteredRows);
   };
 
-  useEffect(() => {
-    setRowsCopy(rows);
-  }, [rows]);
+  const handleWindowSizeChange = () => {
+    setWidth(window.innerWidth);
+  };
 
   return (
     <div className="container center">

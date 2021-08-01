@@ -1,10 +1,15 @@
 import "./search.scss";
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import {
+  removeState,
+  saveState,
+  getState,
+} from "../../Providers/localStorageProvider";
 
 export default function Search() {
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -12,6 +17,17 @@ export default function Search() {
   const [search, setSearch] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const history = useHistory();
+  const SEARCH_RESULTS_STATE_NAME = "searchResults";
+  const SEARCH_TERM_STATE_NAME = "searchTerm";
+
+  // If there is search results in the local state, show them in the page
+  useEffect(() => {
+    if (getState(SEARCH_RESULTS_STATE_NAME)?.length > 0) {
+      setSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
+      setSearchTerm(getState(SEARCH_TERM_STATE_NAME));
+      setActive(true);
+    }
+  }, []);
 
   const onSearch = (event) => {
     event.preventDefault();
@@ -24,8 +40,10 @@ export default function Search() {
           setTimeout(() => {
             setActive(true);
             setSearchResults(results);
+            saveState(SEARCH_TERM_STATE_NAME, searchTerm);
+            saveState(SEARCH_RESULTS_STATE_NAME, results);
             setSearch(false);
-          }, 3000);
+          }, 2500);
         },
         (error) => {
           console.log("error: " + error);
@@ -41,6 +59,8 @@ export default function Search() {
   const onClearInput = () => {
     setSearchResults([]);
     setSearchTerm("");
+    removeState(SEARCH_TERM_STATE_NAME);
+    removeState(SEARCH_RESULTS_STATE_NAME);
     setActive(false);
   };
 
@@ -61,6 +81,7 @@ export default function Search() {
         (results) => {
           setTimeout(() => {
             setSearchResults(results);
+            saveState(SEARCH_RESULTS_STATE_NAME, results);
             setSearch(false);
           }, 1000);
         },
