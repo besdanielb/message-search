@@ -1,8 +1,15 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [],
-  "start_url": ".",
+  "short_name": "Message Search",
+  "name": "Message Search App",
+  "description": "Search and read the Message",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "type": "image/png",
+      "sizes": "120x120"
+    }
+  ],
+  "start_url": "/serch",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
