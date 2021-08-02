@@ -116,6 +116,10 @@ $input-height: 3em;
   font-weight: bold;
 }
 
+.makeStyles-margin-2 {
+  display: none !important;
+}
+
 @media only screen and (min-width: 770px) {
   h1 {
     letter-spacing: 7px;
@@ -126,5 +130,9 @@ $input-height: 3em;
     &__container {
       width: calc(min(55%, 70em));
     }
+  }
+
+  .makeStyles-margin-2 {
+    display: flex !important;
   }
 }

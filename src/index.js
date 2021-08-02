@@ -15,10 +15,6 @@ reportWebVitals();
 
 // ######### TODO ###########
 
-// Search
-// Add go up button
-
 // All site:
-// Add redux to keep state
 // Add production build
 // check reponsiveness

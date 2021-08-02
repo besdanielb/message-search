@@ -1,6 +1,8 @@
 import "./read.scss";
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import ScrollUpButton from "../../Components/scroll-up-button";
+import ScrollToTop from "react-scroll-up";
 
 export default function Read() {
   const [messageToRead, setMessageToRead] = React.useState();
@@ -59,6 +61,9 @@ export default function Read() {
             </li>
           ))}
         </ul>
+        <ScrollToTop showUnder={160}>
+          <ScrollUpButton></ScrollUpButton>
+        </ScrollToTop>
       </div>
     </section>
   );

@@ -3,6 +3,8 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
+import ScrollUpButton from "../../Components/scroll-up-button";
+import ScrollToTop from "react-scroll-up";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
 import {
@@ -139,6 +141,9 @@ export default function Search() {
             <></>
           )}
         </ul>
+        <ScrollToTop showUnder={160}>
+          <ScrollUpButton></ScrollUpButton>
+        </ScrollToTop>
       </div>
     </div>
   );
