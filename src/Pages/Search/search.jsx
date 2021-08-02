@@ -4,6 +4,13 @@ import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
+import FacebookIcon from "@material-ui/icons/Facebook";
+import InstagramIcon from "@material-ui/icons/Instagram";
+import EmailIcon from "@material-ui/icons/Email";
+import AppleIcon from "@material-ui/icons/Apple";
+import LanguageIcon from "@material-ui/icons/Language";
+import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
+import { IconButton } from "@material-ui/core";
 import ScrollToTop from "react-scroll-up";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -93,6 +100,12 @@ export default function Search() {
       );
   };
 
+  const openEmailClient = () => {
+    window.open(
+      "mailto:message-search@gmail.com?subject=Contact%20regarding%20website&body=Body%20goes%20here"
+    );
+  };
+
   return (
     <div className="container">
       <div className="search__container">
@@ -129,7 +142,13 @@ export default function Search() {
           )}
           {searchTerm && searchResults.length > 0 ? (
             <Button
-              style={{ display: "flex", margin: "5em auto" }}
+              style={{
+                display: "flex",
+                marginTop: "5em",
+                marginBottom: "9em",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
               size="medium"
               variant="outlined"
               onClick={onLoadMore}
@@ -144,6 +163,26 @@ export default function Search() {
         <ScrollToTop showUnder={160}>
           <ScrollUpButton></ScrollUpButton>
         </ScrollToTop>
+      </div>
+      <div className="contacts">
+        <IconButton aria-label="facebook" size="medium">
+          <FacebookIcon fontSize="medium" />
+        </IconButton>
+        <IconButton aria-label="apple" size="medium">
+          <InstagramIcon fontSize="medium" />
+        </IconButton>
+        <IconButton aria-label="apple" size="medium">
+          <AppleIcon fontSize="medium" />
+        </IconButton>
+        <IconButton aria-label="android" size="medium">
+          <AndroidOutlinedIcon fontSize="medium" />
+        </IconButton>
+        <IconButton aria-label="email" size="medium">
+          <LanguageIcon fontSize="medium" />
+        </IconButton>
+        <IconButton aria-label="email" size="medium" onClick={openEmailClient}>
+          <EmailIcon fontSize="medium" />
+        </IconButton>
       </div>
     </div>
   );

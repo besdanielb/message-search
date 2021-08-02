@@ -2,6 +2,7 @@ import React from "react";
 import { IconButton } from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/Clear";
 import { makeStyles } from "@material-ui/core/styles";
+import SearchIcon from "@material-ui/icons/Search";
 
 const useStyles = makeStyles((theme) => ({
   clearButton: {
@@ -32,7 +33,7 @@ export default function SearchInput(props) {
           onClick={props?.onClearInput}
           size="small"
         >
-          <ClearIcon fontSize="inherit" />
+          <ClearIcon fontSize="small" />
         </IconButton>
       ) : (
         <></>
@@ -43,7 +44,7 @@ export default function SearchInput(props) {
         onClick={props.onSearch}
         disabled={!props.searchTerm}
       >
-        <i className="fa fa-search"></i>
+        <SearchIcon fontSize="small"></SearchIcon>
       </button>
     </form>
   );

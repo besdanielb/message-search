@@ -10,6 +10,7 @@ body {
   width: 10vw;
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.2);
   transition: 1s;
+  z-index: 3;
 
   &__icon--desktop {
     display: flex;
@@ -46,6 +47,7 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 nav {
