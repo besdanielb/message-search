@@ -2,6 +2,8 @@
   display: block;
   padding-left: 2.5em;
   padding-right: 2.5em;
+  padding-bottom: 2em;
+  height: 100vh;
 }
 
 .title {
@@ -22,19 +24,38 @@
 
 .MuiDataGrid-root {
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
-}
-
-.MuiDataGrid-main {
-  height: 60vh;
+  height: 65vh !important;
 }
 
 .MuiIconButton-root {
   color: black !important;
 }
 
-@media only screen and (max-width: 770px),
-  (orientation: landscape) and (max-width: 1300px) {
-  .MuiDataGrid-main {
-    height: 60vmax;
+@media only screen and (min-device-width: 300px) and (max-device-width: 1200px) and (orientation: landscape) {
+  .center {
+    padding-bottom: 5em;
+    height: 100%;
+  }
+
+  .MuiDataGrid-root {
+    height: 60vmax !important;
+  }
+}
+
+@media only screen and (max-width: 770px) {
+  .center {
+    padding-bottom: 5em;
+    height: 100%;
+  }
+}
+
+@media only screen and (min-width: 2000px) {
+  .center {
+    padding-bottom: 5em;
+    height: 100vh;
+  }
+
+  .MuiDataGrid-root {
+    height: 72vh !important;
   }
 }

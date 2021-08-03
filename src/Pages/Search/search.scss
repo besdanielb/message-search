@@ -97,9 +97,8 @@ $input-height: 3em;
 
   &__form {
     display: flex;
-    width: 100%;
+    width: 100vw;
     justify-content: flex-end;
-    max-width: 63em;
   }
 }
 
@@ -131,7 +130,7 @@ $input-height: 3em;
   display: none !important;
 }
 
-@media only screen and (min-width: 770px) {
+@media only screen and (min-width: 793px) {
   h1 {
     letter-spacing: 7px;
     margin-bottom: 1rem;
@@ -139,7 +138,12 @@ $input-height: 3em;
 
   .search {
     &__container {
-      width: calc(min(55%, 70em));
+      width: calc(min(65%, 70em));
+    }
+
+    &__form {
+      width: 70vw;
+      max-width: 63em;
     }
   }
 

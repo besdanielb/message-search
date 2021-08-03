@@ -16,5 +16,4 @@ reportWebVitals();
 // ######### TODO ###########
 
 // All site:
-// Add production build
 // check reponsiveness

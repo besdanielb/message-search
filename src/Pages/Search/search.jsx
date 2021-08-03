@@ -11,6 +11,8 @@ import AppleIcon from "@material-ui/icons/Apple";
 import LanguageIcon from "@material-ui/icons/Language";
 import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
 import { IconButton } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
@@ -102,8 +104,12 @@ export default function Search() {
 
   const openEmailClient = () => {
     window.open(
-      "mailto:message-search@gmail.com?subject=Contact%20regarding%20website&body=Body%20goes%20here"
+      "mailto:message-search@gmail.com?subject=Contact%20regarding%20website"
     );
+  };
+
+  const onOpenAppleClick = () => {
+    window.open("https://apps.apple.com/bf/app/apple-music/id1108187390");
   };
 
   return (
@@ -165,24 +171,75 @@ export default function Search() {
         </ScrollToTop>
       </div>
       <div className="contacts">
-        <IconButton aria-label="facebook" size="medium">
-          <FacebookIcon fontSize="medium" />
-        </IconButton>
-        <IconButton aria-label="apple" size="medium">
-          <InstagramIcon fontSize="medium" />
-        </IconButton>
-        <IconButton aria-label="apple" size="medium">
-          <AppleIcon fontSize="medium" />
-        </IconButton>
-        <IconButton aria-label="android" size="medium">
-          <AndroidOutlinedIcon fontSize="medium" />
-        </IconButton>
-        <IconButton aria-label="email" size="medium">
-          <LanguageIcon fontSize="medium" />
-        </IconButton>
-        <IconButton aria-label="email" size="medium" onClick={openEmailClient}>
-          <EmailIcon fontSize="medium" />
-        </IconButton>
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="Check out our Facebook page"
+          arrow
+        >
+          <IconButton aria-label="facebook" size="medium">
+            <FacebookIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="Check out our Instagram"
+          arrow
+        >
+          <IconButton aria-label="instagram" size="medium">
+            <InstagramIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="You can download out app for IOS from the App store"
+          arrow
+        >
+          <IconButton
+            aria-label="apple"
+            size="medium"
+            onClick={onOpenAppleClick}
+          >
+            <AppleIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="You can download out app for Android from the Google Play store"
+          arrow
+        >
+          <IconButton aria-label="android" size="medium">
+            <AndroidOutlinedIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="Check out our church website"
+          arrow
+        >
+          <IconButton aria-label="website" size="medium">
+            <LanguageIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="Get in contact with us!"
+          arrow
+        >
+          <IconButton
+            aria-label="email"
+            size="medium"
+            onClick={openEmailClient}
+          >
+            <EmailIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
       </div>
     </div>
   );
