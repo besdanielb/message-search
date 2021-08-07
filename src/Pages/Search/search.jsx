@@ -27,13 +27,15 @@ import {
 } from "../../Providers/localStorageProvider";
 
 export default function Search() {
+  const SEMANTIC_SEARCH_TYPE = "semantic";
+  const SEARCH_RESULTS_STATE_NAME = "searchResults";
+  const SEARCH_TERM_STATE_NAME = "searchTerm";
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState([]);
   const [search, setSearch] = React.useState(false);
   const [active, setActive] = React.useState(false);
+  const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
   const history = useHistory();
-  const SEARCH_RESULTS_STATE_NAME = "searchResults";
-  const SEARCH_TERM_STATE_NAME = "searchTerm";
 
   // If there is search results in the local state, show them in the page
   useEffect(() => {
@@ -47,7 +49,11 @@ export default function Search() {
   const onSearch = (event) => {
     event.preventDefault();
     setSearch(true);
-    const url = "http://localhost:3001/search?title=" + searchTerm;
+    const url =
+      "http://localhost:3001/search?type=" +
+      searchType +
+      "&query=" +
+      searchTerm;
     fetch(url)
       .then((response) => response.json())
       .then(
@@ -116,6 +122,10 @@ export default function Search() {
     window.open("https://apps.apple.com/bf/app/apple-music/id1108187390");
   };
 
+  const onSearchTypeChange = (event) => {
+    setSearchType(event.target.value);
+  };
+
   return (
     <div className="container">
       <div className="search__container">
@@ -130,30 +140,36 @@ export default function Search() {
           onClearInput={onClearInput}
           searchTerm={searchTerm}
         ></SearchInput>
-        <FormControl component="fieldset">
-          <RadioGroup
-            row
-            aria-label="search types"
-            name="searchTypes"
-            defaultValue="semantic"
-          >
-            <FormControlLabel
-              value="semantic"
-              control={<Radio color="primary" />}
-              label="Semantic Search"
-            />
-            <FormControlLabel
-              value="allWords"
-              control={<Radio color="primary" />}
-              label="All Words"
-            />
-            <FormControlLabel
-              value="exactMatch"
-              control={<Radio color="primary" />}
-              label="Exact Match"
-            />
-          </RadioGroup>
-        </FormControl>
+        {search || searchResults?.length > 0 ? (
+          <></>
+        ) : (
+          <FormControl component="fieldset">
+            <RadioGroup
+              row
+              aria-label="search types"
+              name="searchTypes"
+              defaultValue={searchType}
+              onChange={onSearchTypeChange}
+            >
+              <FormControlLabel
+                value="semantic"
+                control={<Radio color="primary" />}
+                label="Semantic Search"
+              />
+              <FormControlLabel
+                value="allWords"
+                control={<Radio color="primary" />}
+                label="All Words"
+              />
+              <FormControlLabel
+                value="exactMatch"
+                control={<Radio color="primary" />}
+                label="Exact Match"
+              />
+            </RadioGroup>
+          </FormControl>
+        )}
+
         {search ? <LoadingSpinner></LoadingSpinner> : <></>}
         <ul className={active ? "transition" : ""}>
           {searchTerm && searchResults.length > 0 ? (
