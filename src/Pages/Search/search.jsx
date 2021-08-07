@@ -11,6 +11,10 @@ import AppleIcon from "@material-ui/icons/Apple";
 import LanguageIcon from "@material-ui/icons/Language";
 import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
 import { IconButton } from "@material-ui/core";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
 import Tooltip from "@material-ui/core/Tooltip";
 import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
@@ -126,6 +130,30 @@ export default function Search() {
           onClearInput={onClearInput}
           searchTerm={searchTerm}
         ></SearchInput>
+        <FormControl component="fieldset">
+          <RadioGroup
+            row
+            aria-label="search types"
+            name="searchTypes"
+            defaultValue="semantic"
+          >
+            <FormControlLabel
+              value="semantic"
+              control={<Radio color="primary" />}
+              label="Semantic Search"
+            />
+            <FormControlLabel
+              value="allWords"
+              control={<Radio color="primary" />}
+              label="All Words"
+            />
+            <FormControlLabel
+              value="exactMatch"
+              control={<Radio color="primary" />}
+              label="Exact Match"
+            />
+          </RadioGroup>
+        </FormControl>
         {search ? <LoadingSpinner></LoadingSpinner> : <></>}
         <ul className={active ? "transition" : ""}>
           {searchTerm && searchResults.length > 0 ? (

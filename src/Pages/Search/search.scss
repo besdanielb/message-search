@@ -130,6 +130,10 @@ $input-height: 3em;
   display: none !important;
 }
 
+.MuiFormGroup-row {
+  flex-direction: column !important;
+}
+
 @media only screen and (min-width: 793px) {
   h1 {
     letter-spacing: 7px;
@@ -149,5 +153,9 @@ $input-height: 3em;
 
   .makeStyles-margin-2 {
     display: flex !important;
+  }
+
+  .MuiFormGroup-row {
+    flex-direction: row !important;
   }
 }
