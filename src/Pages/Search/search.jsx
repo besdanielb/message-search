@@ -51,7 +51,12 @@ export default function Search() {
     event.preventDefault();
     setSearch(true);
     const url =
-      "/?type=" + searchType + "&query=" + searchTerm + "&limit=" + limit;
+      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/?type=" +
+      searchType +
+      "&query=" +
+      searchTerm +
+      "&limit=" +
+      limit;
     fetch(url)
       .then((response) => response.json())
       .then(
