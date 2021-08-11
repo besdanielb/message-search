@@ -34,6 +34,7 @@ export default function Search() {
   const [searchResults, setSearchResults] = React.useState([]);
   const [search, setSearch] = React.useState(false);
   const [active, setActive] = React.useState(false);
+  const [limit, setLimit] = React.useState(10);
   const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
   const history = useHistory();
 
@@ -50,21 +51,19 @@ export default function Search() {
     event.preventDefault();
     setSearch(true);
     const url =
-      "http://localhost:3001/search?type=" +
-      searchType +
-      "&query=" +
-      searchTerm;
+      "/?type=" + searchType + "&query=" + searchTerm + "&limit=" + limit;
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
-          setTimeout(() => {
-            setActive(true);
-            setSearchResults(results);
-            saveState(SEARCH_TERM_STATE_NAME, searchTerm);
-            saveState(SEARCH_RESULTS_STATE_NAME, results);
-            setSearch(false);
-          }, 2500);
+          const parsedResults = JSON.parse(results).similarities.map(
+            (x) => x.features
+          );
+          setActive(true);
+          setSearchResults(parsedResults);
+          saveState(SEARCH_TERM_STATE_NAME, searchTerm);
+          saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
+          setSearch(false);
         },
         (error) => {
           console.log("error: " + error);
@@ -95,16 +94,25 @@ export default function Search() {
   const onLoadMore = (event) => {
     event.preventDefault();
     setSearch(true);
-    const url = "http://localhost:3001/search/load-more";
+    let newLimit = limit + 10;
+    const url =
+      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/?type=" +
+      searchType +
+      "&query=" +
+      searchTerm +
+      "&limit=" +
+      newLimit;
+    setLimit(limit + 10);
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
-          setTimeout(() => {
-            setSearchResults(results);
-            saveState(SEARCH_RESULTS_STATE_NAME, results);
-            setSearch(false);
-          }, 1000);
+          const parsedResults = JSON.parse(results).similarities.map(
+            (x) => x.features
+          );
+          setSearchResults(parsedResults);
+          saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
+          setSearch(false);
         },
         (error) => {
           console.log("error: " + error);
@@ -177,14 +185,14 @@ export default function Search() {
               <li
                 key={index}
                 onClick={() =>
-                  onReadMessage(result.sermonDate, result.paragraphNumber)
+                  onReadMessage(result.SermonDate, result.Paragraph)
                 }
               >
                 <h5 className="message-title">
-                  {result.sermonDate} | {result.sermonTitle}
+                  {result.SermonDate} | {result.SermonTitle}
                 </h5>
                 <div className="underline"></div>
-                <p className="paragraph-text">{result.paragraph}</p>
+                <p className="paragraph-text">{result.Section}</p>
               </li>
             ))
           ) : (

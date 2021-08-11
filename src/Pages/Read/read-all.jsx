@@ -3,9 +3,13 @@ import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import IconButton from "@material-ui/core/IconButton";
-import { DataGrid, escapeRegExp } from "@material-ui/data-grid";
+import { DataGrid } from "@material-ui/data-grid";
 import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 import { saveState, getState } from "../../Providers/localStorageProvider";
+
+const escapeRegExp = (value) => {
+  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 export default function ReadAll() {
   const [messages, setMessages] = React.useState([]);

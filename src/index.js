@@ -16,4 +16,5 @@ reportWebVitals();
 // ######### TODO ###########
 
 // All site:
-// check reponsiveness
+// Add empty state on search (no values found)
+// AWS AMPLIFY
