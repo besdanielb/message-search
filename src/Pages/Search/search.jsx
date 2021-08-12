@@ -8,13 +8,12 @@ import FacebookIcon from "@material-ui/icons/Facebook";
 import InstagramIcon from "@material-ui/icons/Instagram";
 import EmailIcon from "@material-ui/icons/Email";
 import AppleIcon from "@material-ui/icons/Apple";
+import { Alert, AlertTitle } from "@material-ui/lab";
+import Collapse from "@material-ui/core/Collapse";
+import CloseIcon from "@material-ui/icons/Close";
 import LanguageIcon from "@material-ui/icons/Language";
 import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
 import { IconButton } from "@material-ui/core";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormControl from "@material-ui/core/FormControl";
 import Tooltip from "@material-ui/core/Tooltip";
 import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
@@ -25,6 +24,7 @@ import {
   saveState,
   getState,
 } from "../../Providers/localStorageProvider";
+import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
 
 export default function Search() {
   const SEMANTIC_SEARCH_TYPE = "semantic";
@@ -36,6 +36,8 @@ export default function Search() {
   const [active, setActive] = React.useState(false);
   const [limit, setLimit] = React.useState(10);
   const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
+  const [noResultsFound, setNoResultsFound] = React.useState(false);
+  const [alert, setAlert] = React.useState(false);
   const history = useHistory();
 
   // If there is search results in the local state, show them in the page
@@ -51,7 +53,7 @@ export default function Search() {
     event.preventDefault();
     setSearch(true);
     const url =
-      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/?type=" +
+      "/search/?type=" +
       searchType +
       "&query=" +
       searchTerm +
@@ -61,17 +63,24 @@ export default function Search() {
       .then((response) => response.json())
       .then(
         (results) => {
-          const parsedResults = JSON.parse(results).similarities.map(
-            (x) => x.features
-          );
+          if (JSON.parse(results)?.similarities?.length > 0) {
+            setAlert(false);
+            const parsedResults = JSON.parse(results).similarities.map(
+              (x) => x.features
+            );
+            setNoResultsFound(false);
+            setSearchResults(parsedResults);
+            saveState(SEARCH_TERM_STATE_NAME, searchTerm);
+            saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
+          } else {
+            setNoResultsFound(true);
+          }
           setActive(true);
-          setSearchResults(parsedResults);
-          saveState(SEARCH_TERM_STATE_NAME, searchTerm);
-          saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           setSearch(false);
         },
         (error) => {
-          console.log("error: " + error);
+          setAlert(true);
+          setSearch(false);
         }
       );
   };
@@ -87,6 +96,8 @@ export default function Search() {
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
     setActive(false);
+    setSearch(false);
+    setNoResultsFound(false);
   };
 
   const onReadMessage = (messageDate, index) => {
@@ -101,7 +112,7 @@ export default function Search() {
     setSearch(true);
     let newLimit = limit + 10;
     const url =
-      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/?type=" +
+      "/search/?type=" +
       searchType +
       "&query=" +
       searchTerm +
@@ -120,14 +131,15 @@ export default function Search() {
           setSearch(false);
         },
         (error) => {
-          console.log("error: " + error);
+          setAlert(true);
+          setSearch(false);
         }
       );
   };
 
   const openEmailClient = () => {
     window.open(
-      "mailto:message-search@gmail.com?subject=Contact%20regarding%20website"
+      "mailto:themessagesearch@gmail.com?subject=Contact%20regarding%20website"
     );
   };
 
@@ -136,13 +148,15 @@ export default function Search() {
   };
 
   const onSearchTypeChange = (event) => {
-    setSearchType(event.target.value);
+    if (event?.target?.labels[0]?.innerText !== searchType) {
+      setSearchType(event.target.labels[0].innerText);
+    }
   };
 
   return (
     <div className="container">
       <div className="search__container">
-        {search || searchResults?.length > 0 ? (
+        {search || searchResults?.length > 0 || noResultsFound ? (
           <span></span>
         ) : (
           <h1 className="search__container__label">Message Search</h1>
@@ -153,37 +167,15 @@ export default function Search() {
           onClearInput={onClearInput}
           searchTerm={searchTerm}
         ></SearchInput>
-        {search || searchResults?.length > 0 ? (
+        {search || searchResults?.length > 0 || noResultsFound ? (
           <></>
         ) : (
-          <FormControl component="fieldset">
-            <RadioGroup
-              row
-              aria-label="search types"
-              name="searchTypes"
-              defaultValue={searchType}
-              onChange={onSearchTypeChange}
-            >
-              <FormControlLabel
-                value="semantic"
-                control={<Radio color="primary" />}
-                label="Semantic Search"
-              />
-              <FormControlLabel
-                value="allWords"
-                control={<Radio color="primary" />}
-                label="All Words"
-              />
-              <FormControlLabel
-                value="exactMatch"
-                control={<Radio color="primary" />}
-                label="Exact Match"
-              />
-            </RadioGroup>
-          </FormControl>
+          <SearchTypeRadioButtons
+            onSearchTypeChange={onSearchTypeChange}
+          ></SearchTypeRadioButtons>
         )}
 
-        {search ? <LoadingSpinner></LoadingSpinner> : <></>}
+        {search && !noResultsFound ? <LoadingSpinner></LoadingSpinner> : <></>}
         <ul className={active ? "transition" : ""}>
           {searchTerm && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
@@ -201,7 +193,9 @@ export default function Search() {
               </li>
             ))
           ) : (
-            <></>
+            <h3 className="no-results-found">
+              No results found. Please try a different search.
+            </h3>
           )}
           {searchTerm && searchResults.length > 0 ? (
             <Button
@@ -227,6 +221,35 @@ export default function Search() {
           <ScrollUpButton></ScrollUpButton>
         </ScrollToTop>
       </div>
+      <Collapse
+        in={alert}
+        style={{
+          position: "absolute",
+          top: "3em",
+          right: 0,
+          marginRight: "3em",
+        }}
+      >
+        <Alert
+          severity="error"
+          style={{ marginBottom: "7em" }}
+          action={
+            <IconButton
+              aria-label="close"
+              size="small"
+              onClick={() => {
+                setAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          <AlertTitle>Error</AlertTitle>
+          There was an error. Please try again, and if the issue continues,
+          please contact us by email.
+        </Alert>
+      </Collapse>
       <div className="contacts">
         <Tooltip
           TransitionComponent={Fade}
@@ -252,7 +275,7 @@ export default function Search() {
         <Tooltip
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
-          title="You can download out app for IOS from the App store"
+          title="You can download our app for IOS from the App store"
           arrow
         >
           <IconButton
@@ -266,7 +289,7 @@ export default function Search() {
         <Tooltip
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
-          title="You can download out app for Android from the Google Play store"
+          title="You can download our app for Android from the Google Play store"
           arrow
         >
           <IconButton aria-label="android" size="medium">

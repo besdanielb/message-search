@@ -10,6 +10,7 @@ $input-height: 3em;
     &__label {
       text-transform: uppercase;
       text-align: center;
+      font-size: 50px;
     }
 
     ul {
@@ -120,6 +121,15 @@ $input-height: 3em;
 .transition {
   opacity: 1 !important;
   transition: 0.7s ease-in;
+  height: -webkit-fill-available;
+}
+
+.no-results-found {
+  height: 100%;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .message-title {
@@ -143,6 +153,10 @@ $input-height: 3em;
   .search {
     &__container {
       width: calc(min(65%, 70em));
+
+      &__label {
+        font-size: 60px;
+      }
     }
 
     &__form {

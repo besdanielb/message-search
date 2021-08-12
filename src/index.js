@@ -3,8 +3,6 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import "typeface-roboto";
-import "typeface-merriweather";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
@@ -16,5 +14,5 @@ reportWebVitals();
 // ######### TODO ###########
 
 // All site:
-// Add empty state on search (no values found)
-// AWS AMPLIFY
+// Add word highlight on exact match e all words
+// Minimum character validation on semantic search input
