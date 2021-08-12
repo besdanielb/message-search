@@ -15,4 +15,4 @@ reportWebVitals();
 
 // All site:
 // Add word highlight on exact match e all words
-// Minimum character validation on semantic search input
+// Improve title / background

@@ -22,7 +22,11 @@ export default function SearchInput(props) {
         type="text"
         className="search__input"
         style={{ position: "relative" }}
-        placeholder="Enter Search"
+        placeholder={
+          props.searchType === "Semantic"
+            ? "Enter your search (minimum 5 characters)"
+            : "Enter Search"
+        }
         value={props.searchTerm}
         onChange={props.onSearchInputValueChange}
       ></input>
@@ -42,7 +46,10 @@ export default function SearchInput(props) {
         className="search__button"
         type="submit"
         onClick={props.onSearch}
-        disabled={!props.searchTerm}
+        disabled={
+          !props.searchTerm ||
+          (props.searchType === "Semantic" && props.searchTerm.length < 5)
+        }
       >
         <SearchIcon fontSize="small"></SearchIcon>
       </button>

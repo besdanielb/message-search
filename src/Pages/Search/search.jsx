@@ -27,7 +27,7 @@ import {
 import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
 
 export default function Search() {
-  const SEMANTIC_SEARCH_TYPE = "semantic";
+  const SEMANTIC_SEARCH_TYPE = "Semantic";
   const SEARCH_RESULTS_STATE_NAME = "searchResults";
   const SEARCH_TERM_STATE_NAME = "searchTerm";
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -166,6 +166,7 @@ export default function Search() {
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchTerm={searchTerm}
+          searchType={searchType}
         ></SearchInput>
         {search || searchResults?.length > 0 || noResultsFound ? (
           <></>
