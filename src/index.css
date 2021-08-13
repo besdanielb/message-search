@@ -5,6 +5,11 @@
   --secondary-color: #b0b0b0;
 }
 
+mark {
+  background: var(--yellow-color);
+  color: black;
+}
+
 body {
   font-family: "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;

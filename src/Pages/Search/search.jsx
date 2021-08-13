@@ -19,6 +19,7 @@ import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import Mark from "mark.js";
 import {
   removeState,
   saveState,
@@ -31,6 +32,7 @@ export default function Search() {
   const SEMANTIC_SEARCH_TYPE = "semantic";
   const SEARCH_RESULTS_STATE_NAME = "searchResults";
   const SEARCH_TERM_STATE_NAME = "searchTerm";
+  const SEARCH_TYPE_STATE_NAME = "searchType";
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState([]);
   const [search, setSearch] = React.useState(false);
@@ -46,6 +48,7 @@ export default function Search() {
     if (getState(SEARCH_RESULTS_STATE_NAME)?.length > 0) {
       setSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
       setSearchTerm(getState(SEARCH_TERM_STATE_NAME));
+      setSearchType(getState(SEARCH_TYPE_STATE_NAME));
       setActive(true);
     }
     window.scrollTo(0, 0);
@@ -53,32 +56,60 @@ export default function Search() {
 
   const onSearch = (event) => {
     event.preventDefault();
+    const instance = new Mark(".paragraph-text");
     setSearch(true);
-    const url =
-      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/?type=" +
-      searchType +
-      "&query=" +
-      searchTerm +
-      "&limit=" +
-      limit;
+    setSearchResults([]);
+    setActive(false);
+    setNoResultsFound(false);
+    let url;
+    if (searchType === "semantic") {
+      url =
+        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
+        searchTerm +
+        "&limit=" +
+        limit;
+    } else {
+      url =
+        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
+        searchType +
+        "&query=" +
+        searchTerm;
+    }
+
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
-          if (JSON.parse(results)?.similarities?.length > 0) {
-            setAlert(false);
-            const parsedResults = JSON.parse(results).similarities.map(
+          let parsedResults = [];
+          if (
+            searchType === "semantic" &&
+            JSON.parse(results)?.similarities &&
+            JSON.parse(results)?.similarities?.length > 0
+          ) {
+            parsedResults = JSON.parse(results).similarities.map(
               (x) => x.features
             );
+          }
+          if (parsedResults.length === 0 && results.length === 0) {
+            setSearchResults([]);
+            setNoResultsFound(true);
+          } else if (parsedResults.length > 0) {
+            setAlert(false);
             setNoResultsFound(false);
             setSearchResults(parsedResults);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           } else {
-            setNoResultsFound(true);
+            setSearchResults(results);
+            saveState(SEARCH_TERM_STATE_NAME, searchTerm);
+            saveState(SEARCH_RESULTS_STATE_NAME, results);
+            setAlert(false);
+            setNoResultsFound(false);
+            instance.mark(searchTerm);
           }
           setActive(true);
           setSearch(false);
+          saveState(SEARCH_TYPE_STATE_NAME, searchType);
         },
         (error) => {
           setAlert(true);
@@ -88,7 +119,6 @@ export default function Search() {
   };
 
   const onSearchInputValueChange = (event) => {
-    setSearchResults([]);
     setSearchTerm(event.target.value);
   };
 
@@ -97,9 +127,11 @@ export default function Search() {
     setSearchTerm("");
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
+    removeState(SEARCH_TYPE_STATE_NAME);
     setActive(false);
     setSearch(false);
     setNoResultsFound(false);
+    setLimit(10);
   };
 
   const onReadMessage = (messageDate, index) => {
@@ -114,9 +146,7 @@ export default function Search() {
     setSearch(true);
     let newLimit = limit + 10;
     const url =
-      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/?type=" +
-      searchType +
-      "&query=" +
+      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
       searchTerm +
       "&limit=" +
       newLimit;
@@ -199,22 +229,23 @@ export default function Search() {
 
         {search && !noResultsFound ? <LoadingSpinner></LoadingSpinner> : <></>}
         <ul className={active ? "transition" : ""}>
-          {searchTerm && searchResults.length > 0 ? (
+          {(!search || searchTerm) && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
               <li
                 key={index}
+                className="message-paragraph"
                 onClick={() =>
-                  onReadMessage(result.SermonDate, result.Paragraph)
+                  onReadMessage(result.sermonDate, result.paragraph)
                 }
               >
                 <h5 className="message-title">
-                  {result.SermonDate} | {result.SermonTitle}
+                  {result.sermonDate} | {result.sermonTitle}
                 </h5>
                 <div className="underline"></div>
-                <p className="paragraph-text">{result.Section}</p>
+                <p className="paragraph-text">{result.section}</p>
               </li>
             ))
-          ) : searchTerm && search ? (
+          ) : noResultsFound ? (
             <h3 className="no-results-found">
               No results found. Please try a different search.
             </h3>

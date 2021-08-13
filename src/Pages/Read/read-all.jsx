@@ -138,8 +138,8 @@ export default function ReadAll() {
       <div className="title">
         <h1>Read a Message</h1>
         <p>
-          Here you can search and sort for a message Lorem Ipsum Dolor sit amet
-          Lorem Ipsum Dolor sit amet.
+          Here you can read and search for any Message in the table bellow. You
+          can also sort and filter the table columns.
         </p>
       </div>
       <DataGrid
