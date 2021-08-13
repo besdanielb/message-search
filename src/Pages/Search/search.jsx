@@ -25,9 +25,10 @@ import {
   getState,
 } from "../../Providers/localStorageProvider";
 import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
+import SearchingSVG from "../../Components/searching-svg";
 
 export default function Search() {
-  const SEMANTIC_SEARCH_TYPE = "Semantic";
+  const SEMANTIC_SEARCH_TYPE = "semantic";
   const SEARCH_RESULTS_STATE_NAME = "searchResults";
   const SEARCH_TERM_STATE_NAME = "searchTerm";
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -47,13 +48,14 @@ export default function Search() {
       setSearchTerm(getState(SEARCH_TERM_STATE_NAME));
       setActive(true);
     }
+    window.scrollTo(0, 0);
   }, []);
 
   const onSearch = (event) => {
     event.preventDefault();
     setSearch(true);
     const url =
-      "/search/?type=" +
+      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/?type=" +
       searchType +
       "&query=" +
       searchTerm +
@@ -112,7 +114,7 @@ export default function Search() {
     setSearch(true);
     let newLimit = limit + 10;
     const url =
-      "/search/?type=" +
+      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/?type=" +
       searchType +
       "&query=" +
       searchTerm +
@@ -149,7 +151,13 @@ export default function Search() {
 
   const onSearchTypeChange = (event) => {
     if (event?.target?.labels[0]?.innerText !== searchType) {
-      setSearchType(event.target.labels[0].innerText);
+      if (event.target.labels[0].innerText === "All words") {
+        setSearchType("allwords");
+      } else if (event.target.labels[0].innerText === "Exact match") {
+        setSearchType("exact");
+      } else {
+        setSearchType(event.target.labels[0].innerText.toLowerCase());
+      }
     }
   };
 
@@ -159,7 +167,20 @@ export default function Search() {
         {search || searchResults?.length > 0 || noResultsFound ? (
           <span></span>
         ) : (
-          <h1 className="search__container__label">Message Search</h1>
+          <div className="search__container__title">
+            <div className="search__container__title--align">
+              <h2 className="search__container__title__h2">THE MESSAGE</h2>
+              <h1 className="search__container__title__h1">SEARCH</h1>
+              <div className="search__container__title__description">
+                Search the Message of Brother William Marrion Branham like never
+                before, with this new semantic search, powered by the latest
+                Machine Learning algorithms. Or use one of the other more common
+                search methods we have available.
+              </div>
+            </div>
+
+            <SearchingSVG></SearchingSVG>
+          </div>
         )}
         <SearchInput
           onSearch={onSearch}
@@ -193,10 +214,12 @@ export default function Search() {
                 <p className="paragraph-text">{result.Section}</p>
               </li>
             ))
-          ) : (
+          ) : searchTerm && search ? (
             <h3 className="no-results-found">
               No results found. Please try a different search.
             </h3>
+          ) : (
+            <></>
           )}
           {searchTerm && searchResults.length > 0 ? (
             <Button
@@ -228,7 +251,8 @@ export default function Search() {
           position: "absolute",
           top: "3em",
           right: 0,
-          marginRight: "3em",
+          marginRight: "2em",
+          marginLeft: "1em",
         }}
       >
         <Alert

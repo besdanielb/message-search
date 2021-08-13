@@ -36,13 +36,6 @@ export default function ReadAll() {
       flex: 1,
     },
     {
-      field: "location",
-      headerName: "Location",
-      sortable: true,
-      hide: isMobile,
-      flex: 1,
-    },
-    {
       field: "read",
       headerName: " ",
       sortable: false,
@@ -88,7 +81,6 @@ export default function ReadAll() {
         id: index,
         title: message.sermonTitle,
         date: message.sermonDate,
-        location: message.location,
       };
     });
     setRows(tableData);
@@ -96,7 +88,8 @@ export default function ReadAll() {
 
   useEffect(() => {
     let isMounted = true;
-    const url = "http://localhost:3001/all-messages";
+    const url =
+      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/listsermons";
 
     if (messages?.length === 0 && !hasCache) {
       fetch(url)
@@ -104,10 +97,7 @@ export default function ReadAll() {
         .then(
           (result) => {
             if (isMounted) {
-              setTimeout(() => {
-                console.log(444);
-                setMessages(result);
-              }, 2000);
+              setMessages(result);
             }
           },
           (error) => {

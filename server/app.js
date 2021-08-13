@@ -22,7 +22,7 @@ app.get("/search/load-more", (req, res) => {
   return res.status(200).jsonp(loadMoreResults);
 });
 app.get("/message/:date", replyFile(`./responses/message.json`));
-app.get("/all-messages", replyFile(`./responses/all-messages.json`));
+app.get("/listsermons", replyFile(`./responses/all-messages.json`));
 app.get("/", replyJson("This is working"));
 
 function replyFile(file) {

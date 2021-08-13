@@ -5,13 +5,15 @@ import ScrollUpButton from "../../Components/scroll-up-button";
 import ScrollToTop from "react-scroll-up";
 
 export default function Read() {
-  const [messageToRead, setMessageToRead] = React.useState();
+  const [messageToRead, setMessageToRead] = React.useState([]);
   const location = useLocation();
 
   useEffect(() => {
     let isMounted = true;
     if (location?.state?.date) {
-      const url = "http://localhost:3001/message/" + location?.state?.date;
+      const url =
+        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/ReadingSermonFromMySQL?sermon=" +
+        location?.state?.date;
       fetch(url)
         .then((response) => response.json())
         .then(
@@ -36,7 +38,7 @@ export default function Read() {
     if (i) {
       element = document.getElementById(i);
     } else {
-      element = document.getElementById(0);
+      element = document.getElementById(1);
     }
     element.scrollIntoView({
       behavior: "smooth",
@@ -47,16 +49,24 @@ export default function Read() {
   return (
     <section className="container">
       <div className="read__container">
-        <h1 className="message-title">{messageToRead?.sermonTitle}</h1>
+        {messageToRead[0]?.sermonDate || messageToRead[0]?.sermonTitle ? (
+          <h1 className="message-title">
+            {messageToRead[0]?.sermonDate} | {messageToRead[0]?.sermonTitle}
+          </h1>
+        ) : (
+          <></>
+        )}
         <ul>
-          {messageToRead?.paragraphs.map((paragraph, index) => (
+          {messageToRead?.map((entry) => (
             <li
-              key={index}
-              id={index}
-              className={location?.state?.ref === index ? "highlight" : ""}
+              key={entry.paragraph}
+              id={entry.paragraph}
+              className={
+                location?.state?.ref === entry.paragraph ? "highlight" : ""
+              }
             >
               <p>
-                <span className="index">{index}</span> {paragraph}
+                <span className="index">{entry.paragraph}</span> {entry.section}
               </p>
             </li>
           ))}

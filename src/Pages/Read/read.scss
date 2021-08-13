@@ -37,6 +37,9 @@
 
     h1 {
       text-transform: uppercase;
+      font-size: 3vmin;
+      max-width: 100%;
+      padding: 0 1.3rem;
     }
   }
 }
@@ -49,6 +52,10 @@
   .read__container {
     ul:last-child {
       margin-bottom: 5em;
+    }
+
+    h1 {
+      font-size: 2.5vmax;
     }
   }
 }

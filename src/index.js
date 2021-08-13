@@ -12,7 +12,8 @@ ReactDOM.render(<App />, document.getElementById("root"));
 reportWebVitals();
 
 // ######### TODO ###########
+// https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod
 
-// All site:
+// Add error handling geral
 // Add word highlight on exact match e all words
-// Improve title / background
+// Add sorting on exact match e all words

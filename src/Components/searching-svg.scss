@@ -1,0 +1,14 @@
+.align-svg {
+  display: flex;
+  justify-content: center;
+  max-width: 600px;
+  max-height: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media only screen and (max-width: 500px) {
+  .align-svg {
+    display: none;
+  }
+}
