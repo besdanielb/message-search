@@ -5,15 +5,18 @@ import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import FacebookIcon from "@material-ui/icons/Facebook";
-import InstagramIcon from "@material-ui/icons/Instagram";
 import EmailIcon from "@material-ui/icons/Email";
 import AppleIcon from "@material-ui/icons/Apple";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
-import LanguageIcon from "@material-ui/icons/Language";
+import YouTubeIcon from "@material-ui/icons/YouTube";
 import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
 import { IconButton } from "@material-ui/core";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 import Tooltip from "@material-ui/core/Tooltip";
 import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
@@ -33,20 +36,28 @@ export default function Search() {
   const SEARCH_RESULTS_STATE_NAME = "searchResults";
   const SEARCH_TERM_STATE_NAME = "searchTerm";
   const SEARCH_TYPE_STATE_NAME = "searchType";
+  const SORT_BY_DEFAULT = "defaultSort";
+  const SORT_BY_TITLE_DEC = "titleDEC";
+  const SORT_BY_TITLE_ASC = "titleASC";
+  const SORT_BY_DATE_ASC = "dateASC";
+  const SORT_BY_DATE_DEC = "dateDEC";
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState([]);
+  const [defaultSearchResults, setDefaultSearchResults] = React.useState([]);
   const [search, setSearch] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const [limit, setLimit] = React.useState(10);
   const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
   const [noResultsFound, setNoResultsFound] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
+  const [sortBy, setSortBy] = React.useState(SORT_BY_DEFAULT);
   const history = useHistory();
 
   // If there is search results in the local state, show them in the page
   useEffect(() => {
     if (getState(SEARCH_RESULTS_STATE_NAME)?.length > 0) {
       setSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
+      setDefaultSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
       setSearchTerm(getState(SEARCH_TERM_STATE_NAME));
       setSearchType(getState(SEARCH_TYPE_STATE_NAME));
       setActive(true);
@@ -54,9 +65,14 @@ export default function Search() {
     window.scrollTo(0, 0);
   }, []);
 
+  // If there is search results in the local state, show them in the page
+  useEffect(() => {
+    const instance = new Mark(".paragraph-text");
+    instance.mark(searchTerm);
+  }, [sortBy, searchTerm]);
+
   const onSearch = (event) => {
     event.preventDefault();
-    const instance = new Mark(".paragraph-text");
     setSearch(true);
     setSearchResults([]);
     setActive(false);
@@ -97,14 +113,17 @@ export default function Search() {
             setAlert(false);
             setNoResultsFound(false);
             setSearchResults(parsedResults);
+            setDefaultSearchResults(parsedResults);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           } else {
             setSearchResults(results);
+            setDefaultSearchResults(results);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, results);
             setAlert(false);
             setNoResultsFound(false);
+            const instance = new Mark(".paragraph-text");
             instance.mark(searchTerm);
           }
           setActive(true);
@@ -125,6 +144,7 @@ export default function Search() {
   const onClearInput = () => {
     setSearchResults([]);
     setSearchTerm("");
+    setSearchType(SEMANTIC_SEARCH_TYPE);
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
@@ -175,7 +195,13 @@ export default function Search() {
     );
   };
 
-  const onOpenAppleClick = () => {
+  const onOpenFacebookClick = () => {
+    window.open(
+      "https://www.facebook.com/Igreja-Voz-do-S%C3%A9timo-Anjo-312711608747578"
+    );
+  };
+
+  const onOpenYoutubeClick = () => {
     window.open("https://apps.apple.com/bf/app/apple-music/id1108187390");
   };
 
@@ -188,6 +214,69 @@ export default function Search() {
       } else {
         setSearchType(event.target.labels[0].innerText.toLowerCase());
       }
+    }
+  };
+
+  const handleSortChange = (event) => {
+    switch (event.target.value) {
+      case SORT_BY_TITLE_ASC:
+        setSortBy(SORT_BY_TITLE_ASC);
+        searchResults.sort(function (a, b) {
+          if (a.sermonTitle < b.sermonTitle) {
+            return -1;
+          }
+          if (a.sermonTitle > b.sermonTitle) {
+            return 1;
+          }
+          return 0;
+        });
+        setSearchResults(searchResults);
+        break;
+      case SORT_BY_TITLE_DEC:
+        setSortBy(SORT_BY_TITLE_DEC);
+        searchResults.sort(function (a, b) {
+          if (a.sermonTitle > b.sermonTitle) {
+            return -1;
+          }
+          if (a.sermonTitle < b.sermonTitle) {
+            return 1;
+          }
+          return 0;
+        });
+        setSearchResults(searchResults);
+        break;
+      case SORT_BY_DATE_DEC:
+        setSortBy(SORT_BY_DATE_DEC);
+        searchResults.sort(function (a, b) {
+          if (a.sermonDate > b.sermonDate) {
+            return -1;
+          }
+          if (a.sermonDate < b.sermonDate) {
+            return 1;
+          }
+          return 0;
+        });
+        setSearchResults(searchResults);
+        break;
+      case SORT_BY_DATE_ASC:
+        setSortBy(SORT_BY_DATE_ASC);
+        searchResults.sort(function (a, b) {
+          if (a.sermonDate < b.sermonDate) {
+            return -1;
+          }
+          if (a.sermonDate > b.sermonDate) {
+            return 1;
+          }
+          return 0;
+        });
+        setSearchResults(searchResults);
+        break;
+      case SORT_BY_DEFAULT:
+        setSortBy(SORT_BY_DEFAULT);
+        setSearchResults(defaultSearchResults);
+        break;
+      default:
+        break;
     }
   };
 
@@ -219,6 +308,36 @@ export default function Search() {
           searchTerm={searchTerm}
           searchType={searchType}
         ></SearchInput>
+        {(!search || searchTerm) &&
+        searchResults.length > 0 &&
+        (searchType === "allwords" || searchType === "exact") ? (
+          <FormControl
+            style={{
+              display: "flex",
+              alignSelf: "center",
+              margin: "1em 0",
+              width: "12em",
+            }}
+          >
+            <InputLabel id="sort-label">Sort</InputLabel>
+            <Select
+              value={sortBy}
+              onChange={handleSortChange}
+              inputProps={{ "aria-label": "search sorting" }}
+            >
+              <MenuItem value={SORT_BY_DEFAULT}>
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={SORT_BY_TITLE_ASC}>Sermon title ASC</MenuItem>
+              <MenuItem value={SORT_BY_TITLE_DEC}>Sermon title DESC</MenuItem>
+              <MenuItem value={SORT_BY_DATE_ASC}>Sermon date ASC</MenuItem>
+              <MenuItem value={SORT_BY_DATE_DEC}>Sermon date DESC</MenuItem>
+            </Select>
+          </FormControl>
+        ) : (
+          <></>
+        )}
+
         {search || searchResults?.length > 0 || noResultsFound ? (
           <></>
         ) : (
@@ -252,7 +371,9 @@ export default function Search() {
           ) : (
             <></>
           )}
-          {searchTerm && searchResults.length > 0 ? (
+          {searchTerm &&
+          searchResults.length > 0 &&
+          searchType === "semantic" ? (
             <Button
               style={{
                 display: "flex",
@@ -311,6 +432,7 @@ export default function Search() {
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
           title="Check out our Facebook page"
+          onClick={onOpenFacebookClick}
           arrow
         >
           <IconButton aria-label="facebook" size="medium">
@@ -320,32 +442,17 @@ export default function Search() {
         <Tooltip
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
-          title="Check out our Instagram"
+          title="Our iOS is coming soon!"
           arrow
         >
-          <IconButton aria-label="instagram" size="medium">
-            <InstagramIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="You can download our app for IOS from the App store"
-          arrow
-        >
-          <IconButton
-            aria-label="apple"
-            size="medium"
-            onClick={onOpenAppleClick}
-          >
+          <IconButton aria-label="apple" size="medium">
             <AppleIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
         <Tooltip
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
-          title="You can download our app for Android from the Google Play store"
+          title="Our Android app is coming soon!"
           arrow
         >
           <IconButton aria-label="android" size="medium">
@@ -355,11 +462,12 @@ export default function Search() {
         <Tooltip
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
-          title="Check out our church website"
+          title="Check out our Youtube channel"
+          onClick={onOpenYoutubeClick}
           arrow
         >
-          <IconButton aria-label="website" size="medium">
-            <LanguageIcon fontSize="medium" />
+          <IconButton aria-label="youtube" size="medium">
+            <YouTubeIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
         <Tooltip
