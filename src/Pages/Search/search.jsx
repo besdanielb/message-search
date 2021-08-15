@@ -12,6 +12,7 @@ import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
 import YouTubeIcon from "@material-ui/icons/YouTube";
 import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { IconButton } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -65,31 +66,25 @@ export default function Search() {
     window.scrollTo(0, 0);
   }, []);
 
-  // If there is search results in the local state, show them in the page
   useEffect(() => {
-    const instance = new Mark(".paragraph-text");
-    instance.mark(searchTerm);
-  }, [sortBy, searchTerm]);
+    if (searchType && searchType !== "semantic") {
+      const instance = new Mark(".paragraph-text");
+      instance.mark(searchTerm);
+    }
+  }, [sortBy, searchTerm, searchType]);
 
   const onSearch = (event) => {
     event.preventDefault();
     setSearch(true);
     setSearchResults([]);
+    setDefaultSearchResults([]);
     setActive(false);
     setNoResultsFound(false);
     let url;
     if (searchType === "semantic") {
-      url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
-        searchTerm +
-        "&limit=" +
-        limit;
+      url = "/search/semantic?query=" + searchTerm + "&limit=" + limit;
     } else {
-      url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
-        searchType +
-        "&query=" +
-        searchTerm;
+      url = "/search?type=" + searchType + "&query=" + searchTerm;
     }
 
     fetch(url)
@@ -108,6 +103,7 @@ export default function Search() {
           }
           if (parsedResults.length === 0 && results.length === 0) {
             setSearchResults([]);
+            setDefaultSearchResults([]);
             setNoResultsFound(true);
           } else if (parsedResults.length > 0) {
             setAlert(false);
@@ -143,6 +139,7 @@ export default function Search() {
 
   const onClearInput = () => {
     setSearchResults([]);
+    setDefaultSearchResults([]);
     setSearchTerm("");
     setSearchType(SEMANTIC_SEARCH_TYPE);
     removeState(SEARCH_TERM_STATE_NAME);
@@ -273,11 +270,18 @@ export default function Search() {
         break;
       case SORT_BY_DEFAULT:
         setSortBy(SORT_BY_DEFAULT);
-        setSearchResults(defaultSearchResults);
+        const defaultResults = Object.assign([], defaultSearchResults);
+        setSearchResults(defaultResults);
         break;
       default:
         break;
     }
+  };
+
+  const onCopyParagraphClick = (event) => {
+    const textToCopy =
+      event.sermonDate + " | " + event.sermonTitle + "\n" + event.section;
+    navigator.clipboard.writeText(textToCopy);
   };
 
   return (
@@ -326,7 +330,7 @@ export default function Search() {
               inputProps={{ "aria-label": "search sorting" }}
             >
               <MenuItem value={SORT_BY_DEFAULT}>
-                <em>None</em>
+                <em>Default</em>
               </MenuItem>
               <MenuItem value={SORT_BY_TITLE_ASC}>Sermon title ASC</MenuItem>
               <MenuItem value={SORT_BY_TITLE_DEC}>Sermon title DESC</MenuItem>
@@ -350,18 +354,28 @@ export default function Search() {
         <ul className={active ? "transition" : ""}>
           {(!search || searchTerm) && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
-              <li
-                key={index}
-                className="message-paragraph"
-                onClick={() =>
-                  onReadMessage(result.sermonDate, result.paragraph)
-                }
-              >
-                <h5 className="message-title">
-                  {result.sermonDate} | {result.sermonTitle}
-                </h5>
-                <div className="underline"></div>
-                <p className="paragraph-text">{result.section}</p>
+              <li key={index} className="message-paragraph">
+                <span
+                  onClick={() =>
+                    onReadMessage(result.sermonDate, result.paragraph)
+                  }
+                >
+                  <h5 className="message-title">
+                    {result.sermonDate} | {result.sermonTitle}
+                  </h5>
+                  <div className="underline"></div>
+                  <p className="paragraph-text">{result.section}</p>
+                </span>
+                <span className="copy-button">
+                  <IconButton
+                    aria-label="copy"
+                    size="medium"
+                    onClick={() => onCopyParagraphClick(result)}
+                  >
+                    <FileCopyIcon fontSize="medium" />
+                  </IconButton>
+                  <h5 className="copy-label">Copy</h5>
+                </span>
               </li>
             ))
           ) : noResultsFound ? (

@@ -6,6 +6,8 @@ body {
 .menu {
   position: fixed;
   height: 100vh;
+  height: -moz-available; /* WebKit-based browsers will ignore this. */
+  height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
   background: var(--dark-color);
   width: 10vw;
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.2);
@@ -53,7 +55,9 @@ body {
   background: white;
   transition: 1s;
   transform-origin: left center;
+  height: -webkit-fill-available;
   min-height: 100vh;
+  height: -moz-available; /* WebKit-based browsers will ignore this. */
   display: flex;
   justify-content: center;
   position: relative;
@@ -114,6 +118,7 @@ p {
     z-index: 3;
     height: 3.4em;
     width: 100vw;
+    width: -webkit-fill-available;
     bottom: 0;
 
     &__icon--desktop {

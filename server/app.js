@@ -16,7 +16,8 @@ app.use(
   })
 );
 
-app.get("/search", replyFile(`./responses/searchResults.json`));
+app.get("/search/semantic", replyFile(`./responses/searchResults.json`));
+app.get("/search", replyFile(`./responses/exactAllWordsSearch.json`));
 app.get("/search/load-more", (req, res) => {
   const loadMoreResults = results.concat(searchResults);
   return res.status(200).jsonp(loadMoreResults);
