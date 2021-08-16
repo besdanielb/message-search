@@ -318,7 +318,6 @@ export default function Search() {
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchTerm={searchTerm}
-          searchType={searchType}
         ></SearchInput>
         {(!search || searchTerm) &&
         searchResults.length > 0 &&
