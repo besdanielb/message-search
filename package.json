@@ -25,6 +25,7 @@
     "typeface-roboto": "^1.1.13",
     "web-vitals": "^2.1.0"
   },
+  "proxy": "http://localhost:3001",
   "scripts": {
     "start": "react-scripts start",
     "start-local": "npm run server | npm run start",

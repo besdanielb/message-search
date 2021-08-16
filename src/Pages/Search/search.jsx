@@ -82,17 +82,9 @@ export default function Search() {
     setNoResultsFound(false);
     let url;
     if (searchType === "semantic") {
-      url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
-        searchTerm +
-        "&limit=" +
-        limit;
+      url = "/search/semantic?query=" + searchTerm + "&limit=" + limit;
     } else {
-      url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
-        searchType +
-        "&query=" +
-        searchTerm;
+      url = "/search?type=" + searchType + "&query=" + searchTerm;
     }
 
     fetch(url)
