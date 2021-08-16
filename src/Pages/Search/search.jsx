@@ -337,7 +337,10 @@ export default function Search() {
                 <Select
                   value={sortBy}
                   onChange={handleSortChange}
-                  inputProps={{ "aria-label": "search sorting" }}
+                  inputProps={{
+                    "aria-label": "search sorting",
+                    MenuProps: { disableScrollLock: true },
+                  }}
                 >
                   <MenuItem value={SORT_BY_DEFAULT}>
                     <em>Default</em>
