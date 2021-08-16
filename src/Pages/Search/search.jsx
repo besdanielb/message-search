@@ -319,32 +319,43 @@ export default function Search() {
           onClearInput={onClearInput}
           searchTerm={searchTerm}
         ></SearchInput>
-        {(!search || searchTerm) &&
-        searchResults.length > 0 &&
-        (searchType === "allwords" || searchType === "exact") ? (
-          <FormControl
-            style={{
-              display: "flex",
-              alignSelf: "center",
-              margin: "1em 0",
-              width: "12em",
-            }}
-          >
-            <InputLabel id="sort-label">Sort</InputLabel>
-            <Select
-              value={sortBy}
-              onChange={handleSortChange}
-              inputProps={{ "aria-label": "search sorting" }}
-            >
-              <MenuItem value={SORT_BY_DEFAULT}>
-                <em>Default</em>
-              </MenuItem>
-              <MenuItem value={SORT_BY_TITLE_ASC}>Sermon title ASC</MenuItem>
-              <MenuItem value={SORT_BY_TITLE_DEC}>Sermon title DESC</MenuItem>
-              <MenuItem value={SORT_BY_DATE_ASC}>Sermon date ASC</MenuItem>
-              <MenuItem value={SORT_BY_DATE_DEC}>Sermon date DESC</MenuItem>
-            </Select>
-          </FormControl>
+        {(!search || searchTerm) && searchResults.length > 0 ? (
+          <div className="info-div">
+            <h5 className="number-of-results">
+              Number of results: {searchResults.length}
+            </h5>
+            {searchType === "allwords" || searchType === "exact" ? (
+              <FormControl
+                style={{
+                  display: "flex",
+                  alignSelf: "center",
+                  margin: "1em 0",
+                  width: "12em",
+                }}
+              >
+                <InputLabel id="sort-label">Sort</InputLabel>
+                <Select
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  inputProps={{ "aria-label": "search sorting" }}
+                >
+                  <MenuItem value={SORT_BY_DEFAULT}>
+                    <em>Default</em>
+                  </MenuItem>
+                  <MenuItem value={SORT_BY_TITLE_ASC}>
+                    Sermon title ASC
+                  </MenuItem>
+                  <MenuItem value={SORT_BY_TITLE_DEC}>
+                    Sermon title DESC
+                  </MenuItem>
+                  <MenuItem value={SORT_BY_DATE_ASC}>Sermon date ASC</MenuItem>
+                  <MenuItem value={SORT_BY_DATE_DEC}>Sermon date DESC</MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <></>
+            )}
+          </div>
         ) : (
           <></>
         )}
@@ -414,40 +425,10 @@ export default function Search() {
             <></>
           )}
         </ul>
-        <ScrollToTop showUnder={160}>
+        <ScrollToTop showUnder={260}>
           <ScrollUpButton></ScrollUpButton>
         </ScrollToTop>
       </div>
-      <Collapse
-        in={alert}
-        style={{
-          position: "absolute",
-          top: "3em",
-          right: 0,
-          marginRight: "2em",
-          marginLeft: "1em",
-        }}
-      >
-        <Alert
-          severity="error"
-          style={{ marginBottom: "7em" }}
-          action={
-            <IconButton
-              aria-label="close"
-              size="small"
-              onClick={() => {
-                setAlert(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          <AlertTitle>Error</AlertTitle>
-          There was an error. Please try again, and if the issue continues,
-          please contact us by email.
-        </Alert>
-      </Collapse>
       <div className="contacts">
         <Tooltip
           TransitionComponent={Fade}
@@ -506,6 +487,36 @@ export default function Search() {
           </IconButton>
         </Tooltip>
       </div>
+      <Collapse
+        in={alert}
+        style={{
+          position: "absolute",
+          top: "3em",
+          right: 0,
+          marginRight: "2em",
+          marginLeft: "1em",
+        }}
+      >
+        <Alert
+          severity="error"
+          style={{ marginBottom: "7em" }}
+          action={
+            <IconButton
+              aria-label="close"
+              size="small"
+              onClick={() => {
+                setAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          <AlertTitle>Error</AlertTitle>
+          There was an error. Please try again, and if the issue continues,
+          please contact us by email.
+        </Alert>
+      </Collapse>
     </div>
   );
 }

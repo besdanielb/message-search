@@ -46,6 +46,42 @@ export default function Read() {
     });
   };
 
+  const addSermonInfo = () => {
+    //Get the selected text and append the extra info
+    const selection = window.getSelection();
+    console.log(selection);
+    let sermonInfo = "";
+    let copytext = "";
+    let newdiv;
+    if (
+      messageToRead[0] &&
+      !selection.toString().includes(messageToRead[0].sermonDate)
+    ) {
+      sermonInfo =
+        messageToRead[0]?.sermonDate + " | " + messageToRead[0]?.sermonTitle;
+    }
+
+    copytext = sermonInfo + "\n" + selection;
+
+    //Create a new div to hold the prepared text
+    newdiv = document.createElement("div");
+
+    //hide the newly created container
+    newdiv.style.position = "absolute";
+    newdiv.style.left = "-99999px";
+    newdiv.style.whiteSpace = "pre-line";
+
+    //insert the container, fill it with the extended text, and define the new selection
+    document.body.appendChild(newdiv);
+    newdiv.innerHTML = copytext;
+    selection.selectAllChildren(newdiv);
+
+    window.setTimeout(function () {
+      document.body.removeChild(newdiv);
+    }, 100);
+  };
+  document.addEventListener("copy", addSermonInfo);
+
   return (
     <section className="container">
       <div className="read__container">

@@ -43,7 +43,7 @@ export default function SearchInput(props) {
       <TextField
         className={classes.root}
         id="search-input"
-        label="Enter Search"
+        label="Search the Message"
         variant="outlined"
         type="text"
         value={props.searchTerm}
@@ -59,7 +59,11 @@ export default function SearchInput(props) {
               ) : (
                 <></>
               )}
-              <IconButton onClick={props.onSearch} disabled={!props.searchTerm}>
+              <IconButton
+                type="submit"
+                onClick={props.onSearch}
+                disabled={!props.searchTerm}
+              >
                 <SearchIcon />
               </IconButton>
             </InputAdornment>

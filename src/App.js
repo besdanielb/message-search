@@ -25,6 +25,9 @@ function App() {
           </ul>
         </nav>
         <div className="menu__icon--desktop">&#9655;</div>
+        <div className="menu__logo">
+          <img src="/logo-highres.png" alt="logo-highres" />
+        </div>
       </div>
       <Route exact path="/search" component={Search} />
       <Route exact path="/read" component={Read} />
