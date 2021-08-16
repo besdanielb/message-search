@@ -83,13 +83,13 @@ export default function Search() {
     let url;
     if (searchType === "semantic") {
       url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/search/semantic?query=" +
+        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
         searchTerm +
         "&limit=" +
         limit;
     } else {
       url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/search?type=" +
+        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
         searchType +
         "&query=" +
         searchTerm;
