@@ -11,6 +11,8 @@ import Read from "./Pages/Read/read";
 import ReadAll from "./Pages/Read/read-all";
 
 function App() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
   return (
     <Router>
       <div id="menu" className="menu">

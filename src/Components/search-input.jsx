@@ -14,6 +14,9 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: "63em",
       borderRadius: "30px",
       paddingLeft: "5px",
+      [theme.breakpoints.down("sm")]: {
+        width: "90vw",
+      },
     },
     "& label.Mui-focused": {
       color: "var(--dark-color)",

@@ -72,8 +72,8 @@ body {
   background: white;
   transition: 1s;
   transform-origin: left center;
-  height: -webkit-fill-available;
   min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
   height: -moz-available; /* WebKit-based browsers will ignore this. */
   display: flex;
   justify-content: center;
@@ -135,7 +135,6 @@ p {
     z-index: 3;
     height: 3.4em;
     width: 100vw;
-    width: -webkit-fill-available;
     bottom: 0;
 
     &__icon--desktop,
@@ -158,8 +157,13 @@ p {
   .container {
     width: 100%;
     margin-left: 0px;
-    min-height: calc(100vh - 3em);
     padding-bottom: 5em;
+  }
+
+  .contacts {
+    position: absolute;
+    height: 3.4em;
+    margin-bottom: 3.4em;
   }
 
   nav {

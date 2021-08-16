@@ -88,7 +88,6 @@ $input-height: 3em;
   &__form {
     display: flex;
     width: 100vw;
-    width: -webkit-fill-available;
     justify-content: center;
     position: relative;
     margin-top: 12px;
@@ -102,7 +101,7 @@ $input-height: 3em;
   align-items: center;
   justify-content: center;
   position: absolute;
-  bottom: 0;
+  bottom: 0em;
   padding: 10px;
 }
 
@@ -242,5 +241,9 @@ $input-height: 3em;
 
   .MuiFormGroup-row {
     flex-direction: row !important;
+  }
+
+  .contacts {
+    bottom: 0;
   }
 }
