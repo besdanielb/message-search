@@ -1,20 +1,19 @@
 import "./App.scss";
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
+import { Route, Link, Redirect } from "react-router-dom";
+import { Router } from "react-router-dom";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
 import ReadAll from "./Pages/Read/read-all";
+import { createBrowserHistory } from "history";
 
 function App() {
   let vh = window.innerHeight * 0.01;
+  const history = createBrowserHistory();
   document.documentElement.style.setProperty("--vh", `${vh}px`);
+
   return (
-    <Router>
+    <Router history={history}>
       <div id="menu" className="menu">
         <nav className="nav-bar">
           <ul>

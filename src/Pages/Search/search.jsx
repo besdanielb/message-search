@@ -10,7 +10,6 @@ import AppleIcon from "@material-ui/icons/Apple";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
-import YouTubeIcon from "@material-ui/icons/YouTube";
 import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { IconButton } from "@material-ui/core";
@@ -23,7 +22,7 @@ import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
-import Mark from "mark.js";
+import Highlighter from "react-highlight-words";
 import {
   removeState,
   saveState,
@@ -43,6 +42,7 @@ export default function Search() {
   const SORT_BY_DATE_ASC = "dateASC";
   const SORT_BY_DATE_DEC = "dateDEC";
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [wordsToHighlight, setWordsToHighlight] = React.useState([]);
   const [searchResults, setSearchResults] = React.useState([]);
   const [defaultSearchResults, setDefaultSearchResults] = React.useState([]);
   const [search, setSearch] = React.useState(false);
@@ -60,37 +60,37 @@ export default function Search() {
       setSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
       setDefaultSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
       setSearchTerm(getState(SEARCH_TERM_STATE_NAME));
+      setWordsToHighlight(getState(SEARCH_TERM_STATE_NAME).split(" "));
       setSearchType(getState(SEARCH_TYPE_STATE_NAME));
       setActive(true);
     }
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    if (searchType && searchType !== "semantic") {
-      const instance = new Mark(".paragraph-text");
-      instance.mark(searchTerm);
+  const onSearch = (event, typeOfSearch) => {
+    if (event) {
+      event.preventDefault();
     }
-  }, [sortBy, searchTerm, searchType]);
-
-  const onSearch = (event) => {
-    event.preventDefault();
+    setWordsToHighlight(searchTerm.split(" "));
     setSearch(true);
     setSearchResults([]);
     setDefaultSearchResults([]);
     setActive(false);
     setNoResultsFound(false);
+    if (typeOfSearch) {
+      saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
+    }
     let url;
-    if (searchType === "semantic") {
+    if (typeOfSearch === "semantic") {
       url =
         "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
-        searchTerm +
+        typeOfSearch +
         "&limit=" +
         limit;
     } else {
       url =
         "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
-        searchType +
+        typeOfSearch +
         "&query=" +
         searchTerm;
     }
@@ -101,7 +101,7 @@ export default function Search() {
         (results) => {
           let parsedResults = [];
           if (
-            searchType === "semantic" &&
+            typeOfSearch === "semantic" &&
             JSON.parse(results)?.similarities &&
             JSON.parse(results)?.similarities?.length > 0
           ) {
@@ -117,22 +117,19 @@ export default function Search() {
             setAlert(false);
             setNoResultsFound(false);
             setSearchResults(parsedResults);
-            setDefaultSearchResults(parsedResults);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           } else {
             setSearchResults(results);
-            setDefaultSearchResults(results);
+            const defaultResults = Object.assign([], results);
+            setDefaultSearchResults(defaultResults);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, results);
             setAlert(false);
             setNoResultsFound(false);
-            const instance = new Mark(".paragraph-text");
-            instance.mark(searchTerm);
           }
           setActive(true);
           setSearch(false);
-          saveState(SEARCH_TYPE_STATE_NAME, searchType);
         },
         (error) => {
           setAlert(true);
@@ -167,14 +164,16 @@ export default function Search() {
   };
 
   const onLoadMore = (event) => {
-    event.preventDefault();
-    setSearch(true);
+    if (event) {
+      event.preventDefault();
+    }
     let newLimit = limit + 10;
     const url =
       "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
       searchTerm +
       "&limit=" +
       newLimit;
+    setSearch(true);
     setLimit(limit + 10);
     fetch(url)
       .then((response) => response.json())
@@ -206,19 +205,20 @@ export default function Search() {
     );
   };
 
-  const onOpenYoutubeClick = () => {
-    window.open("https://apps.apple.com/bf/app/apple-music/id1108187390");
-  };
-
   const onSearchTypeChange = (event) => {
-    if (event?.target?.labels[0]?.innerText !== searchType) {
-      if (event.target.labels[0].innerText === "All words") {
-        setSearchType("allwords");
-      } else if (event.target.labels[0].innerText === "Exact match") {
-        setSearchType("exact");
-      } else {
-        setSearchType(event.target.labels[0].innerText.toLowerCase());
-      }
+    let newSearchType = "";
+    if (event?.target?.id === "option-3") {
+      setSearchType("allwords");
+      newSearchType = "allwords";
+    } else if (event?.target?.id === "option-2") {
+      setSearchType("exact");
+      newSearchType = "exact";
+    } else {
+      setSearchType("semantic");
+      newSearchType = "semantic";
+    }
+    if (searchTerm) {
+      onSearch(null, newSearchType);
     }
   };
 
@@ -235,7 +235,6 @@ export default function Search() {
           }
           return 0;
         });
-        setSearchResults(searchResults);
         break;
       case SORT_BY_TITLE_DEC:
         setSortBy(SORT_BY_TITLE_DEC);
@@ -248,7 +247,6 @@ export default function Search() {
           }
           return 0;
         });
-        setSearchResults(searchResults);
         break;
       case SORT_BY_DATE_DEC:
         setSortBy(SORT_BY_DATE_DEC);
@@ -261,7 +259,6 @@ export default function Search() {
           }
           return 0;
         });
-        setSearchResults(searchResults);
         break;
       case SORT_BY_DATE_ASC:
         setSortBy(SORT_BY_DATE_ASC);
@@ -274,7 +271,6 @@ export default function Search() {
           }
           return 0;
         });
-        setSearchResults(searchResults);
         break;
       case SORT_BY_DEFAULT:
         setSortBy(SORT_BY_DEFAULT);
@@ -303,10 +299,11 @@ export default function Search() {
               <h2 className="search__container__title__h2">THE MESSAGE</h2>
               <h1 className="search__container__title__h1">SEARCH</h1>
               <div className="search__container__title__description">
-                Search the Message of Brother William Marrion Branham like never
-                before, with this new semantic search, powered by the latest
-                Machine Learning algorithms. Or use one of the other more common
-                search methods we have available.
+                Search the sermons of William Marrion Branham using a learning
+                technology that seeks to understand what you are searching for
+                and links your search to specific phrases and quotes. You can
+                also use the exact match and word match searches to find the
+                exact quote or word you are looking for.
               </div>
             </div>
 
@@ -314,11 +311,19 @@ export default function Search() {
           </div>
         )}
         <SearchInput
-          onSearch={onSearch}
+          onSearch={(event) => onSearch(event, searchType)}
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchTerm={searchTerm}
         ></SearchInput>
+        {search || noResultsFound ? (
+          <></>
+        ) : (
+          <SearchTypeRadioButtons
+            searchType={searchType}
+            onSearchTypeChange={onSearchTypeChange}
+          ></SearchTypeRadioButtons>
+        )}
         {(!search || searchTerm) && searchResults.length > 0 ? (
           <div className="info-div">
             <h5 className="number-of-results">
@@ -341,6 +346,7 @@ export default function Search() {
                     "aria-label": "search sorting",
                     MenuProps: { disableScrollLock: true },
                   }}
+                  name="sortOptions"
                 >
                   <MenuItem value={SORT_BY_DEFAULT}>
                     <em>Default</em>
@@ -363,15 +369,8 @@ export default function Search() {
           <></>
         )}
 
-        {search || searchResults?.length > 0 || noResultsFound ? (
-          <></>
-        ) : (
-          <SearchTypeRadioButtons
-            onSearchTypeChange={onSearchTypeChange}
-          ></SearchTypeRadioButtons>
-        )}
-
         {search && !noResultsFound ? <LoadingSpinner></LoadingSpinner> : <></>}
+
         <ul className={active ? "transition" : ""}>
           {(!search || searchTerm) && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
@@ -385,7 +384,23 @@ export default function Search() {
                     {result.sermonDate} | {result.sermonTitle}
                   </h5>
                   <div className="underline"></div>
-                  <p className="paragraph-text">{result.section}</p>
+                  <p className="paragraph-text">
+                    {searchType !== "semantic" ? (
+                      <Highlighter
+                        activeStyle={{
+                          backgroundColor: "yellow",
+                          color: "black",
+                        }}
+                        searchWords={wordsToHighlight}
+                        autoEscape={true}
+                        textToHighlight={
+                          result.paragraph + " " + result.section
+                        }
+                      />
+                    ) : (
+                      result.paragraph + " " + result.section
+                    )}
+                  </p>
                 </span>
                 <span className="copy-button">
                   <IconButton
@@ -462,17 +477,6 @@ export default function Search() {
         >
           <IconButton aria-label="android" size="medium">
             <AndroidOutlinedIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Check out our Youtube channel"
-          onClick={onOpenYoutubeClick}
-          arrow
-        >
-          <IconButton aria-label="youtube" size="medium">
-            <YouTubeIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
         <Tooltip

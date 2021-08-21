@@ -138,8 +138,8 @@ export default function ReadAll() {
       <div className="title">
         <h1>Read a Message</h1>
         <p>
-          Here you can read and search for any Message in the table bellow. You
-          can also sort and filter the table columns.
+          Read the full sermons of William Branham. You can also sort the
+          sermons by title or date.
         </p>
       </div>
       <DataGrid

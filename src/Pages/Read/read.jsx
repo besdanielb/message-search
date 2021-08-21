@@ -49,7 +49,6 @@ export default function Read() {
   const addSermonInfo = () => {
     //Get the selected text and append the extra info
     const selection = window.getSelection();
-    console.log(selection);
     let sermonInfo = "";
     let copytext = "";
     let newdiv;
