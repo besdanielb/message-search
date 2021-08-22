@@ -7,6 +7,13 @@
   margin: 0 auto;
 }
 
+@media (min-width: 501px) and (max-width: 800px) {
+  .align-svg {
+    max-width: 400px;
+    max-height: 400px;
+  }
+}
+
 @media only screen and (max-width: 500px) {
   .align-svg {
     display: none;
