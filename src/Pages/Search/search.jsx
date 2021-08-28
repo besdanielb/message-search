@@ -47,7 +47,7 @@ export default function Search() {
   const [defaultSearchResults, setDefaultSearchResults] = React.useState([]);
   const [search, setSearch] = React.useState(false);
   const [active, setActive] = React.useState(false);
-  const [limit, setLimit] = React.useState(10);
+  const [limit, setLimit] = React.useState(20);
   const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
   const [noResultsFound, setNoResultsFound] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
@@ -83,10 +83,10 @@ export default function Search() {
     let url;
     if (typeOfSearch === "semantic") {
       url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
-        typeOfSearch +
-        "&limit=" +
-        limit;
+        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?limit=" +
+        limit +
+        "&query=" +
+        searchTerm;
     } else {
       url =
         "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
@@ -157,10 +157,12 @@ export default function Search() {
   };
 
   const onReadMessage = (messageDate, index) => {
-    history.push({
-      pathname: "/read",
-      state: { date: messageDate, ref: index },
-    });
+    if (messageDate && index) {
+      history.push({
+        pathname: "/read",
+        state: { date: messageDate, ref: index },
+      });
+    }
   };
 
   const onLoadMore = (event) => {
@@ -376,6 +378,7 @@ export default function Search() {
             searchResults.map((result, index) => (
               <li key={index} className="message-paragraph">
                 <span
+                  style={{ width: "100%" }}
                   onClick={() =>
                     onReadMessage(result.sermonDate, result.paragraph)
                   }
