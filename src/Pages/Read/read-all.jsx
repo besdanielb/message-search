@@ -79,8 +79,8 @@ export default function ReadAll() {
     let tableData = messages.map((message, index) => {
       return {
         id: index,
-        title: message.sermonTitle.slice(1, -1),
-        date: message.sermonDate.slice(1, -1),
+        title: message.sermonTitle,
+        date: message.sermonDate,
       };
     });
     setRows(tableData);
