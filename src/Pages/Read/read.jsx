@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import ScrollToTop from "react-scroll-up";
+import Highlighter from "react-highlight-words";
 
 export default function Read() {
   const [messageToRead, setMessageToRead] = React.useState([]);
@@ -81,6 +82,47 @@ export default function Read() {
   };
   document.addEventListener("copy", addSermonInfo);
 
+  const showSermonFromSemanticSearch = () => {
+    return messageToRead?.map((entry) => (
+      <li
+        key={entry.paragraph}
+        id={entry.paragraph}
+        className={location?.state?.ref === entry.paragraph ? "highlight" : ""}
+      >
+        <p>
+          <span className="index">{entry.paragraph}</span> {entry.section}
+        </p>
+      </li>
+    ));
+  };
+
+  const showSermonFromAllWordsOrExactSearch = () => {
+    return messageToRead?.map((entry) =>
+      entry.paragraph === location?.state?.ref ? (
+        <li key={entry.paragraph} id={entry.paragraph} className="highlight">
+          <p>
+            <span className="index">{entry.paragraph} </span>
+            <Highlighter
+              activeStyle={{
+                backgroundColor: "yellow",
+                color: "black",
+              }}
+              searchWords={location?.state?.searchTerm?.split(" ")}
+              autoEscape={true}
+              textToHighlight={entry.section}
+            />
+          </p>
+        </li>
+      ) : (
+        <li key={entry.paragraph} id={entry.paragraph}>
+          <p>
+            <span className="index">{entry.paragraph}</span> {entry.section}
+          </p>
+        </li>
+      )
+    );
+  };
+
   return (
     <section className="container">
       <div className="read__container">
@@ -92,21 +134,11 @@ export default function Read() {
           <></>
         )}
         <ul>
-          {messageToRead?.map((entry) => (
-            <li
-              key={entry.paragraph}
-              id={entry.paragraph}
-              className={
-                location?.state?.ref === entry.paragraph ? "highlight" : ""
-              }
-            >
-              <p>
-                <span className="index">{entry.paragraph}</span> {entry.section}
-              </p>
-            </li>
-          ))}
+          {location?.state?.searchType === "semantic"
+            ? showSermonFromSemanticSearch()
+            : showSermonFromAllWordsOrExactSearch()}
         </ul>
-        <ScrollToTop showUnder={160}>
+        <ScrollToTop showUnder={260}>
           <ScrollUpButton></ScrollUpButton>
         </ScrollToTop>
       </div>

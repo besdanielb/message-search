@@ -4,17 +4,19 @@ import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSpinner from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
-import FacebookIcon from "@material-ui/icons/Facebook";
 import EmailIcon from "@material-ui/icons/Email";
 import AppleIcon from "@material-ui/icons/Apple";
 import { Alert, AlertTitle } from "@material-ui/lab";
 import Collapse from "@material-ui/core/Collapse";
 import CloseIcon from "@material-ui/icons/Close";
-import AndroidOutlinedIcon from "@material-ui/icons/AndroidOutlined";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import { IconButton } from "@material-ui/core";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -66,6 +68,10 @@ export default function Search() {
     }
     window.scrollTo(0, 0);
   }, []);
+
+  const handleKeyDown = () => {
+    // overide key down event to fix copy paragraph duplicated titles
+  };
 
   const onSearch = (event, typeOfSearch) => {
     if (event) {
@@ -160,7 +166,12 @@ export default function Search() {
     if (messageDate && index) {
       history.push({
         pathname: "/read",
-        state: { date: messageDate, ref: index },
+        state: {
+          date: messageDate,
+          ref: index,
+          searchTerm: searchTerm,
+          searchType: searchType,
+        },
       });
     }
   };
@@ -198,12 +209,6 @@ export default function Search() {
   const openEmailClient = () => {
     window.open(
       "mailto:themessagesearch@gmail.com?subject=Contact%20regarding%20website"
-    );
-  };
-
-  const onOpenFacebookClick = () => {
-    window.open(
-      "https://www.facebook.com/Igreja-Voz-do-S%C3%A9timo-Anjo-312711608747578"
     );
   };
 
@@ -292,7 +297,7 @@ export default function Search() {
 
   return (
     <div className="container">
-      <div className="search__container">
+      <div className="search__container" onKeyDown={handleKeyDown()}>
         {search || searchResults?.length > 0 || noResultsFound ? (
           <span></span>
         ) : (
@@ -308,7 +313,6 @@ export default function Search() {
                 exact quote or word you are looking for.
               </div>
             </div>
-
             <SearchingSVG></SearchingSVG>
           </div>
         )}
@@ -351,16 +355,32 @@ export default function Search() {
                   name="sortOptions"
                 >
                   <MenuItem value={SORT_BY_DEFAULT}>
-                    <em>Default</em>
+                    <ListItemText primary="Default" />
                   </MenuItem>
                   <MenuItem value={SORT_BY_TITLE_ASC}>
-                    Sermon title ASC
+                    <ListItemText primary="Sermon Title" />
+                    <ListItemIcon>
+                      <ArrowUpwardIcon />
+                    </ListItemIcon>
                   </MenuItem>
                   <MenuItem value={SORT_BY_TITLE_DEC}>
-                    Sermon title DESC
+                    <ListItemText primary="Sermon Title" />
+                    <ListItemIcon>
+                      <ArrowDownwardIcon />
+                    </ListItemIcon>
                   </MenuItem>
-                  <MenuItem value={SORT_BY_DATE_ASC}>Sermon date ASC</MenuItem>
-                  <MenuItem value={SORT_BY_DATE_DEC}>Sermon date DESC</MenuItem>
+                  <MenuItem value={SORT_BY_DATE_ASC}>
+                    <ListItemText primary="Sermon Date" />
+                    <ListItemIcon>
+                      <ArrowUpwardIcon />
+                    </ListItemIcon>
+                  </MenuItem>
+                  <MenuItem value={SORT_BY_DATE_DEC}>
+                    <ListItemText primary="Sermon Date" />
+                    <ListItemIcon>
+                      <ArrowDownwardIcon />
+                    </ListItemIcon>
+                  </MenuItem>
                 </Select>
               </FormControl>
             ) : (
@@ -377,43 +397,43 @@ export default function Search() {
           {(!search || searchTerm) && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
               <li key={index} className="message-paragraph">
-                <span
-                  style={{ width: "100%" }}
-                  onClick={() =>
-                    onReadMessage(result.sermonDate, result.paragraph)
-                  }
-                >
-                  <h5 className="message-title">
-                    {result.sermonDate} | {result.sermonTitle}
-                  </h5>
-                  <div className="underline"></div>
-                  <p className="paragraph-text">
-                    {searchType !== "semantic" ? (
-                      <Highlighter
-                        activeStyle={{
-                          backgroundColor: "yellow",
-                          color: "black",
-                        }}
-                        searchWords={wordsToHighlight}
-                        autoEscape={true}
-                        textToHighlight={
-                          result.paragraph + " " + result.section
-                        }
-                      />
-                    ) : (
-                      result.paragraph + " " + result.section
-                    )}
-                  </p>
-                </span>
-                <span className="copy-button">
-                  <IconButton
-                    aria-label="copy"
-                    size="medium"
-                    onClick={() => onCopyParagraphClick(result)}
+                <span style={{ width: "100%" }}>
+                  <div
+                    onClick={() =>
+                      onReadMessage(result.sermonDate, result.paragraph)
+                    }
                   >
-                    <FileCopyIcon fontSize="medium" />
-                  </IconButton>
-                  <h5 className="copy-label">Copy</h5>
+                    <h5 className="message-title">
+                      {result.sermonDate} | {result.sermonTitle}
+                    </h5>
+                    <div className="underline"></div>
+                    <p className="paragraph-text">
+                      {searchType !== "semantic" ? (
+                        <Highlighter
+                          activeStyle={{
+                            backgroundColor: "yellow",
+                            color: "black",
+                          }}
+                          searchWords={wordsToHighlight}
+                          autoEscape={true}
+                          textToHighlight={
+                            result.paragraph + " " + result.section
+                          }
+                        />
+                      ) : (
+                        result.paragraph + " " + result.section
+                      )}
+                    </p>
+                  </div>
+                  <span className="copy-button">
+                    <IconButton
+                      aria-label="copy"
+                      onClick={() => onCopyParagraphClick(result)}
+                    >
+                      <FileCopyIcon fontSize="medium" />
+                    </IconButton>
+                    <h5 className="copy-label">Copy</h5>
+                  </span>
                 </span>
               </li>
             ))
@@ -454,32 +474,11 @@ export default function Search() {
         <Tooltip
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
-          title="Check out our Facebook page"
-          onClick={onOpenFacebookClick}
-          arrow
-        >
-          <IconButton aria-label="facebook" size="medium">
-            <FacebookIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Our iOS is coming soon!"
+          title="Check out our iOS app!"
           arrow
         >
           <IconButton aria-label="apple" size="medium">
             <AppleIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Our Android app is coming soon!"
-          arrow
-        >
-          <IconButton aria-label="android" size="medium">
-            <AndroidOutlinedIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
         <Tooltip

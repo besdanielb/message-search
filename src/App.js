@@ -6,8 +6,22 @@ import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
 import ReadAll from "./Pages/Read/read-all";
 import { createBrowserHistory } from "history";
+import MenuIcon from "@material-ui/icons/Menu";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles({
+  menuIcon: {
+    display: "flex",
+    justifyContent: "center",
+    color: "var(--gray-color)",
+    fontSize: "12.5vmin",
+    transition: "0.5s ease-in-out",
+    width: "100%",
+  },
+});
 
 function App() {
+  const classes = useStyles();
   let vh = window.innerHeight * 0.01;
   const history = createBrowserHistory();
   document.documentElement.style.setProperty("--vh", `${vh}px`);
@@ -25,10 +39,10 @@ function App() {
             </li>
           </ul>
         </nav>
-        <div className="menu__icon--desktop">&#9655;</div>
         <div className="menu__logo">
           <img src="/logo-highres.png" alt="logo-highres" />
         </div>
+        <MenuIcon className={classes.menuIcon}></MenuIcon>
       </div>
       <Route exact path="/search" component={Search} />
       <Route exact path="/read" component={Read} />
