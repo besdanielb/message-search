@@ -42,7 +42,7 @@ function App() {
         <div className="menu__logo">
           <img src="/logo-highres.png" alt="logo-highres" />
         </div>
-        <MenuIcon className={classes.menuIcon}></MenuIcon>
+        <MenuIcon className={classes.menuIcon} id="menuIcon"></MenuIcon>
       </div>
       <Route exact path="/search" component={Search} />
       <Route exact path="/read" component={Read} />

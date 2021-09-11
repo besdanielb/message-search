@@ -30,6 +30,14 @@ body {
   &:focus {
     width: 18vw;
     height: 100%;
+
+    #menuIcon {
+      margin-left: -5em !important;
+    }
+
+    .menu__logo {
+      width: 90%;
+    }
   }
 
   &:active {
@@ -39,17 +47,6 @@ body {
   &:hover ~ .container,
   &:focus ~ .container {
     transform: translateX(12vw);
-  }
-
-  &:hover,
-  &:focus {
-    .makeStyles-menuIcon-1 {
-      margin-left: -5em;
-    }
-
-    .menu__logo {
-      width: 90%;
-    }
   }
 
   &:hover nav,
@@ -131,7 +128,7 @@ p {
       display: none;
     }
 
-    .makeStyles-menuIcon-1 {
+    #menuIcon {
       display: none;
     }
 
@@ -191,7 +188,7 @@ p {
 }
 
 @media (max-width: 1100px) {
-  .makeStyles-menuIcon-1 {
+  #menu-icon {
     font-size: 9vmin;
   }
 }
