@@ -32,6 +32,8 @@ import {
 } from "../../Providers/localStorageProvider";
 import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
 import SearchingSVG from "../../Components/searching-svg";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "../../index";
 
 export default function Search() {
   const SEMANTIC_SEARCH_TYPE = "semantic";
@@ -68,6 +70,10 @@ export default function Search() {
     }
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    logEvent(analytics, "searchpage_visited");
+  });
 
   const handleKeyDown = () => {
     // overide key down event to fix copy paragraph duplicated titles
@@ -136,6 +142,10 @@ export default function Search() {
           }
           setActive(true);
           setSearch(false);
+          logEvent(analytics, "search_query", {
+            searchType: searchType,
+            query: searchTerm,
+          });
         },
         (error) => {
           setAlert(true);

@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import ScrollToTop from "react-scroll-up";
 import Highlighter from "react-highlight-words";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "../../index";
 
 export default function Read() {
   const [messageToRead, setMessageToRead] = React.useState([]);
@@ -22,6 +24,10 @@ export default function Read() {
             if (isMounted) {
               setMessageToRead(results);
               executeScroll(location?.state?.ref);
+              logEvent(analytics, "read_sermon", {
+                sermon_date: location.state?.date,
+                sermon_title: results[0]?.title,
+              });
             }
           },
           (error) => {

@@ -14,6 +14,7 @@
     "bootstrap": "^5.0.2",
     "cors": "^2.8.5",
     "css-what": "^5.0.1",
+    "firebase": "^9.0.2",
     "node-sass": "^5.0.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",

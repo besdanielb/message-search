@@ -6,6 +6,8 @@ import IconButton from "@material-ui/core/IconButton";
 import { DataGrid } from "@material-ui/data-grid";
 import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 import { saveState, getState } from "../../Providers/localStorageProvider";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "../../index";
 
 const escapeRegExp = (value) => {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -61,6 +63,10 @@ export default function ReadAll() {
   useEffect(() => {
     setRowsCopy(rows);
   }, [rows]);
+
+  useEffect(() => {
+    logEvent(analytics, "read-allpage_visited");
+  });
 
   useEffect(() => {
     window.addEventListener("resize", handleWindowSizeChange);

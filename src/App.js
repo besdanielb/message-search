@@ -8,6 +8,8 @@ import ReadAll from "./Pages/Read/read-all";
 import { createBrowserHistory } from "history";
 import MenuIcon from "@material-ui/icons/Menu";
 import { makeStyles } from "@material-ui/core/styles";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "./index";
 
 const useStyles = makeStyles({
   menuIcon: {
@@ -22,6 +24,7 @@ const useStyles = makeStyles({
 
 function App() {
   const classes = useStyles();
+  logEvent(analytics, "homepage_visited");
   let vh = window.innerHeight * 0.01;
   const history = createBrowserHistory();
   document.documentElement.style.setProperty("--vh", `${vh}px`);
