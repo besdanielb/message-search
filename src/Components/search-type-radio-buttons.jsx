@@ -34,7 +34,7 @@ export default function SearchTypeRadioButtons(props) {
         title={
           <div style={{ fontSize: "16px", lineHeight: "20px" }}>
             Dynamic search matches relevant terms to your search query, e.g.
-            searches with “Holy Spirit” will also bring up searches with “Holy
+            searches with “Holy Spirit” will also return results with “Holy
             Ghost”.
           </div>
         }
@@ -51,8 +51,8 @@ export default function SearchTypeRadioButtons(props) {
         TransitionProps={{ timeout: 600 }}
         title={
           <div style={{ fontSize: "16px", lineHeight: "20px" }}>
-            This will search for the exact phrase that you type in, within the
-            Message database.
+            Exact Match will search for the exact phrase that you type in,
+            within the Message database.
           </div>
         }
         arrow
@@ -68,8 +68,8 @@ export default function SearchTypeRadioButtons(props) {
         TransitionProps={{ timeout: 600 }}
         title={
           <div style={{ fontSize: "16px", lineHeight: "20px" }}>
-            All words that are typed in and are relevant to your search will
-            pull up in the search query.
+            All words that are typed in, and are relevant to your search, will
+            be shown in the search results.
           </div>
         }
         arrow

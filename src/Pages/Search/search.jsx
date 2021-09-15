@@ -222,6 +222,10 @@ export default function Search() {
     );
   };
 
+  const openiOSApp = () => {
+    window.open("https://apps.apple.com/pt/app/message-search/id1579582830");
+  };
+
   const onSearchTypeChange = (event) => {
     let newSearchType = "";
     if (event?.target?.id === "option-3") {
@@ -485,6 +489,7 @@ export default function Search() {
           TransitionComponent={Fade}
           TransitionProps={{ timeout: 600 }}
           title="Check out our iOS app!"
+          onClick={openiOSApp}
           arrow
         >
           <IconButton aria-label="apple" size="medium">
