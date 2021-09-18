@@ -145,7 +145,7 @@ export default function Read() {
             : showSermonFromAllWordsOrExactSearch()}
         </ul>
         <ScrollToTop showUnder={260}>
-          <ScrollUpButton></ScrollUpButton>
+          <ScrollUpButton aria-label="scroll to the top"></ScrollUpButton>
         </ScrollToTop>
       </div>
     </section>

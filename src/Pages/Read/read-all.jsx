@@ -47,7 +47,7 @@ export default function ReadAll() {
       renderCell: (params) => {
         return (
           <IconButton
-            aria-label="read"
+            aria-label="read message"
             color="default"
             onClick={() => {
               onReadMessage(params);

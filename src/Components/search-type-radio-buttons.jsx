@@ -11,6 +11,7 @@ export default function SearchTypeRadioButtons(props) {
         name="select"
         id="option-1"
         checked={props.searchType === "semantic"}
+        aria-label="semantic search"
         onChange={props.onSearchTypeChange}
       />
       <input
@@ -18,6 +19,7 @@ export default function SearchTypeRadioButtons(props) {
         name="select"
         id="option-2"
         checked={props.searchType === "exact"}
+        aria-label="exact match search"
         onChange={props.onSearchTypeChange}
       />
       <input
@@ -25,6 +27,7 @@ export default function SearchTypeRadioButtons(props) {
         name="select"
         id="option-3"
         checked={props.searchType === "allwords"}
+        aria-label="All words search"
         onChange={props.onSearchTypeChange}
       />
       <Tooltip

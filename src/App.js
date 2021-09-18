@@ -43,7 +43,12 @@ function App() {
           </ul>
         </nav>
         <div className="menu__logo">
-          <img src="/logo-highres.png" alt="logo-highres" />
+          <img
+            width="65%"
+            height="100%"
+            src="/logo-highres.png"
+            alt="website logo"
+          />
         </div>
         <MenuIcon className={classes.menuIcon} id="menuIcon"></MenuIcon>
       </div>

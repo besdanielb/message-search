@@ -56,7 +56,10 @@ export default function SearchInput(props) {
           endAdornment: (
             <InputAdornment position="end">
               {props.searchTerm ? (
-                <IconButton onClick={props.onClearInput}>
+                <IconButton
+                  onClick={props.onClearInput}
+                  aria-label="clear search"
+                >
                   <ClearIcon />
                 </IconButton>
               ) : (
@@ -64,6 +67,7 @@ export default function SearchInput(props) {
               )}
               <IconButton
                 type="submit"
+                aria-label="submit search"
                 onClick={props.onSearch}
                 disabled={!props.searchTerm}
               >

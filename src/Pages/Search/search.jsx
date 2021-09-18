@@ -335,6 +335,7 @@ export default function Search() {
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchTerm={searchTerm}
+          aria-label="search input"
         ></SearchInput>
         {search || noResultsFound ? (
           <></>
@@ -441,7 +442,7 @@ export default function Search() {
                   </div>
                   <span className="copy-button">
                     <IconButton
-                      aria-label="copy"
+                      aria-label="copy paragraph"
                       onClick={() => onCopyParagraphClick(result)}
                     >
                       <FileCopyIcon fontSize="medium" />
@@ -471,6 +472,7 @@ export default function Search() {
               }}
               size="medium"
               variant="outlined"
+              aria-label="load more results"
               onClick={onLoadMore}
               endIcon={<GetAppIcon></GetAppIcon>}
             >
@@ -481,7 +483,7 @@ export default function Search() {
           )}
         </ul>
         <ScrollToTop showUnder={260}>
-          <ScrollUpButton></ScrollUpButton>
+          <ScrollUpButton aria-label="scroll up"></ScrollUpButton>
         </ScrollToTop>
       </div>
       <div className="contacts">
@@ -492,7 +494,7 @@ export default function Search() {
           onClick={openiOSApp}
           arrow
         >
-          <IconButton aria-label="apple" size="medium">
+          <IconButton aria-label="download ios app" size="medium">
             <AppleIcon fontSize="medium" />
           </IconButton>
         </Tooltip>
@@ -503,7 +505,7 @@ export default function Search() {
           arrow
         >
           <IconButton
-            aria-label="email"
+            aria-label="contact us by email"
             size="medium"
             onClick={openEmailClient}
           >
@@ -526,7 +528,7 @@ export default function Search() {
           style={{ marginBottom: "7em" }}
           action={
             <IconButton
-              aria-label="close"
+              aria-label="close error message"
               size="small"
               onClick={() => {
                 setAlert(false);
