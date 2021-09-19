@@ -143,6 +143,11 @@ $input-height: 3em;
   text-align: left;
 }
 
+.MuiSelect-select.MuiSelect-select {
+  display: flex;
+  align-items: center;
+}
+
 .info-div {
   display: flex;
   width: 100%;

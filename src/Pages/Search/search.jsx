@@ -147,7 +147,7 @@ export default function Search() {
             query: searchTerm,
           });
         },
-        (error) => {
+        () => {
           setAlert(true);
           setSearch(false);
         }
@@ -209,7 +209,7 @@ export default function Search() {
           saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           setSearch(false);
         },
-        (error) => {
+        () => {
           setAlert(true);
           setSearch(false);
         }
@@ -350,57 +350,52 @@ export default function Search() {
             <h5 className="number-of-results">
               Number of results: {searchResults.length}
             </h5>
-            {searchType === "allwords" || searchType === "exact" ? (
-              <FormControl
-                style={{
-                  display: "flex",
-                  alignSelf: "center",
-                  margin: "1em 0",
-                  width: "12em",
+            <FormControl
+              style={{
+                display: "flex",
+                alignSelf: "center",
+                margin: "1em 0",
+                width: "12em",
+              }}
+            >
+              <InputLabel id="sort-label">Sort</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={handleSortChange}
+                inputProps={{
+                  "aria-label": "search sorting",
+                  MenuProps: { disableScrollLock: true },
                 }}
               >
-                <InputLabel id="sort-label">Sort</InputLabel>
-                <Select
-                  value={sortBy}
-                  onChange={handleSortChange}
-                  inputProps={{
-                    "aria-label": "search sorting",
-                    MenuProps: { disableScrollLock: true },
-                  }}
-                  name="sortOptions"
-                >
-                  <MenuItem value={SORT_BY_DEFAULT}>
-                    <ListItemText primary="Default" />
-                  </MenuItem>
-                  <MenuItem value={SORT_BY_TITLE_ASC}>
-                    <ListItemText primary="Sermon Title" />
-                    <ListItemIcon>
-                      <ArrowUpwardIcon />
-                    </ListItemIcon>
-                  </MenuItem>
-                  <MenuItem value={SORT_BY_TITLE_DEC}>
-                    <ListItemText primary="Sermon Title" />
-                    <ListItemIcon>
-                      <ArrowDownwardIcon />
-                    </ListItemIcon>
-                  </MenuItem>
-                  <MenuItem value={SORT_BY_DATE_ASC}>
-                    <ListItemText primary="Sermon Date" />
-                    <ListItemIcon>
-                      <ArrowUpwardIcon />
-                    </ListItemIcon>
-                  </MenuItem>
-                  <MenuItem value={SORT_BY_DATE_DEC}>
-                    <ListItemText primary="Sermon Date" />
-                    <ListItemIcon>
-                      <ArrowDownwardIcon />
-                    </ListItemIcon>
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            ) : (
-              <></>
-            )}
+                <MenuItem value={SORT_BY_DEFAULT}>
+                  <ListItemText primary="Default" />
+                </MenuItem>
+                <MenuItem value={SORT_BY_TITLE_ASC}>
+                  <ListItemText primary="Sermon Title" />
+                  <ListItemIcon>
+                    <ArrowUpwardIcon />
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem value={SORT_BY_TITLE_DEC}>
+                  <ListItemText primary="Sermon Title" />
+                  <ListItemIcon>
+                    <ArrowDownwardIcon />
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem value={SORT_BY_DATE_ASC}>
+                  <ListItemText primary="Sermon Date" />
+                  <ListItemIcon>
+                    <ArrowUpwardIcon />
+                  </ListItemIcon>
+                </MenuItem>
+                <MenuItem value={SORT_BY_DATE_DEC}>
+                  <ListItemText primary="Sermon Date" />
+                  <ListItemIcon>
+                    <ArrowDownwardIcon />
+                  </ListItemIcon>
+                </MenuItem>
+              </Select>
+            </FormControl>
           </div>
         ) : (
           <></>

@@ -10,6 +10,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import { makeStyles } from "@material-ui/core/styles";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "./index";
+import withClearCache from "./ClearCache";
 
 const useStyles = makeStyles({
   menuIcon: {
@@ -22,7 +23,13 @@ const useStyles = makeStyles({
   },
 });
 
+const ClearCacheComponent = withClearCache(MainApp);
+
 function App() {
+  return <ClearCacheComponent />;
+}
+
+function MainApp(props) {
   const classes = useStyles();
   logEvent(analytics, "homepage_visited");
   let vh = window.innerHeight * 0.01;
@@ -59,5 +66,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
