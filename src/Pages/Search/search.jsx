@@ -360,7 +360,7 @@ export default function Search() {
           ></MoodBadTwoToneIcon>
         </Tooltip>
       );
-    } else {
+    } else if (distance) {
       return (
         <Tooltip
           title="This result is really bad, try a different search or add more words to your search text"
