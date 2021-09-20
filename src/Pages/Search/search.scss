@@ -129,6 +129,8 @@ $input-height: 3em;
 
 .message-title {
   font-weight: bold;
+  display: flex;
+  align-items: center;
 }
 
 .makeStyles-margin-2 {

@@ -24,6 +24,10 @@ import Fade from "@material-ui/core/Fade";
 import ScrollToTop from "react-scroll-up";
 import Button from "@material-ui/core/Button";
 import GetAppIcon from "@material-ui/icons/GetApp";
+import SentimentSatisfiedTwoToneIcon from "@mui/icons-material/SentimentSatisfiedTwoTone";
+import SentimentDissatisfiedTwoToneIcon from "@mui/icons-material/SentimentDissatisfiedTwoTone";
+import MoodTwoToneIcon from "@mui/icons-material/MoodTwoTone";
+import MoodBadTwoToneIcon from "@mui/icons-material/MoodBadTwoTone";
 import Highlighter from "react-highlight-words";
 import {
   removeState,
@@ -117,9 +121,9 @@ export default function Search() {
             JSON.parse(results)?.similarities &&
             JSON.parse(results)?.similarities?.length > 0
           ) {
-            parsedResults = JSON.parse(results).similarities.map(
-              (x) => x.features
-            );
+            parsedResults = JSON.parse(results).similarities.map((x) => {
+              return { distance: x.distance, ...x.features };
+            });
           }
           if (parsedResults.length === 0 && results.length === 0) {
             setSearchResults([]);
@@ -202,9 +206,9 @@ export default function Search() {
       .then((response) => response.json())
       .then(
         (results) => {
-          const parsedResults = JSON.parse(results).similarities.map(
-            (x) => x.features
-          );
+          const parsedResults = JSON.parse(results).similarities.map((x) => {
+            return { distance: x.distance, ...x.features };
+          });
           setSearchResults(parsedResults);
           saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           setSearch(false);
@@ -309,6 +313,68 @@ export default function Search() {
     navigator.clipboard.writeText(textToCopy);
   };
 
+  const getParagraphRatingIcon = (distance) => {
+    if (distance <= 0.4) {
+      return (
+        <Tooltip
+          title="This is a really good result!"
+          placement="top"
+          arrow={true}
+          style={{ marginRight: "5px" }}
+        >
+          <MoodTwoToneIcon color="success"></MoodTwoToneIcon>
+        </Tooltip>
+      );
+    } else if (distance <= 0.5) {
+      return (
+        <Tooltip title="This is a good result!" placement="top" arrow={true}>
+          <SentimentSatisfiedTwoToneIcon
+            color="success"
+            style={{ opacity: "0.5", marginRight: "5px" }}
+          ></SentimentSatisfiedTwoToneIcon>
+        </Tooltip>
+      );
+    } else if (distance <= 0.55) {
+      return (
+        <Tooltip
+          title="This result is not the best."
+          placement="top"
+          arrow={true}
+        >
+          <SentimentDissatisfiedTwoToneIcon
+            color="warning"
+            style={{ opacity: "0.5", marginRight: "5px" }}
+          ></SentimentDissatisfiedTwoToneIcon>
+        </Tooltip>
+      );
+    } else if (distance <= 0.65) {
+      return (
+        <Tooltip
+          title="This result is not good, maybe try a different search."
+          placement="top"
+          arrow={true}
+        >
+          <MoodBadTwoToneIcon
+            color="warning"
+            style={{ marginRight: "5px" }}
+          ></MoodBadTwoToneIcon>
+        </Tooltip>
+      );
+    } else {
+      return (
+        <Tooltip
+          title="This result is really bad, try a different search or add more words to your search text"
+          placement="top"
+          arrow={true}
+        >
+          <MoodBadTwoToneIcon
+            color="error"
+            style={{ marginRight: "5px" }}
+          ></MoodBadTwoToneIcon>
+        </Tooltip>
+      );
+    }
+  };
   return (
     <div className="container">
       <div className="search__container" onKeyDown={handleKeyDown()}>
@@ -414,6 +480,7 @@ export default function Search() {
                     }
                   >
                     <h5 className="message-title">
+                      {getParagraphRatingIcon(result.distance)}{" "}
                       {result.sermonDate} | {result.sermonTitle}
                     </h5>
                     <div className="underline"></div>
