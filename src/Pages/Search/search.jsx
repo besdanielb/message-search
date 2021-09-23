@@ -2,7 +2,7 @@ import "./search.scss";
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
-import LoadingSpinner from "../../Components/loader";
+import LoadingSkeleton from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import EmailIcon from "@material-ui/icons/Email";
 import AppleIcon from "@material-ui/icons/Apple";
@@ -17,6 +17,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -38,6 +39,7 @@ import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
 import SearchingSVG from "../../Components/searching-svg";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
+import { Skeleton } from "@mui/material";
 
 export default function Search() {
   const SEMANTIC_SEARCH_TYPE = "semantic";
@@ -59,6 +61,8 @@ export default function Search() {
   const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
   const [noResultsFound, setNoResultsFound] = React.useState(false);
   const [alert, setAlert] = React.useState(false);
+  const [searchClicked, setSearchClicked] = React.useState(false);
+  const [searchBook, setSearchBook] = React.useState("Message");
   const [sortBy, setSortBy] = React.useState(SORT_BY_DEFAULT);
   const history = useHistory();
 
@@ -93,6 +97,7 @@ export default function Search() {
     setDefaultSearchResults([]);
     setActive(false);
     setNoResultsFound(false);
+    setSearchClicked(true);
     if (typeOfSearch) {
       saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
     }
@@ -164,6 +169,7 @@ export default function Search() {
 
   const onClearInput = () => {
     setSearchResults([]);
+    setSearchClicked(false);
     setDefaultSearchResults([]);
     setSearchTerm("");
     setSearchType(SEMANTIC_SEARCH_TYPE);
@@ -173,7 +179,7 @@ export default function Search() {
     setActive(false);
     setSearch(false);
     setNoResultsFound(false);
-    setLimit(10);
+    setLimit(20);
   };
 
   const onReadMessage = (messageDate, index) => {
@@ -313,6 +319,14 @@ export default function Search() {
     navigator.clipboard.writeText(textToCopy);
   };
 
+  const changeSearchBook = () => {
+    if (searchBook === "Message") {
+      setSearchBook("Bible");
+    } else {
+      setSearchBook("Message");
+    }
+  };
+
   const getParagraphRatingIcon = (distance) => {
     if (distance <= 0.4) {
       return (
@@ -382,28 +396,70 @@ export default function Search() {
           <span></span>
         ) : (
           <div className="search__container__title">
+            <Button
+              aria-label="change search book"
+              size="medium"
+              variant="contained"
+              style={{
+                position: "absolute",
+                right: "2em",
+                top: "2em",
+                backgroundColor: "var(--dark-color)",
+                color: "white",
+              }}
+              onClick={changeSearchBook}
+            >
+              {searchBook === "Message"
+                ? "Change to Bible Search"
+                : "Change to Message Search"}
+            </Button>
             <div className="search__container__title--align">
-              <h2 className="search__container__title__h2">THE MESSAGE</h2>
+              <h2 className="search__container__title__h2">
+                THE {searchBook.toUpperCase()}
+              </h2>
               <h1 className="search__container__title__h1">SEARCH</h1>
               <div className="search__container__title__description">
-                Search the sermons of William Marrion Branham using a learning
-                technology that seeks to understand what you are searching for
-                and links your search to specific phrases and quotes. You can
-                also use the exact match and word match searches to find the
-                exact quote or word you are looking for.
+                Search the{" "}
+                {searchBook === "Message"
+                  ? "sermons of William Marrion Branham"
+                  : "Bible"}{" "}
+                using a learning technology that seeks to understand what you
+                are searching for and links your search to specific phrases and
+                quotes. You can also use the exact match and word match searches
+                to find the exact {searchBook === "Message" ? "quote" : "verse"}{" "}
+                or word you are looking for.
               </div>
             </div>
             <SearchingSVG></SearchingSVG>
           </div>
         )}
-        <SearchInput
-          onSearch={(event) => onSearch(event, searchType)}
-          onSearchInputValueChange={onSearchInputValueChange}
-          onClearInput={onClearInput}
-          searchTerm={searchTerm}
-          aria-label="search input"
-        ></SearchInput>
-        {search || noResultsFound ? (
+        <span style={{ position: "relative" }}>
+          {searchClicked ? (
+            <IconButton
+              aria-label="go back"
+              size="medium"
+              style={{
+                position: "absolute",
+                left: "-60px",
+                top: "1.2em",
+              }}
+              onClick={onClearInput}
+            >
+              <ArrowBackIosNewIcon />
+            </IconButton>
+          ) : (
+            <></>
+          )}
+          <SearchInput
+            onSearch={(event) => onSearch(event, searchType)}
+            onSearchInputValueChange={onSearchInputValueChange}
+            onClearInput={onClearInput}
+            searchTerm={searchTerm}
+            searchBook={searchBook}
+            aria-label="search input"
+          ></SearchInput>
+        </span>
+        {noResultsFound ? (
           <></>
         ) : (
           <SearchTypeRadioButtons
@@ -411,10 +467,20 @@ export default function Search() {
             onSearchTypeChange={onSearchTypeChange}
           ></SearchTypeRadioButtons>
         )}
-        {(!search || searchTerm) && searchResults.length > 0 ? (
+        {searchTerm && searchClicked ? (
           <div className="info-div">
             <h5 className="number-of-results">
-              Number of results: {searchResults.length}
+              Number of results:{" "}
+              {search && !noResultsFound ? (
+                <Skeleton
+                  animation="wave"
+                  width={30}
+                  height={24}
+                  style={{ display: "inline-flex" }}
+                ></Skeleton>
+              ) : (
+                searchResults.length
+              )}
             </h5>
             <FormControl
               style={{
@@ -467,12 +533,16 @@ export default function Search() {
           <></>
         )}
 
-        {search && !noResultsFound ? <LoadingSpinner></LoadingSpinner> : <></>}
+        {search && !noResultsFound ? (
+          <LoadingSkeleton></LoadingSkeleton>
+        ) : (
+          <></>
+        )}
 
         <ul className={active ? "transition" : ""}>
           {(!search || searchTerm) && searchResults.length > 0 ? (
             searchResults.map((result, index) => (
-              <li key={index} className="message-paragraph">
+              <li key={index}>
                 <span style={{ width: "100%" }}>
                   <div
                     onClick={() =>

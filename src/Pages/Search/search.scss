@@ -121,7 +121,7 @@ $input-height: 3em;
 
 .no-results-found {
   height: 100%;
-  display: flex;
+  display: inline-flex;
   text-align: center;
   align-items: center;
   justify-content: center;
@@ -202,7 +202,7 @@ $input-height: 3em;
 
   .search {
     &__container {
-      width: calc(min(90%, 90em));
+      width: 90%;
       justify-content: center;
 
       &__title {
@@ -219,7 +219,6 @@ $input-height: 3em;
       }
       li {
         flex-direction: row;
-        display: flex;
 
         &:hover .copy-button {
           display: block;
