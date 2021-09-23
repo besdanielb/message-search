@@ -425,9 +425,10 @@ export default function Search() {
                   : "Bible"}{" "}
                 using a learning technology that seeks to understand what you
                 are searching for and links your search to specific phrases and
-                quotes. You can also use the exact match and word match searches
-                to find the exact {searchBook === "Message" ? "quote" : "verse"}{" "}
-                or word you are looking for.
+                {searchBook === "Message" ? " quotes" : " verses"}. You can also
+                use the exact match and word match searches to find the exact{" "}
+                {searchBook === "Message" ? "quote" : "verse"} or word you are
+                looking for.
               </div>
             </div>
             <SearchingSVG></SearchingSVG>
