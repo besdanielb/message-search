@@ -46,7 +46,7 @@ export default function SearchInput(props) {
       <TextField
         className={classes.root}
         id="search-input"
-        label="Search the Message"
+        label={"Search the " + props.searchBook}
         variant="outlined"
         type="text"
         value={props.searchTerm}
