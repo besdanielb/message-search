@@ -91,13 +91,7 @@ export default function Search() {
     if (event) {
       event.preventDefault();
     }
-    setWordsToHighlight(searchTerm.split(" "));
-    setSearch(true);
-    setSearchResults([]);
-    setDefaultSearchResults([]);
-    setActive(false);
-    setNoResultsFound(false);
-    setSearchClicked(true);
+    resetStateFields();
     if (typeOfSearch) {
       saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
     }
@@ -115,7 +109,20 @@ export default function Search() {
         "&query=" +
         searchTerm;
     }
+    fetchSearchResults(url, typeOfSearch);
+  };
 
+  const resetStateFields = () => {
+    setWordsToHighlight(searchTerm.split(" "));
+    setSearch(true);
+    setSearchResults([]);
+    setDefaultSearchResults([]);
+    setActive(false);
+    setNoResultsFound(false);
+    setSearchClicked(true);
+  };
+
+  const fetchSearchResults = (url, typeOfSearch) => {
     fetch(url)
       .then((response) => response.json())
       .then(
@@ -159,6 +166,7 @@ export default function Search() {
         () => {
           setAlert(true);
           setSearch(false);
+          setSearchClicked(false);
         }
       );
   };
@@ -222,6 +230,7 @@ export default function Search() {
         () => {
           setAlert(true);
           setSearch(false);
+          setSearchClicked(false);
         }
       );
   };
@@ -319,6 +328,8 @@ export default function Search() {
     navigator.clipboard.writeText(textToCopy);
   };
 
+  // Will be used when Bible is added
+  // eslint-disable-next-line
   const changeSearchBook = () => {
     if (searchBook === "Message") {
       setSearchBook("Bible");
@@ -389,6 +400,220 @@ export default function Search() {
       );
     }
   };
+
+  const renderNumberOfResultsAndSortOptions = () => {
+    return searchTerm && searchClicked ? (
+      <div className="info-div">
+        <h5 className="number-of-results">
+          Number of results:{" "}
+          {search && !noResultsFound ? (
+            <Skeleton
+              animation="wave"
+              width={30}
+              height={24}
+              style={{ display: "inline-flex" }}
+            ></Skeleton>
+          ) : (
+            searchResults.length
+          )}
+        </h5>
+        <FormControl
+          style={{
+            display: "flex",
+            alignSelf: "center",
+            margin: "1em 0",
+            width: "12em",
+          }}
+        >
+          <InputLabel id="sort-label">Sort</InputLabel>
+          <Select
+            value={sortBy}
+            onChange={handleSortChange}
+            inputProps={{
+              "aria-label": "search sorting",
+              MenuProps: { disableScrollLock: true },
+            }}
+          >
+            <MenuItem value={SORT_BY_DEFAULT}>
+              <ListItemText primary="Default" />
+            </MenuItem>
+            <MenuItem value={SORT_BY_TITLE_ASC}>
+              <ListItemText primary="Sermon Title" />
+              <ListItemIcon>
+                <ArrowUpwardIcon />
+              </ListItemIcon>
+            </MenuItem>
+            <MenuItem value={SORT_BY_TITLE_DEC}>
+              <ListItemText primary="Sermon Title" />
+              <ListItemIcon>
+                <ArrowDownwardIcon />
+              </ListItemIcon>
+            </MenuItem>
+            <MenuItem value={SORT_BY_DATE_ASC}>
+              <ListItemText primary="Sermon Date" />
+              <ListItemIcon>
+                <ArrowUpwardIcon />
+              </ListItemIcon>
+            </MenuItem>
+            <MenuItem value={SORT_BY_DATE_DEC}>
+              <ListItemText primary="Sermon Date" />
+              <ListItemIcon>
+                <ArrowDownwardIcon />
+              </ListItemIcon>
+            </MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+    ) : (
+      <></>
+    );
+  };
+
+  const renderSearchResults = () => {
+    return (
+      <ul className={active ? "transition" : ""}>
+        {(!search || searchTerm) && searchResults.length > 0 ? (
+          searchResults.map((result, index) => (
+            <li key={index}>
+              <span style={{ width: "100%" }}>
+                <div
+                  onClick={() =>
+                    onReadMessage(result.sermonDate, result.paragraph)
+                  }
+                >
+                  <h5 className="message-title">
+                    {getParagraphRatingIcon(result.distance)}{" "}
+                    {result.sermonDate} | {result.sermonTitle}
+                  </h5>
+                  <div className="underline"></div>
+                  <p className="paragraph-text">
+                    {searchType !== "semantic" ? (
+                      <Highlighter
+                        activeStyle={{
+                          backgroundColor: "yellow",
+                          color: "black",
+                        }}
+                        searchWords={wordsToHighlight}
+                        autoEscape={true}
+                        textToHighlight={
+                          result.paragraph + " " + result.section
+                        }
+                      />
+                    ) : (
+                      result.paragraph + " " + result.section
+                    )}
+                  </p>
+                </div>
+                <span className="copy-button">
+                  <IconButton
+                    aria-label="copy paragraph"
+                    onClick={() => onCopyParagraphClick(result)}
+                  >
+                    <FileCopyIcon fontSize="medium" />
+                  </IconButton>
+                  <h5 className="copy-label">Copy</h5>
+                </span>
+              </span>
+            </li>
+          ))
+        ) : noResultsFound ? (
+          <h3 className="no-results-found">
+            No results found. Please try a different search.
+          </h3>
+        ) : (
+          <></>
+        )}
+        {searchTerm && searchResults.length > 0 && searchType === "semantic" ? (
+          <Button
+            style={{
+              display: "flex",
+              marginTop: "5em",
+              marginBottom: "9em",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}
+            size="medium"
+            variant="outlined"
+            aria-label="load more results"
+            onClick={onLoadMore}
+            endIcon={<GetAppIcon></GetAppIcon>}
+          >
+            Load more
+          </Button>
+        ) : (
+          <></>
+        )}
+      </ul>
+    );
+  };
+
+  const renderFooter = () => {
+    return (
+      <div className="contacts">
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="Check out our iOS app!"
+          onClick={openiOSApp}
+          arrow
+        >
+          <IconButton aria-label="download ios app" size="medium">
+            <AppleIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip
+          TransitionComponent={Fade}
+          TransitionProps={{ timeout: 600 }}
+          title="Get in contact with us!"
+          arrow
+        >
+          <IconButton
+            aria-label="contact us by email"
+            size="medium"
+            onClick={openEmailClient}
+          >
+            <EmailIcon fontSize="medium" />
+          </IconButton>
+        </Tooltip>
+      </div>
+    );
+  };
+
+  const renderErrorAlert = () => {
+    return (
+      <Collapse
+        in={alert}
+        style={{
+          position: "absolute",
+          top: "3em",
+          right: 0,
+          marginRight: "2em",
+          marginLeft: "1em",
+        }}
+      >
+        <Alert
+          severity="error"
+          style={{ marginBottom: "7em" }}
+          action={
+            <IconButton
+              aria-label="close error message"
+              size="small"
+              onClick={() => {
+                setAlert(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          <AlertTitle>Error</AlertTitle>
+          There was an error. Please try again, and if the issue continues,
+          please contact us by email.
+        </Alert>
+      </Collapse>
+    );
+  };
+
   return (
     <div className="container">
       <div className="search__container" onKeyDown={handleKeyDown()}>
@@ -396,7 +621,7 @@ export default function Search() {
           <span></span>
         ) : (
           <div className="search__container__title">
-            <Button
+            {/*<Button
               aria-label="change search book"
               size="medium"
               variant="contained"
@@ -413,11 +638,14 @@ export default function Search() {
                 ? "Change to Bible Search"
                 : "Change to Message Search"}
             </Button>
+            */}
             <div className="search__container__title--align">
               <h2 className="search__container__title__h2">
-                THE {searchBook.toUpperCase()}
+                {/*THE {searchBook.toUpperCase()}*/}
+                THE MESSAGE
               </h2>
               <h1 className="search__container__title__h1">SEARCH</h1>
+              {/*
               <div className="search__container__title__description">
                 Search the{" "}
                 {searchBook === "Message"
@@ -429,6 +657,14 @@ export default function Search() {
                 use the exact match and word match searches to find the exact{" "}
                 {searchBook === "Message" ? "quote" : "verse"} or word you are
                 looking for.
+              </div>
+              */}
+              <div className="search__container__title__description">
+                Search the sermons of William Marrion Branham using a learning
+                technology that seeks to understand what you are searching for
+                and links your search to specific phrases and quotes. You can
+                also use the exact match and word match searches to find the
+                exact quote or word you are looking for.
               </div>
             </div>
             <SearchingSVG></SearchingSVG>
@@ -468,214 +704,19 @@ export default function Search() {
             onSearchTypeChange={onSearchTypeChange}
           ></SearchTypeRadioButtons>
         )}
-        {searchTerm && searchClicked ? (
-          <div className="info-div">
-            <h5 className="number-of-results">
-              Number of results:{" "}
-              {search && !noResultsFound ? (
-                <Skeleton
-                  animation="wave"
-                  width={30}
-                  height={24}
-                  style={{ display: "inline-flex" }}
-                ></Skeleton>
-              ) : (
-                searchResults.length
-              )}
-            </h5>
-            <FormControl
-              style={{
-                display: "flex",
-                alignSelf: "center",
-                margin: "1em 0",
-                width: "12em",
-              }}
-            >
-              <InputLabel id="sort-label">Sort</InputLabel>
-              <Select
-                value={sortBy}
-                onChange={handleSortChange}
-                inputProps={{
-                  "aria-label": "search sorting",
-                  MenuProps: { disableScrollLock: true },
-                }}
-              >
-                <MenuItem value={SORT_BY_DEFAULT}>
-                  <ListItemText primary="Default" />
-                </MenuItem>
-                <MenuItem value={SORT_BY_TITLE_ASC}>
-                  <ListItemText primary="Sermon Title" />
-                  <ListItemIcon>
-                    <ArrowUpwardIcon />
-                  </ListItemIcon>
-                </MenuItem>
-                <MenuItem value={SORT_BY_TITLE_DEC}>
-                  <ListItemText primary="Sermon Title" />
-                  <ListItemIcon>
-                    <ArrowDownwardIcon />
-                  </ListItemIcon>
-                </MenuItem>
-                <MenuItem value={SORT_BY_DATE_ASC}>
-                  <ListItemText primary="Sermon Date" />
-                  <ListItemIcon>
-                    <ArrowUpwardIcon />
-                  </ListItemIcon>
-                </MenuItem>
-                <MenuItem value={SORT_BY_DATE_DEC}>
-                  <ListItemText primary="Sermon Date" />
-                  <ListItemIcon>
-                    <ArrowDownwardIcon />
-                  </ListItemIcon>
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-        ) : (
-          <></>
-        )}
-
+        {renderNumberOfResultsAndSortOptions()}
         {search && !noResultsFound ? (
           <LoadingSkeleton></LoadingSkeleton>
         ) : (
           <></>
         )}
-
-        <ul className={active ? "transition" : ""}>
-          {(!search || searchTerm) && searchResults.length > 0 ? (
-            searchResults.map((result, index) => (
-              <li key={index}>
-                <span style={{ width: "100%" }}>
-                  <div
-                    onClick={() =>
-                      onReadMessage(result.sermonDate, result.paragraph)
-                    }
-                  >
-                    <h5 className="message-title">
-                      {getParagraphRatingIcon(result.distance)}{" "}
-                      {result.sermonDate} | {result.sermonTitle}
-                    </h5>
-                    <div className="underline"></div>
-                    <p className="paragraph-text">
-                      {searchType !== "semantic" ? (
-                        <Highlighter
-                          activeStyle={{
-                            backgroundColor: "yellow",
-                            color: "black",
-                          }}
-                          searchWords={wordsToHighlight}
-                          autoEscape={true}
-                          textToHighlight={
-                            result.paragraph + " " + result.section
-                          }
-                        />
-                      ) : (
-                        result.paragraph + " " + result.section
-                      )}
-                    </p>
-                  </div>
-                  <span className="copy-button">
-                    <IconButton
-                      aria-label="copy paragraph"
-                      onClick={() => onCopyParagraphClick(result)}
-                    >
-                      <FileCopyIcon fontSize="medium" />
-                    </IconButton>
-                    <h5 className="copy-label">Copy</h5>
-                  </span>
-                </span>
-              </li>
-            ))
-          ) : noResultsFound ? (
-            <h3 className="no-results-found">
-              No results found. Please try a different search.
-            </h3>
-          ) : (
-            <></>
-          )}
-          {searchTerm &&
-          searchResults.length > 0 &&
-          searchType === "semantic" ? (
-            <Button
-              style={{
-                display: "flex",
-                marginTop: "5em",
-                marginBottom: "9em",
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-              size="medium"
-              variant="outlined"
-              aria-label="load more results"
-              onClick={onLoadMore}
-              endIcon={<GetAppIcon></GetAppIcon>}
-            >
-              Load more
-            </Button>
-          ) : (
-            <></>
-          )}
-        </ul>
+        {renderSearchResults()}
         <ScrollToTop showUnder={260}>
           <ScrollUpButton aria-label="scroll up"></ScrollUpButton>
         </ScrollToTop>
       </div>
-      <div className="contacts">
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Check out our iOS app!"
-          onClick={openiOSApp}
-          arrow
-        >
-          <IconButton aria-label="download ios app" size="medium">
-            <AppleIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Get in contact with us!"
-          arrow
-        >
-          <IconButton
-            aria-label="contact us by email"
-            size="medium"
-            onClick={openEmailClient}
-          >
-            <EmailIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-      </div>
-      <Collapse
-        in={alert}
-        style={{
-          position: "absolute",
-          top: "3em",
-          right: 0,
-          marginRight: "2em",
-          marginLeft: "1em",
-        }}
-      >
-        <Alert
-          severity="error"
-          style={{ marginBottom: "7em" }}
-          action={
-            <IconButton
-              aria-label="close error message"
-              size="small"
-              onClick={() => {
-                setAlert(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          <AlertTitle>Error</AlertTitle>
-          There was an error. Please try again, and if the issue continues,
-          please contact us by email.
-        </Alert>
-      </Collapse>
+      {renderFooter()}
+      {renderErrorAlert()}
     </div>
   );
 }
