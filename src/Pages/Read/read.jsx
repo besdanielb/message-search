@@ -93,7 +93,7 @@ export default function Read() {
       <li
         key={entry.paragraph}
         id={entry.paragraph}
-        className={location?.state?.ref === entry.paragraph ? "highlight" : ""}
+        className={+location?.state?.ref === entry.paragraph ? "highlight" : ""}
       >
         <p>
           <span className="index">{entry.paragraph}</span> {entry.section}

@@ -65,6 +65,10 @@ export default function Search() {
   const [searchBook, setSearchBook] = React.useState("Message");
   const [sortBy, setSortBy] = React.useState(SORT_BY_DEFAULT);
   const history = useHistory();
+  const semanticApiUrl =
+    "https://kmehw4lrl9.execute-api.us-east-2.amazonaws.com/default/nyckel";
+  const otherSearchesApiUrl =
+    "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=";
 
   // If there is search results in the local state, show them in the page
   useEffect(() => {
@@ -97,17 +101,9 @@ export default function Search() {
     }
     let url;
     if (typeOfSearch === "semantic") {
-      url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?limit=" +
-        limit +
-        "&query=" +
-        searchTerm;
+      url = `${semanticApiUrl}?limit=${limit}&query=${searchTerm}`;
     } else {
-      url =
-        "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=" +
-        typeOfSearch +
-        "&query=" +
-        searchTerm;
+      url = `${otherSearchesApiUrl}${typeOfSearch}&query=${searchTerm}`;
     }
     fetchSearchResults(url, typeOfSearch);
   };
@@ -122,20 +118,31 @@ export default function Search() {
     setSearchClicked(true);
   };
 
+  const parseResults = (results) => {
+    return results?.searchSamples.map((entry) => {
+      const sermonInfo = entry?.externalId?.split("/");
+      return {
+        sermonTitle: sermonInfo[1],
+        sermonDate: sermonInfo[0],
+        section: entry.data,
+        paragraph: sermonInfo[2],
+        ...entry,
+      };
+    });
+  };
+
   const fetchSearchResults = (url, typeOfSearch) => {
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
+          console.log(results);
           let parsedResults = [];
           if (
             typeOfSearch === "semantic" &&
-            JSON.parse(results)?.similarities &&
-            JSON.parse(results)?.similarities?.length > 0
+            results?.searchSamples.length > 0
           ) {
-            parsedResults = JSON.parse(results).similarities.map((x) => {
-              return { distance: x.distance, ...x.features };
-            });
+            parsedResults = parseResults(results);
           }
           if (parsedResults.length === 0 && results.length === 0) {
             setSearchResults([]);
@@ -209,20 +216,14 @@ export default function Search() {
       event.preventDefault();
     }
     let newLimit = limit + 10;
-    const url =
-      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search/semantic?query=" +
-      searchTerm +
-      "&limit=" +
-      newLimit;
+    const url = `${semanticApiUrl}?limit=${newLimit}&query=${searchTerm}`;
     setSearch(true);
     setLimit(limit + 10);
     fetch(url)
       .then((response) => response.json())
       .then(
         (results) => {
-          const parsedResults = JSON.parse(results).similarities.map((x) => {
-            return { distance: x.distance, ...x.features };
-          });
+          const parsedResults = parseResults(results);
           setSearchResults(parsedResults);
           saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           setSearch(false);
@@ -323,8 +324,7 @@ export default function Search() {
   };
 
   const onCopyParagraphClick = (event) => {
-    const textToCopy =
-      event.sermonDate + " | " + event.sermonTitle + "\n" + event.section;
+    const textToCopy = `${event.sermonDate} | ${event.sermonTitle} \n ${event.paragraph} ${event.section}`;
     navigator.clipboard.writeText(textToCopy);
   };
 
@@ -339,7 +339,7 @@ export default function Search() {
   };
 
   const getParagraphRatingIcon = (distance) => {
-    if (distance <= 0.4) {
+    if (distance <= 0.55) {
       return (
         <Tooltip
           title="This is a really good result!"
@@ -350,7 +350,7 @@ export default function Search() {
           <MoodTwoToneIcon color="success"></MoodTwoToneIcon>
         </Tooltip>
       );
-    } else if (distance <= 0.5) {
+    } else if (distance <= 0.63) {
       return (
         <Tooltip title="This is a good result!" placement="top" arrow={true}>
           <SentimentSatisfiedTwoToneIcon
@@ -359,7 +359,7 @@ export default function Search() {
           ></SentimentSatisfiedTwoToneIcon>
         </Tooltip>
       );
-    } else if (distance <= 0.55) {
+    } else if (distance <= 0.7) {
       return (
         <Tooltip
           title="This result is not the best."
@@ -372,7 +372,7 @@ export default function Search() {
           ></SentimentDissatisfiedTwoToneIcon>
         </Tooltip>
       );
-    } else if (distance <= 0.65) {
+    } else if (distance <= 0.8) {
       return (
         <Tooltip
           title="This result is not good, maybe try a different search."
