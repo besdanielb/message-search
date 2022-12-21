@@ -40,6 +40,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
+  "resolutions": {
+    "node-sass/node-gyp": "^6.0.0"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
