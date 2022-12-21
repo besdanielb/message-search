@@ -20,7 +20,7 @@
     "css-what": "^5.0.1",
     "firebase": "^9.0.2",
     "moment": "^2.29.1",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-dom": "^17.0.2",
@@ -39,9 +39,6 @@
     "build": "node ./update-build.js && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "resolutions": {
-    "node-sass/node-gyp": "^6.0.0"
   },
   "eslintConfig": {
     "extends": [
