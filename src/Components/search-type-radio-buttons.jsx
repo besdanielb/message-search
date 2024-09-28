@@ -1,7 +1,7 @@
 import React from "react";
 import "./search-type-radio-buttons.scss";
-import Tooltip from "@material-ui/core/Tooltip";
-import Fade from "@material-ui/core/Fade";
+import Tooltip from "@mui/material/Tooltip";
+import Fade from "@mui/material/Fade";
 
 export default function SearchTypeRadioButtons(props) {
   return (

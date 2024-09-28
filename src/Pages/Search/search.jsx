@@ -1,30 +1,31 @@
 import "./search.scss";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SearchInput from "../../Components/search-input";
 import LoadingSkeleton from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
-import EmailIcon from "@material-ui/icons/Email";
-import AppleIcon from "@material-ui/icons/Apple";
-import { Alert, AlertTitle } from "@material-ui/lab";
-import Collapse from "@material-ui/core/Collapse";
-import CloseIcon from "@material-ui/icons/Close";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import { IconButton } from "@material-ui/core";
-import InputLabel from "@material-ui/core/InputLabel";
-import MenuItem from "@material-ui/core/MenuItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
-import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import EmailIcon from "@mui/icons-material/Email";
+import AppleIcon from "@mui/icons-material/Apple";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import Collapse from "@mui/material/Collapse";
+import CloseIcon from "@mui/icons-material/Close";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import Tooltip from "@material-ui/core/Tooltip";
-import Fade from "@material-ui/core/Fade";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
+import Fade from "@mui/material/Fade";
 import ScrollToTop from "react-scroll-up";
-import Button from "@material-ui/core/Button";
-import GetAppIcon from "@material-ui/icons/GetApp";
+import Button from "@mui/material/Button";
+import GetAppIcon from "@mui/icons-material/GetApp";
 import SentimentSatisfiedTwoToneIcon from "@mui/icons-material/SentimentSatisfiedTwoTone";
 import SentimentDissatisfiedTwoToneIcon from "@mui/icons-material/SentimentDissatisfiedTwoTone";
 import MoodTwoToneIcon from "@mui/icons-material/MoodTwoTone";
@@ -64,7 +65,7 @@ export default function Search() {
   const [searchClicked, setSearchClicked] = React.useState(false);
   const [searchBook, setSearchBook] = React.useState("Message");
   const [sortBy, setSortBy] = React.useState(SORT_BY_DEFAULT);
-  const history = useHistory();
+  const navigate = useNavigate();
   const semanticApiUrl =
     "https://kmehw4lrl9.execute-api.us-east-2.amazonaws.com/default/nyckel";
   const otherSearchesApiUrl =
@@ -199,8 +200,7 @@ export default function Search() {
 
   const onReadMessage = (messageDate, index) => {
     if (messageDate && index) {
-      history.push({
-        pathname: "/read",
+      navigate("/read",{
         state: {
           date: messageDate,
           ref: index,

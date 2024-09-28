@@ -1,50 +1,43 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import SearchIcon from "@material-ui/icons/Search";
-import IconButton from "@material-ui/core/IconButton";
-import ClearIcon from "@material-ui/icons/Clear";
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    "& > *": {
-      margin: theme.spacing(1),
-      width: "70vw",
-      maxWidth: "63em",
-      borderRadius: "30px",
-      paddingLeft: "5px",
-      [theme.breakpoints.down("sm")]: {
-        width: "90vw",
-      },
-    },
-    "& label.Mui-focused": {
-      color: "var(--dark-color)",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "var(--grey-color)",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "var(--dark-color)",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "var(--dark-color)",
-      },
-      "&:hover fieldset": {
-        cursor: "pointer",
-      },
-    },
-  },
-}));
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import SearchIcon from "@mui/icons-material/Search";
+import IconButton from "@mui/material/IconButton";
+import ClearIcon from "@mui/icons-material/Clear";
 
 export default function SearchInput(props) {
-  const classes = useStyles();
-
   return (
     <form className="search__form" noValidate autoComplete="off">
       <TextField
-        className={classes.root}
+        sx={{
+          "& > *": {
+            margin: 1, 
+            width: "70vw",
+            maxWidth: "63em",
+            borderRadius: "30px",
+            paddingLeft: "5px",
+            "@media (max-width:600px)": {
+              width: "90vw",
+            },
+          },
+          "& label.Mui-focused": {
+            color: "var(--dark-color)",
+          },
+          "& .MuiInput-underline:after": {
+            borderBottomColor: "var(--grey-color)",
+          },
+          "& .MuiOutlinedInput-root": {
+            "& fieldset": {
+              borderColor: "var(--dark-color)",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "var(--dark-color)",
+            },
+            "&:hover fieldset": {
+              cursor: "pointer",
+            },
+          },
+        }}
         id="search-input"
         label={"Search the " + props.searchBook}
         variant="outlined"

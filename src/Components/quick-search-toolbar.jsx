@@ -1,11 +1,11 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import IconButton from "@material-ui/core/IconButton";
-import TextField from "@material-ui/core/TextField";
-import ClearIcon from "@material-ui/icons/Clear";
-import SearchIcon from "@material-ui/icons/Search";
-import { createTheme } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/styles";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import ClearIcon from "@mui/icons-material/Clear";
+import SearchIcon from "@mui/icons-material/Search";
+import { createTheme } from "@mui/material/styles";
+import makeStyles from '@mui/styles/makeStyles';
 
 const defaultTheme = createTheme();
 const useStyles = makeStyles(

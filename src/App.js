@@ -1,13 +1,11 @@
 import "./App.scss";
 import React from "react";
-import { Route, Link, Redirect } from "react-router-dom";
-import { Router } from "react-router-dom";
+import { BrowserRouter, Route, Link, Navigate, Routes } from "react-router-dom";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
 import ReadAll from "./Pages/Read/read-all";
-import { createBrowserHistory } from "history";
-import MenuIcon from "@material-ui/icons/Menu";
-import { makeStyles } from "@material-ui/core/styles";
+import MenuIcon from "@mui/icons-material/Menu";
+import { makeStyles } from "@mui/styles";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "./index";
 import withClearCache from "./ClearCache";
@@ -33,11 +31,10 @@ function MainApp(props) {
   const classes = useStyles();
   logEvent(analytics, "homepage_visited");
   let vh = window.innerHeight * 0.01;
-  const history = createBrowserHistory();
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 
   return (
-    <Router history={history}>
+    <BrowserRouter>
       <div id="menu" className="menu">
         <nav className="nav-bar">
           <ul>
@@ -59,11 +56,13 @@ function MainApp(props) {
         </div>
         <MenuIcon className={classes.menuIcon} id="menuIcon"></MenuIcon>
       </div>
-      <Route exact path="/search" component={Search} />
-      <Route exact path="/read" component={Read} />
-      <Route exact path="/read-all" component={ReadAll} />
-      <Redirect to="/search"></Redirect>
-    </Router>
+      <Routes>
+      <Route exact path="/search" element={<Search></Search>} />
+      <Route exact path="/read" element={<Read></Read>} />
+      <Route exact path="/read-all" element={<ReadAll></ReadAll>} />
+      <Route path="*" element={<Navigate to="/search" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 export default App;

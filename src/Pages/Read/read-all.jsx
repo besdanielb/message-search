@@ -1,9 +1,9 @@
 import "./read-all.scss";
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import MenuBookIcon from "@material-ui/icons/MenuBook";
-import IconButton from "@material-ui/core/IconButton";
-import { DataGrid } from "@material-ui/data-grid";
+import { useNavigate } from "react-router-dom";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import IconButton from "@mui/material/IconButton";
+import { DataGrid } from "@mui/x-data-grid";
 import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 import { saveState, getState } from "../../Providers/localStorageProvider";
 import { logEvent } from "firebase/analytics";
@@ -21,7 +21,7 @@ export default function ReadAll() {
   const [searchText, setSearchText] = React.useState("");
   const [hasCache, setHasCache] = React.useState();
   let isMobile = width <= 768;
-  const history = useHistory();
+  const navigate = useNavigate();
   const MESSAGES_STATE_NAME = "messages";
   const TABLE_COLUMNS = [
     {
@@ -118,8 +118,7 @@ export default function ReadAll() {
   }, [messages?.length]);
 
   const onReadMessage = (params) => {
-    history.push({
-      pathname: "/read",
+    navigate("/read", {
       state: { date: params.row?.date },
     });
   };
