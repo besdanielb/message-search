@@ -1,124 +1,98 @@
-import "./search.scss";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  IconButton,
+  Skeleton,
+  Tooltip,
+  Fade,
+} from "@mui/material";
+import {
+  Email as EmailIcon,
+  Apple as AppleIcon,
+  ArrowBackIosNew as ArrowBackIosNewIcon,
+  GetApp as GetAppIcon,
+} from "@mui/icons-material";
+import ScrollToTop from "react-scroll-up";
+import "./search.scss";
 import SearchInput from "../../Components/search-input";
 import LoadingSkeleton from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
-import EmailIcon from "@mui/icons-material/Email";
-import AppleIcon from "@mui/icons-material/Apple";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
-import Collapse from "@mui/material/Collapse";
-import CloseIcon from "@mui/icons-material/Close";
-import FileCopyIcon from "@mui/icons-material/FileCopy";
-import IconButton from "@mui/material/IconButton";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Tooltip from "@mui/material/Tooltip";
-import Fade from "@mui/material/Fade";
-import ScrollToTop from "react-scroll-up";
-import Button from "@mui/material/Button";
-import GetAppIcon from "@mui/icons-material/GetApp";
-import SentimentSatisfiedTwoToneIcon from "@mui/icons-material/SentimentSatisfiedTwoTone";
-import SentimentDissatisfiedTwoToneIcon from "@mui/icons-material/SentimentDissatisfiedTwoTone";
-import MoodTwoToneIcon from "@mui/icons-material/MoodTwoTone";
-import MoodBadTwoToneIcon from "@mui/icons-material/MoodBadTwoTone";
-import Highlighter from "react-highlight-words";
+import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
+import SearchingSVG from "../../Components/searching-svg";
+import { logEvent } from "firebase/analytics";
+import { analytics } from "../../index";
 import {
   removeState,
   saveState,
   getState,
 } from "../../Providers/localStorageProvider";
-import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
-import SearchingSVG from "../../Components/searching-svg";
-import { logEvent } from "firebase/analytics";
-import { analytics } from "../../index";
-import { Skeleton } from "@mui/material";
+import SearchResultItem from "./search-result-item";
+import SortOptions from "./sort-options";
+import {
+  API_URLS,
+  SEARCH_RESULTS_STATE_NAME,
+  SEARCH_TERM_STATE_NAME,
+  SEARCH_TYPE_STATE_NAME,
+  SEMANTIC_SEARCH_TYPE,
+  SORT_OPTIONS,
+} from "../../constants";
+import ErrorAlert from "./error-alert";
 
 export default function Search() {
-  const SEMANTIC_SEARCH_TYPE = "semantic";
-  const SEARCH_RESULTS_STATE_NAME = "searchResults";
-  const SEARCH_TERM_STATE_NAME = "searchTerm";
-  const SEARCH_TYPE_STATE_NAME = "searchType";
-  const SORT_BY_DEFAULT = "defaultSort";
-  const SORT_BY_TITLE_DEC = "titleDEC";
-  const SORT_BY_TITLE_ASC = "titleASC";
-  const SORT_BY_DATE_ASC = "dateASC";
-  const SORT_BY_DATE_DEC = "dateDEC";
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [wordsToHighlight, setWordsToHighlight] = React.useState([]);
-  const [searchResults, setSearchResults] = React.useState([]);
-  const [defaultSearchResults, setDefaultSearchResults] = React.useState([]);
-  const [search, setSearch] = React.useState(false);
-  const [active, setActive] = React.useState(false);
-  const [limit, setLimit] = React.useState(20);
-  const [searchType, setSearchType] = React.useState(SEMANTIC_SEARCH_TYPE);
-  const [noResultsFound, setNoResultsFound] = React.useState(false);
-  const [alert, setAlert] = React.useState(false);
-  const [searchClicked, setSearchClicked] = React.useState(false);
-  const [searchBook, setSearchBook] = React.useState("Message");
-  const [sortBy, setSortBy] = React.useState(SORT_BY_DEFAULT);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [wordsToHighlight, setWordsToHighlight] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [defaultSearchResults, setDefaultSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [limit, setLimit] = useState(20);
+  const [searchType, setSearchType] = useState(SEMANTIC_SEARCH_TYPE);
+  const [noResultsFound, setNoResultsFound] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [searchClicked, setSearchClicked] = useState(false);
+  const [sortBy, setSortBy] = useState(SORT_OPTIONS.DEFAULT);
   const navigate = useNavigate();
-  const semanticApiUrl =
-    "https://kmehw4lrl9.execute-api.us-east-2.amazonaws.com/default/nyckel";
-  const otherSearchesApiUrl =
-    "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=";
 
-  // If there is search results in the local state, show them in the page
+  // Load initial state from localStorage
   useEffect(() => {
-    if (getState(SEARCH_RESULTS_STATE_NAME)?.length > 0) {
-      setSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
-      setDefaultSearchResults(getState(SEARCH_RESULTS_STATE_NAME));
-      setSearchTerm(getState(SEARCH_TERM_STATE_NAME));
-      setWordsToHighlight(getState(SEARCH_TERM_STATE_NAME).split(" "));
-      setSearchType(getState(SEARCH_TYPE_STATE_NAME));
-      setActive(true);
+    const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
+    const storedTerm = getState(SEARCH_TERM_STATE_NAME);
+    const storedType = getState(SEARCH_TYPE_STATE_NAME);
+
+    if (storedResults?.length > 0) {
+      setSearchResults(storedResults);
+      setDefaultSearchResults(storedResults);
+      setSearchTerm(storedTerm);
+      setWordsToHighlight(storedTerm.split(" "));
+      setSearchType(storedType);
+      setIsActive(true);
     }
     window.scrollTo(0, 0);
   }, []);
 
+  // Log page visit on mount
   useEffect(() => {
     logEvent(analytics, "searchpage_visited");
-  });
+  }, []);
 
-  const handleKeyDown = () => {
-    // overide key down event to fix copy paragraph duplicated titles
-  };
+  // Handler to prevent default key down behavior (if needed)
+  const handleKeyDown = useCallback((e) => {
+    // Implement any key down logic if necessary
+  }, []);
 
-  const onSearch = (event, typeOfSearch) => {
-    if (event) {
-      event.preventDefault();
-    }
-    resetStateFields();
-    if (typeOfSearch) {
-      saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
-    }
-    let url;
-    if (typeOfSearch === "semantic") {
-      url = `${semanticApiUrl}?limit=${limit}&query=${searchTerm}`;
-    } else {
-      url = `${otherSearchesApiUrl}${typeOfSearch}&query=${searchTerm}`;
-    }
-    fetchSearchResults(url, typeOfSearch);
-  };
-
-  const resetStateFields = () => {
-    setWordsToHighlight(searchTerm.split(" "));
-    setSearch(true);
+  // Reset search-related state fields
+  const resetStateFields = useCallback(() => {
+    setWordsToHighlight(searchTerm.trim().split(" "));
+    setIsSearching(true);
     setSearchResults([]);
     setDefaultSearchResults([]);
-    setActive(false);
+    setIsActive(false);
     setNoResultsFound(false);
     setSearchClicked(true);
-  };
+  }, [searchTerm]);
 
+  // Parse API results
   const parseResults = (results) => {
     return results?.searchSamples.map((entry) => {
       const sermonInfo = entry?.externalId?.split("/");
@@ -132,58 +106,87 @@ export default function Search() {
     });
   };
 
-  const fetchSearchResults = (url, typeOfSearch) => {
-    fetch(url)
-      .then((response) => response.json())
-      .then(
-        (results) => {
-          console.log(results);
-          let parsedResults = [];
-          if (
-            typeOfSearch === "semantic" &&
-            results?.searchSamples.length > 0
-          ) {
-            parsedResults = parseResults(results);
-          }
-          if (parsedResults.length === 0 && results.length === 0) {
-            setSearchResults([]);
-            setDefaultSearchResults([]);
-            setNoResultsFound(true);
-          } else if (parsedResults.length > 0) {
-            setAlert(false);
-            setNoResultsFound(false);
+  // Fetch search results from API
+  const fetchSearchResults = useCallback(
+    async (url, typeOfSearch) => {
+      try {
+        const response = await fetch(url);
+        const results = await response.json();
+        let parsedResults = [];
+
+        if (
+          typeOfSearch === SEMANTIC_SEARCH_TYPE &&
+          results?.searchSamples.length > 0
+        ) {
+          parsedResults = parseResults(results);
+        }
+
+        if (
+          (typeOfSearch === SEMANTIC_SEARCH_TYPE &&
+            parsedResults.length === 0) ||
+          (!typeOfSearch === SEMANTIC_SEARCH_TYPE && results.length === 0)
+        ) {
+          setSearchResults([]);
+          setDefaultSearchResults([]);
+          setNoResultsFound(true);
+        } else {
+          if (parsedResults.length > 0) {
             setSearchResults(parsedResults);
+            setDefaultSearchResults(parsedResults);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           } else {
             setSearchResults(results);
-            const defaultResults = Object.assign([], results);
-            setDefaultSearchResults(defaultResults);
+            setDefaultSearchResults([...results]);
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, results);
-            setAlert(false);
-            setNoResultsFound(false);
           }
-          setActive(true);
-          setSearch(false);
-          logEvent(analytics, "search_query", {
-            searchType: searchType,
-            query: searchTerm,
-          });
-        },
-        () => {
-          setAlert(true);
-          setSearch(false);
-          setSearchClicked(false);
+          setIsActive(true);
+          setNoResultsFound(false);
         }
-      );
-  };
+        setIsSearching(false);
+        logEvent(analytics, "search_query", {
+          searchType: typeOfSearch,
+          query: searchTerm,
+        });
+      } catch (error) {
+        console.error("Fetch search results error:", error);
+        setAlertOpen(true);
+        setIsSearching(false);
+        setSearchClicked(false);
+      }
+    },
+    [searchTerm]
+  );
 
-  const onSearchInputValueChange = (event) => {
+  // Handle search submission
+  const onSearch = useCallback(
+    (event, typeOfSearch) => {
+      if (event) event.preventDefault();
+      resetStateFields();
+      if (typeOfSearch) {
+        saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
+      }
+      const url =
+        typeOfSearch === SEMANTIC_SEARCH_TYPE
+          ? `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodeURIComponent(
+              searchTerm
+            )}`
+          : `${API_URLS.OTHER}${typeOfSearch}&query=${encodeURIComponent(
+              searchTerm
+            )}`;
+      fetchSearchResults(url, typeOfSearch);
+    },
+    [fetchSearchResults, limit, resetStateFields, searchTerm]
+  );
+
+  // Handle input value change
+  const onSearchInputValueChange = useCallback((event) => {
     setSearchTerm(event.target.value);
-  };
+  }, []);
 
-  const onClearInput = () => {
+  // Clear search input and reset state
+  const onClearInput = useCallback(() => {
     setSearchResults([]);
     setSearchClicked(false);
     setDefaultSearchResults([]);
@@ -192,363 +195,256 @@ export default function Search() {
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
-    setActive(false);
-    setSearch(false);
+    setIsActive(false);
+    setIsSearching(false);
     setNoResultsFound(false);
     setLimit(20);
-  };
+    setSortBy(SORT_OPTIONS.DEFAULT);
+  }, []);
 
-  const onReadMessage = (messageDate, index) => {
-    if (messageDate && index) {
-      navigate("/read",{
-        state: {
-          date: messageDate,
-          ref: index,
-          searchTerm: searchTerm,
-          searchType: searchType,
-        },
-      });
-    }
-  };
+  // Navigate to read message
+  const onReadMessage = useCallback(
+    (messageDate, index) => {
+      if (messageDate && index) {
+        navigate("/read", {
+          state: {
+            date: messageDate,
+            ref: index,
+            searchTerm,
+            searchType,
+          },
+        });
+      }
+    },
+    [navigate, searchTerm, searchType]
+  );
 
-  const onLoadMore = (event) => {
-    if (event) {
-      event.preventDefault();
-    }
-    let newLimit = limit + 10;
-    const url = `${semanticApiUrl}?limit=${newLimit}&query=${searchTerm}`;
-    setSearch(true);
-    setLimit(limit + 10);
-    fetch(url)
-      .then((response) => response.json())
-      .then(
-        (results) => {
-          const parsedResults = parseResults(results);
-          setSearchResults(parsedResults);
-          saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
-          setSearch(false);
-        },
-        () => {
-          setAlert(true);
-          setSearch(false);
-          setSearchClicked(false);
-        }
-      );
-  };
+  // Load more results
+  const onLoadMore = useCallback(
+    async (event) => {
+      if (event) event.preventDefault();
+      const newLimit = limit + 10;
+      const url = `${
+        API_URLS.SEMANTIC
+      }?limit=${newLimit}&query=${encodeURIComponent(searchTerm)}`;
+      setIsSearching(true);
+      setLimit(newLimit);
+      try {
+        const response = await fetch(url);
+        const results = await response.json();
+        const parsedResults = parseResults(results);
+        setSearchResults((prevResults) => {
+          const updatedResults = [...prevResults, ...parsedResults];
+          saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
+          return updatedResults;
+        });
+        setIsSearching(false);
+      } catch (error) {
+        console.error("Load more results error:", error);
+        setAlertOpen(true);
+        setIsSearching(false);
+        setSearchClicked(false);
+      }
+    },
+    [limit, searchTerm]
+  );
 
-  const openEmailClient = () => {
+  // Open email client
+  const openEmailClient = useCallback(() => {
     window.open(
       "mailto:themessagesearch@gmail.com?subject=Contact%20regarding%20website"
     );
-  };
+  }, []);
 
-  const openiOSApp = () => {
+  // Open iOS App link
+  const openiOSApp = useCallback(() => {
     window.open("https://apps.apple.com/pt/app/message-search/id1579582830");
-  };
+  }, []);
 
-  const onSearchTypeChange = (event) => {
-    let newSearchType = "";
-    if (event?.target?.id === "option-3") {
-      setSearchType("allwords");
-      newSearchType = "allwords";
-    } else if (event?.target?.id === "option-2") {
-      setSearchType("exact");
-      newSearchType = "exact";
-    } else {
-      setSearchType("semantic");
-      newSearchType = "semantic";
-    }
-    if (searchTerm) {
-      onSearch(null, newSearchType);
-    }
-  };
+  // Handle search type change
+  const onSearchTypeChange = useCallback(
+    (event) => {
+      const { id } = event.target;
+      let newSearchType = SEMANTIC_SEARCH_TYPE;
 
-  const handleSortChange = (event) => {
-    switch (event.target.value) {
-      case SORT_BY_TITLE_ASC:
-        setSortBy(SORT_BY_TITLE_ASC);
-        searchResults.sort(function (a, b) {
-          if (a.sermonTitle < b.sermonTitle) {
-            return -1;
-          }
-          if (a.sermonTitle > b.sermonTitle) {
-            return 1;
-          }
-          return 0;
-        });
-        break;
-      case SORT_BY_TITLE_DEC:
-        setSortBy(SORT_BY_TITLE_DEC);
-        searchResults.sort(function (a, b) {
-          if (a.sermonTitle > b.sermonTitle) {
-            return -1;
-          }
-          if (a.sermonTitle < b.sermonTitle) {
-            return 1;
-          }
-          return 0;
-        });
-        break;
-      case SORT_BY_DATE_DEC:
-        setSortBy(SORT_BY_DATE_DEC);
-        searchResults.sort(function (a, b) {
-          if (a.sermonDate > b.sermonDate) {
-            return -1;
-          }
-          if (a.sermonDate < b.sermonDate) {
-            return 1;
-          }
-          return 0;
-        });
-        break;
-      case SORT_BY_DATE_ASC:
-        setSortBy(SORT_BY_DATE_ASC);
-        searchResults.sort(function (a, b) {
-          if (a.sermonDate < b.sermonDate) {
-            return -1;
-          }
-          if (a.sermonDate > b.sermonDate) {
-            return 1;
-          }
-          return 0;
-        });
-        break;
-      case SORT_BY_DEFAULT:
-        setSortBy(SORT_BY_DEFAULT);
-        const defaultResults = Object.assign([], defaultSearchResults);
-        setSearchResults(defaultResults);
-        break;
-      default:
-        break;
-    }
-  };
+      if (id === "option-3") {
+        newSearchType = "allwords";
+      } else if (id === "option-2") {
+        newSearchType = "exact";
+      }
 
-  const onCopyParagraphClick = (event) => {
-    const textToCopy = `${event.sermonDate} | ${event.sermonTitle} \n ${event.paragraph} ${event.section}`;
-    navigator.clipboard.writeText(textToCopy);
-  };
+      setSearchType(newSearchType);
+      saveState(SEARCH_TYPE_STATE_NAME, newSearchType);
 
-  // Will be used when Bible is added
-  // eslint-disable-next-line
-  const changeSearchBook = () => {
-    if (searchBook === "Message") {
-      setSearchBook("Bible");
-    } else {
-      setSearchBook("Message");
-    }
-  };
+      if (searchTerm) {
+        onSearch(null, newSearchType);
+      }
+    },
+    [onSearch, searchTerm]
+  );
 
-  const getParagraphRatingIcon = (distance) => {
-    if (distance <= 0.55) {
-      return (
-        <Tooltip
-          title="This is a really good result!"
-          placement="top"
-          arrow={true}
-          style={{ marginRight: "5px" }}
-        >
-          <MoodTwoToneIcon color="success"></MoodTwoToneIcon>
-        </Tooltip>
-      );
-    } else if (distance <= 0.63) {
-      return (
-        <Tooltip title="This is a good result!" placement="top" arrow={true}>
-          <SentimentSatisfiedTwoToneIcon
-            color="success"
-            style={{ opacity: "0.5", marginRight: "5px" }}
-          ></SentimentSatisfiedTwoToneIcon>
-        </Tooltip>
-      );
-    } else if (distance <= 0.7) {
-      return (
-        <Tooltip
-          title="This result is not the best."
-          placement="top"
-          arrow={true}
-        >
-          <SentimentDissatisfiedTwoToneIcon
-            color="warning"
-            style={{ opacity: "0.5", marginRight: "5px" }}
-          ></SentimentDissatisfiedTwoToneIcon>
-        </Tooltip>
-      );
-    } else if (distance <= 0.8) {
-      return (
-        <Tooltip
-          title="This result is not good, maybe try a different search."
-          placement="top"
-          arrow={true}
-        >
-          <MoodBadTwoToneIcon
-            color="warning"
-            style={{ marginRight: "5px" }}
-          ></MoodBadTwoToneIcon>
-        </Tooltip>
-      );
-    } else if (distance) {
-      return (
-        <Tooltip
-          title="This result is really bad, try a different search or add more words to your search text"
-          placement="top"
-          arrow={true}
-        >
-          <MoodBadTwoToneIcon
-            color="error"
-            style={{ marginRight: "5px" }}
-          ></MoodBadTwoToneIcon>
-        </Tooltip>
-      );
-    }
-  };
+  // Handle sort option change
+  const handleSortChange = useCallback(
+    (event) => {
+      const selectedSort = event.target.value;
+      setSortBy(selectedSort);
 
-  const renderNumberOfResultsAndSortOptions = () => {
-    return searchTerm && searchClicked ? (
-      <div className="info-div">
-        <h5 className="number-of-results">
-          Number of results:{" "}
-          {search && !noResultsFound ? (
-            <Skeleton
-              animation="wave"
-              width={30}
-              height={24}
-              style={{ display: "inline-flex" }}
-            ></Skeleton>
-          ) : (
-            searchResults.length
+      let sortedResults = [...searchResults];
+
+      switch (selectedSort) {
+        case SORT_OPTIONS.TITLE_ASC:
+          sortedResults.sort((a, b) =>
+            a.sermonTitle.localeCompare(b.sermonTitle)
+          );
+          break;
+        case SORT_OPTIONS.TITLE_DEC:
+          sortedResults.sort((a, b) =>
+            b.sermonTitle.localeCompare(a.sermonTitle)
+          );
+          break;
+        case SORT_OPTIONS.DATE_ASC:
+          sortedResults.sort(
+            (a, b) => new Date(a.sermonDate) - new Date(b.sermonDate)
+          );
+          break;
+        case SORT_OPTIONS.DATE_DEC:
+          sortedResults.sort(
+            (a, b) => new Date(b.sermonDate) - new Date(a.sermonDate)
+          );
+          break;
+        case SORT_OPTIONS.DEFAULT:
+        default:
+          sortedResults = [...defaultSearchResults];
+          break;
+      }
+
+      setSearchResults(sortedResults);
+    },
+    [searchResults, defaultSearchResults]
+  );
+
+  // Handle copying paragraph text
+  const onCopyParagraphClick = useCallback((result) => {
+    const textToCopy = `${result.sermonDate} | ${result.sermonTitle}\n${result.paragraph} ${result.section}`;
+    navigator.clipboard
+      .writeText(textToCopy)
+      .catch((err) => console.error("Failed to copy text: ", err));
+  }, []);
+
+  return (
+    <div className="container">
+      <div className="search__container" onKeyDown={handleKeyDown}>
+        {!isSearching && searchResults.length === 0 && !noResultsFound && (
+          <div className="search__container__title">
+            <div className="search__container__title--align">
+              <h2 className="search__container__title__h2">THE MESSAGE</h2>
+              <h1 className="search__container__title__h1">SEARCH</h1>
+              <div className="search__container__title__description">
+                Search the sermons of William Marrion Branham using a learning
+                technology that seeks to understand what you are searching for
+                and links your search to specific phrases and quotes. You can
+                also use the exact match and word match searches to find the
+                exact quote or word you are looking for.
+              </div>
+            </div>
+            <SearchingSVG />
+          </div>
+        )}
+
+        <span style={{ position: "relative" }}>
+          {searchClicked && (
+            <IconButton
+              aria-label="go back"
+              size="medium"
+              style={{
+                position: "absolute",
+                left: "-60px",
+                top: "1.2em",
+              }}
+              onClick={onClearInput}
+            >
+              <ArrowBackIosNewIcon />
+            </IconButton>
           )}
-        </h5>
-        <FormControl
-          style={{
-            display: "flex",
-            alignSelf: "center",
-            margin: "1em 0",
-            width: "12em",
-          }}
-        >
-          <InputLabel id="sort-label">Sort</InputLabel>
-          <Select
-            value={sortBy}
-            onChange={handleSortChange}
-            inputProps={{
-              "aria-label": "search sorting",
-              MenuProps: { disableScrollLock: true },
-            }}
-          >
-            <MenuItem value={SORT_BY_DEFAULT}>
-              <ListItemText primary="Default" />
-            </MenuItem>
-            <MenuItem value={SORT_BY_TITLE_ASC}>
-              <ListItemText primary="Sermon Title" />
-              <ListItemIcon>
-                <ArrowUpwardIcon />
-              </ListItemIcon>
-            </MenuItem>
-            <MenuItem value={SORT_BY_TITLE_DEC}>
-              <ListItemText primary="Sermon Title" />
-              <ListItemIcon>
-                <ArrowDownwardIcon />
-              </ListItemIcon>
-            </MenuItem>
-            <MenuItem value={SORT_BY_DATE_ASC}>
-              <ListItemText primary="Sermon Date" />
-              <ListItemIcon>
-                <ArrowUpwardIcon />
-              </ListItemIcon>
-            </MenuItem>
-            <MenuItem value={SORT_BY_DATE_DEC}>
-              <ListItemText primary="Sermon Date" />
-              <ListItemIcon>
-                <ArrowDownwardIcon />
-              </ListItemIcon>
-            </MenuItem>
-          </Select>
-        </FormControl>
+          <SearchInput
+            onSearch={(event) => onSearch(event, searchType)}
+            onSearchInputValueChange={onSearchInputValueChange}
+            onClearInput={onClearInput}
+            searchTerm={searchTerm}
+            aria-label="search input"
+          />
+        </span>
+
+        {!noResultsFound && (
+          <SearchTypeRadioButtons
+            searchType={searchType}
+            onSearchTypeChange={onSearchTypeChange}
+          />
+        )}
+
+        {searchTerm && searchClicked && (
+          <div className="info-div">
+            <h5 className="number-of-results">
+              Number of results:{" "}
+              {isSearching && !noResultsFound ? (
+                <Skeleton
+                  animation="wave"
+                  width={30}
+                  height={24}
+                  style={{ display: "inline-flex" }}
+                />
+              ) : (
+                searchResults.length
+              )}
+            </h5>
+            <SortOptions sortBy={sortBy} handleSortChange={handleSortChange} />
+          </div>
+        )}
+
+        {isSearching && !noResultsFound && <LoadingSkeleton />}
+
+        <ul className={isActive ? "transition" : ""}>
+          {!isSearching && searchResults.length > 0 ? (
+            searchResults.map((result, index) => (
+              <SearchResultItem
+                key={index}
+                result={result}
+                onReadMessage={onReadMessage}
+                onCopyParagraph={onCopyParagraphClick}
+                searchType={searchType}
+                wordsToHighlight={wordsToHighlight}
+              />
+            ))
+          ) : noResultsFound ? (
+            <h3 className="no-results-found">
+              No results found. Please try a different search.
+            </h3>
+          ) : null}
+
+          {searchTerm &&
+            searchResults.length > 0 &&
+            searchType === SEMANTIC_SEARCH_TYPE && (
+              <Button
+                style={{
+                  display: "flex",
+                  margin: "5em auto 9em",
+                }}
+                size="medium"
+                variant="outlined"
+                aria-label="load more results"
+                onClick={onLoadMore}
+                endIcon={<GetAppIcon />}
+              >
+                Load more
+              </Button>
+            )}
+        </ul>
+
+        <ScrollToTop showUnder={260}>
+          <ScrollUpButton aria-label="scroll up" />
+        </ScrollToTop>
       </div>
-    ) : (
-      <></>
-    );
-  };
 
-  const renderSearchResults = () => {
-    return (
-      <ul className={active ? "transition" : ""}>
-        {(!search || searchTerm) && searchResults.length > 0 ? (
-          searchResults.map((result, index) => (
-            <li key={index}>
-              <span style={{ width: "100%" }}>
-                <div
-                  onClick={() =>
-                    onReadMessage(result.sermonDate, result.paragraph)
-                  }
-                >
-                  <h5 className="message-title">
-                    {getParagraphRatingIcon(result.distance)}{" "}
-                    {result.sermonDate} | {result.sermonTitle}
-                  </h5>
-                  <div className="underline"></div>
-                  <p className="paragraph-text">
-                    {searchType !== "semantic" ? (
-                      <Highlighter
-                        activeStyle={{
-                          backgroundColor: "yellow",
-                          color: "black",
-                        }}
-                        searchWords={wordsToHighlight}
-                        autoEscape={true}
-                        textToHighlight={
-                          result.paragraph + " " + result.section
-                        }
-                      />
-                    ) : (
-                      result.paragraph + " " + result.section
-                    )}
-                  </p>
-                </div>
-                <span className="copy-button">
-                  <IconButton
-                    aria-label="copy paragraph"
-                    onClick={() => onCopyParagraphClick(result)}
-                  >
-                    <FileCopyIcon fontSize="medium" />
-                  </IconButton>
-                  <h5 className="copy-label">Copy</h5>
-                </span>
-              </span>
-            </li>
-          ))
-        ) : noResultsFound ? (
-          <h3 className="no-results-found">
-            No results found. Please try a different search.
-          </h3>
-        ) : (
-          <></>
-        )}
-        {searchTerm && searchResults.length > 0 && searchType === "semantic" ? (
-          <Button
-            style={{
-              display: "flex",
-              marginTop: "5em",
-              marginBottom: "9em",
-              marginLeft: "auto",
-              marginRight: "auto",
-            }}
-            size="medium"
-            variant="outlined"
-            aria-label="load more results"
-            onClick={onLoadMore}
-            endIcon={<GetAppIcon></GetAppIcon>}
-          >
-            Load more
-          </Button>
-        ) : (
-          <></>
-        )}
-      </ul>
-    );
-  };
-
-  const renderFooter = () => {
-    return (
       <div className="contacts">
         <Tooltip
           TransitionComponent={Fade}
@@ -576,147 +472,8 @@ export default function Search() {
           </IconButton>
         </Tooltip>
       </div>
-    );
-  };
 
-  const renderErrorAlert = () => {
-    return (
-      <Collapse
-        in={alert}
-        style={{
-          position: "absolute",
-          top: "3em",
-          right: 0,
-          marginRight: "2em",
-          marginLeft: "1em",
-        }}
-      >
-        <Alert
-          severity="error"
-          style={{ marginBottom: "7em" }}
-          action={
-            <IconButton
-              aria-label="close error message"
-              size="small"
-              onClick={() => {
-                setAlert(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
-        >
-          <AlertTitle>Error</AlertTitle>
-          There was an error. Please try again, and if the issue continues,
-          please contact us by email.
-        </Alert>
-      </Collapse>
-    );
-  };
-
-  return (
-    <div className="container">
-      <div className="search__container" onKeyDown={handleKeyDown()}>
-        {search || searchResults?.length > 0 || noResultsFound ? (
-          <span></span>
-        ) : (
-          <div className="search__container__title">
-            {/*<Button
-              aria-label="change search book"
-              size="medium"
-              variant="contained"
-              style={{
-                position: "absolute",
-                right: "2em",
-                top: "2em",
-                backgroundColor: "var(--dark-color)",
-                color: "white",
-              }}
-              onClick={changeSearchBook}
-            >
-              {searchBook === "Message"
-                ? "Change to Bible Search"
-                : "Change to Message Search"}
-            </Button>
-            */}
-            <div className="search__container__title--align">
-              <h2 className="search__container__title__h2">
-                {/*THE {searchBook.toUpperCase()}*/}
-                THE MESSAGE
-              </h2>
-              <h1 className="search__container__title__h1">SEARCH</h1>
-              {/*
-              <div className="search__container__title__description">
-                Search the{" "}
-                {searchBook === "Message"
-                  ? "sermons of William Marrion Branham"
-                  : "Bible"}{" "}
-                using a learning technology that seeks to understand what you
-                are searching for and links your search to specific phrases and
-                {searchBook === "Message" ? " quotes" : " verses"}. You can also
-                use the exact match and word match searches to find the exact{" "}
-                {searchBook === "Message" ? "quote" : "verse"} or word you are
-                looking for.
-              </div>
-              */}
-              <div className="search__container__title__description">
-                Search the sermons of William Marrion Branham using a learning
-                technology that seeks to understand what you are searching for
-                and links your search to specific phrases and quotes. You can
-                also use the exact match and word match searches to find the
-                exact quote or word you are looking for.
-              </div>
-            </div>
-            <SearchingSVG></SearchingSVG>
-          </div>
-        )}
-        <span style={{ position: "relative" }}>
-          {searchClicked ? (
-            <IconButton
-              aria-label="go back"
-              size="medium"
-              style={{
-                position: "absolute",
-                left: "-60px",
-                top: "1.2em",
-              }}
-              onClick={onClearInput}
-            >
-              <ArrowBackIosNewIcon />
-            </IconButton>
-          ) : (
-            <></>
-          )}
-          <SearchInput
-            onSearch={(event) => onSearch(event, searchType)}
-            onSearchInputValueChange={onSearchInputValueChange}
-            onClearInput={onClearInput}
-            searchTerm={searchTerm}
-            searchBook={searchBook}
-            aria-label="search input"
-          ></SearchInput>
-        </span>
-        {noResultsFound ? (
-          <></>
-        ) : (
-          <SearchTypeRadioButtons
-            searchType={searchType}
-            onSearchTypeChange={onSearchTypeChange}
-          ></SearchTypeRadioButtons>
-        )}
-        {renderNumberOfResultsAndSortOptions()}
-        {search && !noResultsFound ? (
-          <LoadingSkeleton></LoadingSkeleton>
-        ) : (
-          <></>
-        )}
-        {renderSearchResults()}
-        <ScrollToTop showUnder={260}>
-          <ScrollUpButton aria-label="scroll up"></ScrollUpButton>
-        </ScrollToTop>
-      </div>
-      {renderFooter()}
-      {renderErrorAlert()}
+      <ErrorAlert open={alertOpen} onClose={() => setAlertOpen(false)} />
     </div>
   );
 }
