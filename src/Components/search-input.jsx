@@ -47,7 +47,7 @@ export default function SearchInput(props) {
         onSubmit={props.onSearch}
         InputProps={{
           endAdornment: (
-            <InputAdornment position="end">
+            <InputAdornment position="end" >
               {props.searchTerm ? (
                 <IconButton
                   onClick={props.onClearInput}
@@ -63,6 +63,7 @@ export default function SearchInput(props) {
                 aria-label="submit search"
                 onClick={props.onSearch}
                 disabled={!props.searchTerm}
+                sx={{color: "transparent"}}
               >
                 <SearchIcon />
               </IconButton>

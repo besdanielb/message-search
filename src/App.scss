@@ -1,63 +1,12 @@
+@import 'colors.scss';
+
 body {
   background: var(--secondary-color);
   box-sizing: content-box;
 }
 
-.menu {
-  position: fixed;
-  height: 100vh;
-  height: -moz-available; /* WebKit-based browsers will ignore this. */
-  height: -webkit-fill-available; /* Mozilla-based browsers will ignore this. */
-  background: var(--dark-color);
-  width: 10vw;
-  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.2);
-  transition: 1s;
-
-  &__logo {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: auto;
-    transition: 0.5s ease-in-out;
-    margin-top: 20px;
-    img {
-      width: 65%;
-      margin-bottom: 1em;
-    }
-  }
-
-  &:hover,
-  &:focus {
-    width: 18vw;
-    height: 100%;
-
-    #menuIcon {
-      margin-left: -5em !important;
-    }
-
-    .menu__logo {
-      width: 90%;
-    }
-  }
-
-  &:active {
-    width: 18vw;
-  }
-
-  &:hover ~ .container,
-  &:focus ~ .container {
-    transform: translateX(12vw);
-  }
-
-  &:hover nav,
-  &:focus nav {
-    left: 13%;
-  }
-}
-
 .container {
-  margin-left: 10vw;
-  background: white;
+  background: $light-gray;
   transition: 1s;
   transform-origin: left center;
   min-height: 100vh;

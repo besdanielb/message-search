@@ -1,0 +1,13 @@
+@import '../colors.scss';
+
+.contacts {
+  background-color: $very-light-gray;
+  width: 100%;
+	display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  bottom: 0em;
+  padding: 10px;
+	
+}

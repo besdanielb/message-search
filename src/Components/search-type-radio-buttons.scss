@@ -1,6 +1,7 @@
+@import '../colors.scss';
+
 .wrapper {
   display: inline-flex;
-  background: #fff;
   height: 45px;
   line-height: 45px;
   width: 70%;
@@ -10,7 +11,7 @@
   margin-top: 1.5em;
 }
 .wrapper .option {
-  background: #fff;
+  background: $light-gray;
   height: 100%;
   width: 100%;
   max-width: 175px;
@@ -21,13 +22,13 @@
   border-radius: 5px;
   cursor: pointer;
   padding: 0 10px;
-  border: 2px solid lightgrey;
+  border: 2px solid $mid-gray;
   transition: all 0.3s ease;
 }
 .wrapper .option .dot {
   height: 18px;
   width: 18px;
-  background: var(--gray-color);
+  background: $mid-gray;
   border-radius: 50%;
   position: relative;
 }
@@ -38,7 +39,7 @@
   left: 3px;
   width: 12px;
   height: 12px;
-  background: var(--dark-color);
+  background: $soft-blue;
   border-radius: 50%;
   opacity: 0;
   transform: scale(1.5);
@@ -50,13 +51,13 @@ input[type="radio"] {
 #option-1:checked:checked ~ .option-1,
 #option-2:checked:checked ~ .option-2,
 #option-3:checked:checked ~ .option-3 {
-  border-color: var(--dark-color);
-  background: var(--dark-color);
+  border-color: $dark-blue;
+  background: $dark-blue;
 }
 #option-1:checked:checked ~ .option-1 .dot,
 #option-2:checked:checked ~ .option-2 .dot,
 #option-3:checked:checked ~ .option-3 .dot {
-  background: #fff;
+  background: $very-light-gray;
 }
 #option-1:checked:checked ~ .option-1 .dot::before,
 #option-2:checked:checked ~ .option-2 .dot::before,
@@ -66,12 +67,12 @@ input[type="radio"] {
 }
 .wrapper .option span {
   font-size: 18px;
-  color: var(--dark-color);
+  color: $dark-blue;
 }
 #option-1:checked:checked ~ .option-1 span,
 #option-2:checked:checked ~ .option-2 span,
 #option-3:checked:checked ~ .option-3 span {
-  color: #fff;
+  color: $very-light-gray;
 }
 
 @media (max-width: 660px) {

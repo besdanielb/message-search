@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useReducer, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -19,7 +19,6 @@ import SearchInput from "../../Components/search-input";
 import LoadingSkeleton from "../../Components/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
-import SearchingSVG from "../../Components/searching-svg";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
 import {
@@ -38,21 +37,75 @@ import {
   SORT_OPTIONS,
 } from "../../constants";
 import ErrorAlert from "./error-alert";
+import Footer from "../../Components/footer";
+
+// Initial State for Reducer
+const initialState = {
+  searchTerm: "",
+  wordsToHighlight: [],
+  searchResults: [],
+  defaultSearchResults: [],
+  isSearching: false,
+  isActive: false,
+  limit: 20,
+  searchType: SEMANTIC_SEARCH_TYPE,
+  noResultsFound: false,
+  alertOpen: false,
+  searchClicked: false,
+  sortBy: SORT_OPTIONS.DEFAULT,
+};
+
+// Reducer Function
+function reducer(state, action) {
+  switch (action.type) {
+    case "SET_SEARCH_TERM":
+      return { ...state, searchTerm: action.payload };
+    case "SET_WORDS_TO_HIGHLIGHT":
+      return { ...state, wordsToHighlight: action.payload };
+    case "SET_SEARCH_RESULTS":
+      return { ...state, searchResults: action.payload };
+    case "SET_DEFAULT_SEARCH_RESULTS":
+      return { ...state, defaultSearchResults: action.payload };
+    case "SET_IS_SEARCHING":
+      return { ...state, isSearching: action.payload };
+    case "SET_IS_ACTIVE":
+      return { ...state, isActive: action.payload };
+    case "SET_LIMIT":
+      return { ...state, limit: action.payload };
+    case "SET_SEARCH_TYPE":
+      return { ...state, searchType: action.payload };
+    case "SET_NO_RESULTS_FOUND":
+      return { ...state, noResultsFound: action.payload };
+    case "SET_ALERT_OPEN":
+      return { ...state, alertOpen: action.payload };
+    case "SET_SEARCH_CLICKED":
+      return { ...state, searchClicked: action.payload };
+    case "SET_SORT_BY":
+      return { ...state, sortBy: action.payload };
+    case "RESET":
+      return initialState;
+    default:
+      return state;
+  }
+}
 
 export default function Search() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [wordsToHighlight, setWordsToHighlight] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
-  const [defaultSearchResults, setDefaultSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isActive, setIsActive] = useState(false);
-  const [limit, setLimit] = useState(20);
-  const [searchType, setSearchType] = useState(SEMANTIC_SEARCH_TYPE);
-  const [noResultsFound, setNoResultsFound] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [searchClicked, setSearchClicked] = useState(false);
-  const [sortBy, setSortBy] = useState(SORT_OPTIONS.DEFAULT);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const navigate = useNavigate();
+
+  const {
+    searchTerm,
+    wordsToHighlight,
+    searchResults,
+    isSearching,
+    isActive,
+    limit,
+    searchType,
+    noResultsFound,
+    alertOpen,
+    searchClicked,
+    sortBy,
+  } = state;
 
   // Load initial state from localStorage
   useEffect(() => {
@@ -61,12 +114,15 @@ export default function Search() {
     const storedType = getState(SEARCH_TYPE_STATE_NAME);
 
     if (storedResults?.length > 0) {
-      setSearchResults(storedResults);
-      setDefaultSearchResults(storedResults);
-      setSearchTerm(storedTerm);
-      setWordsToHighlight(storedTerm.split(" "));
-      setSearchType(storedType);
-      setIsActive(true);
+      dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
+      dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: storedResults });
+      dispatch({ type: "SET_SEARCH_TERM", payload: storedTerm });
+      dispatch({
+        type: "SET_WORDS_TO_HIGHLIGHT",
+        payload: storedTerm.split(" "),
+      });
+      dispatch({ type: "SET_SEARCH_TYPE", payload: storedType });
+      dispatch({ type: "SET_IS_ACTIVE", payload: true });
     }
     window.scrollTo(0, 0);
   }, []);
@@ -83,17 +139,20 @@ export default function Search() {
 
   // Reset search-related state fields
   const resetStateFields = useCallback(() => {
-    setWordsToHighlight(searchTerm.trim().split(" "));
-    setIsSearching(true);
-    setSearchResults([]);
-    setDefaultSearchResults([]);
-    setIsActive(false);
-    setNoResultsFound(false);
-    setSearchClicked(true);
+    dispatch({
+      type: "SET_WORDS_TO_HIGHLIGHT",
+      payload: searchTerm.trim().split(" "),
+    });
+    dispatch({ type: "SET_IS_SEARCHING", payload: true });
+    dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
+    dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: [] });
+    dispatch({ type: "SET_IS_ACTIVE", payload: false });
+    dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
+    dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
   }, [searchTerm]);
 
   // Parse API results
-  const parseResults = (results) => {
+  const parseResults = useCallback((results) => {
     return results?.searchSamples.map((entry) => {
       const sermonInfo = entry?.externalId?.split("/");
       return {
@@ -104,13 +163,16 @@ export default function Search() {
         ...entry,
       };
     });
-  };
+  }, []);
 
   // Fetch search results from API
   const fetchSearchResults = useCallback(
     async (url, typeOfSearch) => {
       try {
         const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
         const results = await response.json();
         let parsedResults = [];
 
@@ -124,39 +186,45 @@ export default function Search() {
         if (
           (typeOfSearch === SEMANTIC_SEARCH_TYPE &&
             parsedResults.length === 0) ||
-          (!typeOfSearch === SEMANTIC_SEARCH_TYPE && results.length === 0)
+          (typeOfSearch !== SEMANTIC_SEARCH_TYPE && results.length === 0)
         ) {
-          setSearchResults([]);
-          setDefaultSearchResults([]);
-          setNoResultsFound(true);
+          dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
+          dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: [] });
+          dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
         } else {
           if (parsedResults.length > 0) {
-            setSearchResults(parsedResults);
-            setDefaultSearchResults(parsedResults);
+            dispatch({ type: "SET_SEARCH_RESULTS", payload: parsedResults });
+            dispatch({
+              type: "SET_DEFAULT_SEARCH_RESULTS",
+              payload: parsedResults,
+            });
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           } else {
-            setSearchResults(results);
-            setDefaultSearchResults([...results]);
+            dispatch({ type: "SET_SEARCH_RESULTS", payload: results });
+            dispatch({
+              type: "SET_DEFAULT_SEARCH_RESULTS",
+              payload: [...results],
+            });
             saveState(SEARCH_TERM_STATE_NAME, searchTerm);
             saveState(SEARCH_RESULTS_STATE_NAME, results);
           }
-          setIsActive(true);
-          setNoResultsFound(false);
+          dispatch({ type: "SET_IS_ACTIVE", payload: true });
+          dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
         }
-        setIsSearching(false);
+        dispatch({ type: "SET_IS_SEARCHING", payload: false });
         logEvent(analytics, "search_query", {
           searchType: typeOfSearch,
           query: searchTerm,
         });
       } catch (error) {
         console.error("Fetch search results error:", error);
-        setAlertOpen(true);
-        setIsSearching(false);
-        setSearchClicked(false);
+        dispatch({ type: "SET_ALERT_OPEN", payload: true });
+        dispatch({ type: "SET_IS_SEARCHING", payload: false });
+        dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
       }
     },
-    [searchTerm]
+    [parseResults, searchTerm]
   );
 
   // Handle search submission
@@ -165,16 +233,14 @@ export default function Search() {
       if (event) event.preventDefault();
       resetStateFields();
       if (typeOfSearch) {
+        dispatch({ type: "SET_SEARCH_TYPE", payload: typeOfSearch });
         saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
       }
+      const encodedSearchTerm = encodeURIComponent(searchTerm);
       const url =
         typeOfSearch === SEMANTIC_SEARCH_TYPE
-          ? `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodeURIComponent(
-              searchTerm
-            )}`
-          : `${API_URLS.OTHER}${typeOfSearch}&query=${encodeURIComponent(
-              searchTerm
-            )}`;
+          ? `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodedSearchTerm}`
+          : `${API_URLS.OTHER}${typeOfSearch}&query=${encodedSearchTerm}`;
       fetchSearchResults(url, typeOfSearch);
     },
     [fetchSearchResults, limit, resetStateFields, searchTerm]
@@ -182,24 +248,15 @@ export default function Search() {
 
   // Handle input value change
   const onSearchInputValueChange = useCallback((event) => {
-    setSearchTerm(event.target.value);
+    dispatch({ type: "SET_SEARCH_TERM", payload: event.target.value });
   }, []);
 
   // Clear search input and reset state
   const onClearInput = useCallback(() => {
-    setSearchResults([]);
-    setSearchClicked(false);
-    setDefaultSearchResults([]);
-    setSearchTerm("");
-    setSearchType(SEMANTIC_SEARCH_TYPE);
+    dispatch({ type: "RESET" });
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
-    setIsActive(false);
-    setIsSearching(false);
-    setNoResultsFound(false);
-    setLimit(20);
-    setSortBy(SORT_OPTIONS.DEFAULT);
   }, []);
 
   // Navigate to read message
@@ -224,42 +281,30 @@ export default function Search() {
     async (event) => {
       if (event) event.preventDefault();
       const newLimit = limit + 10;
-      const url = `${
-        API_URLS.SEMANTIC
-      }?limit=${newLimit}&query=${encodeURIComponent(searchTerm)}`;
-      setIsSearching(true);
-      setLimit(newLimit);
+      const encodedSearchTerm = encodeURIComponent(searchTerm);
+      const url = `${API_URLS.SEMANTIC}?limit=${newLimit}&query=${encodedSearchTerm}`;
+      dispatch({ type: "SET_IS_SEARCHING", payload: true });
+      dispatch({ type: "SET_LIMIT", payload: newLimit });
       try {
         const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
         const results = await response.json();
         const parsedResults = parseResults(results);
-        setSearchResults((prevResults) => {
-          const updatedResults = [...prevResults, ...parsedResults];
-          saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
-          return updatedResults;
-        });
-        setIsSearching(false);
+        const updatedResults = [...searchResults, ...parsedResults];
+        dispatch({ type: "SET_SEARCH_RESULTS", payload: updatedResults });
+        saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
+        dispatch({ type: "SET_IS_SEARCHING", payload: false });
       } catch (error) {
         console.error("Load more results error:", error);
-        setAlertOpen(true);
-        setIsSearching(false);
-        setSearchClicked(false);
+        dispatch({ type: "SET_ALERT_OPEN", payload: true });
+        dispatch({ type: "SET_IS_SEARCHING", payload: false });
+        dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
       }
     },
-    [limit, searchTerm]
+    [limit, parseResults, searchResults, searchTerm]
   );
-
-  // Open email client
-  const openEmailClient = useCallback(() => {
-    window.open(
-      "mailto:themessagesearch@gmail.com?subject=Contact%20regarding%20website"
-    );
-  }, []);
-
-  // Open iOS App link
-  const openiOSApp = useCallback(() => {
-    window.open("https://apps.apple.com/pt/app/message-search/id1579582830");
-  }, []);
 
   // Handle search type change
   const onSearchTypeChange = useCallback(
@@ -273,7 +318,7 @@ export default function Search() {
         newSearchType = "exact";
       }
 
-      setSearchType(newSearchType);
+      dispatch({ type: "SET_SEARCH_TYPE", payload: newSearchType });
       saveState(SEARCH_TYPE_STATE_NAME, newSearchType);
 
       if (searchTerm) {
@@ -287,10 +332,9 @@ export default function Search() {
   const handleSortChange = useCallback(
     (event) => {
       const selectedSort = event.target.value;
-      setSortBy(selectedSort);
+      dispatch({ type: "SET_SORT_BY", payload: selectedSort });
 
-      let sortedResults = [...searchResults];
-
+      const sortedResults = [...searchResults];
       switch (selectedSort) {
         case SORT_OPTIONS.TITLE_ASC:
           sortedResults.sort((a, b) =>
@@ -314,13 +358,15 @@ export default function Search() {
           break;
         case SORT_OPTIONS.DEFAULT:
         default:
-          sortedResults = [...defaultSearchResults];
+          sortedResults.sort((a, b) =>
+            new Date(a.sermonDate) - new Date(b.sermonDate)
+          );
           break;
       }
 
-      setSearchResults(sortedResults);
+      dispatch({ type: "SET_SEARCH_RESULTS", payload: sortedResults });
     },
-    [searchResults, defaultSearchResults]
+    [searchResults]
   );
 
   // Handle copying paragraph text
@@ -331,36 +377,41 @@ export default function Search() {
       .catch((err) => console.error("Failed to copy text: ", err));
   }, []);
 
+  // Memoized Search Results
+  const renderedSearchResults = useMemo(() => {
+    if (isSearching) return null;
+    if (noResultsFound) {
+      return <h3 className="no-results-found">No results found. Please try a different search.</h3>;
+    }
+    return searchResults.map((result, index) => (
+      <SearchResultItem
+        key={index}
+        result={result}
+        onReadMessage={onReadMessage}
+        onCopyParagraph={onCopyParagraphClick}
+        searchType={searchType}
+        wordsToHighlight={wordsToHighlight}
+      />
+    ));
+  }, [isSearching, noResultsFound, searchResults, onReadMessage, onCopyParagraphClick, searchType, wordsToHighlight]);
+
   return (
     <div className="container">
       <div className="search__container" onKeyDown={handleKeyDown}>
         {!isSearching && searchResults.length === 0 && !noResultsFound && (
           <div className="search__container__title">
-            <div className="search__container__title--align">
-              <h2 className="search__container__title__h2">THE MESSAGE</h2>
-              <h1 className="search__container__title__h1">SEARCH</h1>
-              <div className="search__container__title__description">
-                Search the sermons of William Marrion Branham using a learning
-                technology that seeks to understand what you are searching for
-                and links your search to specific phrases and quotes. You can
-                also use the exact match and word match searches to find the
-                exact quote or word you are looking for.
-              </div>
-            </div>
-            <SearchingSVG />
-          </div>
+          <h1 className="search__container__title__h1">Search The Message</h1>
+        </div>
         )}
 
         <span style={{ position: "relative" }}>
+          
+          <div className="search__container__input-container" style={{marginTop: isSearching || searchClicked || searchResults.length > 0 ? '70px': '0'}}>
           {searchClicked && (
             <IconButton
               aria-label="go back"
               size="medium"
-              style={{
-                position: "absolute",
-                left: "-60px",
-                top: "1.2em",
-              }}
+              sx={{marginTop: "10px"}}
               onClick={onClearInput}
             >
               <ArrowBackIosNewIcon />
@@ -373,6 +424,7 @@ export default function Search() {
             searchTerm={searchTerm}
             aria-label="search input"
           />
+          </div>
         </span>
 
         {!noResultsFound && (
@@ -404,31 +456,13 @@ export default function Search() {
         {isSearching && !noResultsFound && <LoadingSkeleton />}
 
         <ul className={isActive ? "transition" : ""}>
-          {!isSearching && searchResults.length > 0 ? (
-            searchResults.map((result, index) => (
-              <SearchResultItem
-                key={index}
-                result={result}
-                onReadMessage={onReadMessage}
-                onCopyParagraph={onCopyParagraphClick}
-                searchType={searchType}
-                wordsToHighlight={wordsToHighlight}
-              />
-            ))
-          ) : noResultsFound ? (
-            <h3 className="no-results-found">
-              No results found. Please try a different search.
-            </h3>
-          ) : null}
+          {renderedSearchResults}
 
           {searchTerm &&
             searchResults.length > 0 &&
             searchType === SEMANTIC_SEARCH_TYPE && (
               <Button
-                style={{
-                  display: "flex",
-                  margin: "5em auto 9em",
-                }}
+                className="load-more-button"
                 size="medium"
                 variant="outlined"
                 aria-label="load more results"
@@ -445,35 +479,9 @@ export default function Search() {
         </ScrollToTop>
       </div>
 
-      <div className="contacts">
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Check out our iOS app!"
-          onClick={openiOSApp}
-          arrow
-        >
-          <IconButton aria-label="download ios app" size="medium">
-            <AppleIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip
-          TransitionComponent={Fade}
-          TransitionProps={{ timeout: 600 }}
-          title="Get in contact with us!"
-          arrow
-        >
-          <IconButton
-            aria-label="contact us by email"
-            size="medium"
-            onClick={openEmailClient}
-          >
-            <EmailIcon fontSize="medium" />
-          </IconButton>
-        </Tooltip>
-      </div>
+      <Footer></Footer>
 
-      <ErrorAlert open={alertOpen} onClose={() => setAlertOpen(false)} />
+      <ErrorAlert open={alertOpen} onClose={() => dispatch({ type: "SET_ALERT_OPEN", payload: false })} />
     </div>
   );
 }
