@@ -1,15 +1,10 @@
-import React, { useEffect, useReducer, useCallback, useMemo } from "react";
+import React, { useEffect, useReducer, useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
   IconButton,
-  Skeleton,
-  Tooltip,
-  Fade,
 } from "@mui/material";
 import {
-  Email as EmailIcon,
-  Apple as AppleIcon,
   ArrowBackIosNew as ArrowBackIosNewIcon,
   GetApp as GetAppIcon,
 } from "@mui/icons-material";
@@ -27,7 +22,7 @@ import {
   getState,
 } from "../../Providers/localStorageProvider";
 import SearchResultItem from "./search-result-item";
-import SortOptions from "./sort-options";
+// import SortOptions from "./sort-options";
 import {
   API_URLS,
   SEARCH_RESULTS_STATE_NAME,
@@ -38,6 +33,9 @@ import {
 } from "../../constants";
 import ErrorAlert from "./error-alert";
 import Footer from "../../Components/footer";
+import HintCard from "../../Components/hint-card";
+import ShowHintsButton from "../../Components/show-hints-button";
+import TypingTitle from "../../Components/typing-title";
 
 // Initial State for Reducer
 const initialState = {
@@ -91,6 +89,8 @@ function reducer(state, action) {
 
 export default function Search() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [hintCardVisible, setHintCardVisible] = useState(false);
+  const [showHintButton, setShowHintButton] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -127,10 +127,27 @@ export default function Search() {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHintCardVisible(true); // Show hint card after 1 second
+    }, 1000);
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, []);
+
   // Log page visit on mount
   useEffect(() => {
     logEvent(analytics, "searchpage_visited");
   }, []);
+
+  const handleCloseHintCard = () => {
+    setHintCardVisible(false); // Trigger slide-out animation
+    setShowHintButton(true); // Show the "Show Hints" button after the card slides out
+  };
+
+  const handleShowHintCard = () => {
+    setHintCardVisible(true); // Show the hint card
+    setShowHintButton(false); // Hide the "Show Hints" button
+  };
 
   // Handler to prevent default key down behavior (if needed)
   const handleKeyDown = useCallback((e) => {
@@ -397,10 +414,12 @@ export default function Search() {
 
   return (
     <div className="container">
+       <HintCard visible={hintCardVisible} onClose={handleCloseHintCard} />
+       {showHintButton && <ShowHintsButton onClick={handleShowHintCard} />}
       <div className="search__container" onKeyDown={handleKeyDown}>
         {!isSearching && searchResults.length === 0 && !noResultsFound && (
           <div className="search__container__title">
-          <h1 className="search__container__title__h1">Search The Message</h1>
+          <TypingTitle text="Search The Message" speed={150} />
         </div>
         )}
 
@@ -423,6 +442,7 @@ export default function Search() {
             onClearInput={onClearInput}
             searchTerm={searchTerm}
             aria-label="search input"
+            searchBook="Message"
           />
           </div>
         </span>
@@ -434,24 +454,11 @@ export default function Search() {
           />
         )}
 
-        {searchTerm && searchClicked && (
+        {/*searchTerm && searchClicked && (
           <div className="info-div">
-            <h5 className="number-of-results">
-              Number of results:{" "}
-              {isSearching && !noResultsFound ? (
-                <Skeleton
-                  animation="wave"
-                  width={30}
-                  height={24}
-                  style={{ display: "inline-flex" }}
-                />
-              ) : (
-                searchResults.length
-              )}
-            </h5>
             <SortOptions sortBy={sortBy} handleSortChange={handleSortChange} />
           </div>
-        )}
+        )*/}
 
         {isSearching && !noResultsFound && <LoadingSkeleton />}
 

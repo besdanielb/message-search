@@ -35,11 +35,12 @@ export default function SearchInput(props) {
             },
             "&:hover fieldset": {
               cursor: "pointer",
+              boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.2)",
             },
           },
         }}
         id="search-input"
-        label={"Search the " + props.searchBook}
+        label={"Enter your search terms here"}
         variant="outlined"
         type="text"
         value={props.searchTerm}
@@ -63,7 +64,6 @@ export default function SearchInput(props) {
                 aria-label="submit search"
                 onClick={props.onSearch}
                 disabled={!props.searchTerm}
-                sx={{color: "transparent"}}
               >
                 <SearchIcon />
               </IconButton>

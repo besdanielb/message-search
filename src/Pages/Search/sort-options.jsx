@@ -6,6 +6,8 @@ import {
 import { SORT_OPTIONS } from "../../constants";
 
 export default function SortOptions ({ sortBy, handleSortChange }) {
+
+  return (
   <FormControl
     style={{
       display: "flex",
@@ -53,4 +55,5 @@ export default function SortOptions ({ sortBy, handleSortChange }) {
       </MenuItem>
     </Select>
   </FormControl>
+  );
 };

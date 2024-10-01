@@ -1,0 +1,132 @@
+@import '../colors.scss';
+
+.hint-card-wrapper {
+  position: fixed;
+  left: 20px;
+  top: 100px;
+  z-index: 1000;
+  width: 400px;
+
+  .hint-card-animation {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, $mid-gray, $dark-blue);
+    border-radius: 15px;
+    filter: blur(8px);
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow {
+    0% {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .hint-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+
+		.hint-card__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .hint-card__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hint-title {
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: #333;
+
+      .hint-icon {
+        color: $soft-blue;
+        margin-right: 8px;
+      }
+    }
+
+    .hint-description {
+      margin-top: 10px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .hint-card__controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+
+      .small-hint-button {
+        border-radius: 15px;
+        padding: 4px 10px;
+        font-size: 0.8rem; /* Smaller font size */
+        background: linear-gradient(135deg, $dark-blue, $gray-blue);
+        color: #fff;
+        text-transform: none;
+        transition: background 0.3s;
+        box-shadow: none;
+
+        &:hover {
+          background: linear-gradient(135deg, $soft-blue, $dark-blue);
+        }
+
+        &:disabled {
+          background: #ccc;
+          color: #666;
+        }
+
+        svg {
+          font-size: 18px; /* Smaller icon size */
+        }
+    }
+	}
+  }
+}
+
+@media (max-width: 600px) {
+  .hint-card-wrapper {
+    width: 90%;
+    left: 5%;
+    top: 80px;
+
+    .hint-card {
+      height: 200px; // Adjust height for smaller screens
+    }
+
+    .hint-title {
+      font-size: 1rem;
+    }
+
+    .hint-description {
+      font-size: 0.9rem;
+    }
+
+    .hint-card__controls {
+      .small-hint-button {
+        font-size: 0.7rem; // Smaller buttons for mobile
+        padding: 3px 8px;
+        min-width: 60px;
+        height: 28px;
+      }
+    }
+  }
+}

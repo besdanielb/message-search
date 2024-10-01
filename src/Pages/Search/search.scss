@@ -19,10 +19,8 @@ $input-height: 3em;
       margin-bottom: 1.5em;
       text-align: center;
       
-      &__h1 {
-        font-size: 4rem; // Large font for main "Search" text
-        font-weight: bold;
-        color: #333;
+      .typing-title {
+        color: $dark-blue;
         margin: 0;
       }
     }
@@ -59,7 +57,6 @@ $input-height: 3em;
         margin: 2.5em 15px;
         padding: 1em 1.3em;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        border-left: 8px solid transparent;
         border-radius: 10px;
         background-color: $very-light-gray;
 
@@ -75,9 +72,8 @@ $input-height: 3em;
           cursor: pointer;
           animation-name: example;
           animation-duration: 0.3s;
-          border-left: 8px solid $gray-blue;
-          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
-            0 10px 10px rgba(0, 0, 0, 0.22);
+          box-shadow: 0 0px 20px $dark-blue,
+            0 0px 15px $light-gray;
         }
       }
 
@@ -211,17 +207,13 @@ $input-height: 3em;
       }
       li {
         flex-direction: row;
+        position: relative;
 
         &:hover .copy-button {
-          display: block;
+          display: flex;
+          position: absolute;
+          right: 20px;
           margin: 10px 0;
-
-          .copy-label {
-            font-size: 11px;
-            font-weight: 400;
-            text-align: left;
-            margin-left: 11px;
-          }
         }
       }
     }

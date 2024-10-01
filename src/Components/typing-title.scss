@@ -1,0 +1,22 @@
+@import '../colors.scss';
+
+.typing-title {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.cursor {
+  display: inline-block;
+  background-color: $dark-blue;
+  width: 0.1em;
+  margin-left: -5px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 0; }
+  50% { opacity: 1; }
+}
