@@ -1,0 +1,19 @@
+.skeleton-item {
+	display: flex;
+	align-items: center;
+	margin-bottom: 1em;
+
+	.skeleton-content {
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-start;
+		flex-direction: column;
+
+		width: 100%;
+
+		// Adjust spacing between number and text skeletons
+		& > *:first-child {
+			margin-right: 0.5em;
+		}
+	}
+}

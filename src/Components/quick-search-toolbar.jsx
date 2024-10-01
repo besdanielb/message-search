@@ -1,72 +1,40 @@
-import * as React from "react";
-import PropTypes from "prop-types";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import ClearIcon from "@mui/icons-material/Clear";
 import SearchIcon from "@mui/icons-material/Search";
-import { createTheme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
+import { GridToolbarContainer } from '@mui/x-data-grid';
 
-const defaultTheme = createTheme();
-const useStyles = makeStyles(
-  (theme) => ({
-    root: {
-      padding: theme.spacing(0.5, 0.5, 0),
-      justifyContent: "flex-start",
-      display: "flex",
-      alignItems: "flex-start",
-      flexWrap: "wrap",
-    },
-    textField: {
-      width: "40%",
-      minWidth: "17em",
-      [theme.breakpoints.down("s")]: {
-        width: "100%",
-      },
-      margin: theme.spacing(1, 0.5, 1.5),
-      "& .MuiSvgIcon-root": {
-        marginRight: theme.spacing(0.5),
-      },
-      "& .MuiInput-underline:before": {
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      },
-    },
-  }),
-  { defaultTheme }
-);
+const StyledGridToolbarContainer = styled(GridToolbarContainer)(() => ({
+  padding: 1,
+  display: 'flex',
+  justifyContent: 'flex-start',
+}));
 
 export default function QuickSearchToolbar(props) {
-  const classes = useStyles();
+  const { value, onChange, clearSearch } = props;
 
   return (
-    <div className={classes.root}>
+    <StyledGridToolbarContainer>
       <TextField
         variant="standard"
-        value={props.value}
-        onChange={props.onChange}
+        value={value}
+        onChange={onChange}
         placeholder="Search…"
-        className={classes.textField}
         InputProps={{
           startAdornment: <SearchIcon fontSize="small" />,
-          endAdornment: (
+          endAdornment: value ? (
             <IconButton
-              title="Clear"
-              aria-label="Clear search"
+              aria-label="clear search"
+              onClick={clearSearch}
               size="small"
-              style={{ visibility: props.value ? "visible" : "hidden" }}
-              onClick={props.clearSearch}
             >
               <ClearIcon fontSize="small" />
             </IconButton>
-          ),
+          ) : null,
         }}
+        sx={{ width: '25ch' }}
       />
-    </div>
+    </StyledGridToolbarContainer>
   );
 }
-
-QuickSearchToolbar.propTypes = {
-  clearSearch: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired,
-};

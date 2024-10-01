@@ -1,4 +1,4 @@
-import { Icon, IconButton, Tooltip, Typography } from "@mui/material";
+import { IconButton, Tooltip, Typography } from "@mui/material";
 import {
   SentimentSatisfiedTwoTone as SentimentSatisfiedTwoToneIcon,
   SentimentDissatisfiedTwoTone as SentimentDissatisfiedTwoToneIcon,
@@ -87,7 +87,7 @@ export default function SearchResultItem({
         <Tooltip title="Read more" placement="top" arrow>
           <IconButton aria-label="Read more">
             <ReadMore
-              onClick={() => onReadMessage(result)}
+              onClick={() => onReadMessage(result.sermonDate, result.paragraph)}
               sx={{ color: COLORS.darkBlue }}
             ></ReadMore>
           </IconButton>

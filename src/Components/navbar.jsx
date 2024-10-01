@@ -5,23 +5,10 @@ import {
   Typography,
   Button,
   IconButton,
-  useScrollTrigger,
-  Slide,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { COLORS } from "../constants";
-
-// Custom hook to hide the AppBar on scroll down
-function HideOnScroll(props) {
-  const { children } = props;
-  const trigger = useScrollTrigger();
-  return (
-    <Slide appear={false} direction="down" in={!trigger}>
-      {children}
-    </Slide>
-  );
-}
 
 export default function Navbar(props) {
   const [scrolled, setScrolled] = useState(false);
@@ -66,15 +53,69 @@ export default function Navbar(props) {
 
           {/* Desktop Navigation Items */}
           <div className="navbar__nav-items">
-            <Button sx={{ color: scrolled
-            ? COLORS.lightGray :  COLORS.darkBlue, fontSize: "1.2rem", marginLeft: 2, textTransform: "capitalize" }} onClick={() => navigate("/search")}>
-						Search
-            </Button>
-            <Button sx={{ color: scrolled
-            ? COLORS.lightGray :  COLORS.darkBlue, fontSize: "1.2rem", marginLeft: 2, textTransform: "capitalize" }} onClick={() => navigate("/read-all")}>
-						Read
-            </Button>
-          </div>
+          <Button
+            sx={{
+							height: "40px",
+              position: "relative", // Needed for the pseudo-element
+              color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
+              fontSize: "1.2rem",
+              marginLeft: 2,
+              textTransform: "capitalize",
+              padding: "6px 12px",
+              overflow: "hidden", // Hide the pseudo-element overflow
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "0%",
+                height: "2px",
+                backgroundColor: scrolled ? COLORS.lightGray : COLORS.darkBlue,
+                transition: "width 0.3s ease",
+              },
+							"&:hover": {
+								backgroundColor: "transparent",
+              },
+              "&:hover::after": {
+                width: "100%",
+              },
+            }}
+            onClick={() => navigate("/search")}
+          >
+            Search
+          </Button>
+          <Button
+            sx={{
+							height: "40px",
+              position: "relative",
+              color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
+              fontSize: "1.2rem",
+              marginLeft: 2,
+              textTransform: "capitalize",
+              padding: "6px 12px",
+              overflow: "hidden",
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                width: "0%",
+                height: "2px",
+                backgroundColor: scrolled ? COLORS.lightGray : COLORS.darkBlue,
+                transition: "width 0.3s ease",
+              },
+              "&:hover::after": {
+                width: "100%",
+              },
+							"&:hover": {
+								backgroundColor: "transparent",
+              },
+            }}
+            onClick={() => navigate("/read-all")}
+          >
+            Read
+          </Button>
+        </div>
 
           {/* Mobile Menu Icon */}
           <IconButton

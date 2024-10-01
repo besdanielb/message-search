@@ -22,9 +22,10 @@ import {
   getState,
 } from "../../Providers/localStorageProvider";
 import SearchResultItem from "./search-result-item";
-// import SortOptions from "./sort-options";
+//import SortOptions from "./sort-options";
 import {
   API_URLS,
+  HINTS_STATE_NAME,
   SEARCH_RESULTS_STATE_NAME,
   SEARCH_TERM_STATE_NAME,
   SEARCH_TYPE_STATE_NAME,
@@ -90,7 +91,7 @@ function reducer(state, action) {
 export default function Search() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [hintCardVisible, setHintCardVisible] = useState(false);
-  const [showHintButton, setShowHintButton] = useState(false);
+  const [showHintButton, setShowHintButton] = useState(false || getState(HINTS_STATE_NAME));
   const navigate = useNavigate();
 
   const {
@@ -128,10 +129,12 @@ export default function Search() {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setHintCardVisible(true); // Show hint card after 1 second
-    }, 1000);
-    return () => clearTimeout(timer); // Cleanup timer on unmount
+    if(!getState(HINTS_STATE_NAME)){
+      const timer = setTimeout(() => {
+        setHintCardVisible(true); // Show hint card after 1 second
+      }, 1000);
+      return () => clearTimeout(timer); // Cleanup timer on unmount
+    }
   }, []);
 
   // Log page visit on mount
@@ -139,9 +142,12 @@ export default function Search() {
     logEvent(analytics, "searchpage_visited");
   }, []);
 
+
+
   const handleCloseHintCard = () => {
-    setHintCardVisible(false); // Trigger slide-out animation
-    setShowHintButton(true); // Show the "Show Hints" button after the card slides out
+    setHintCardVisible(false);
+    setShowHintButton(true); 
+    saveState(HINTS_STATE_NAME, true);
   };
 
   const handleShowHintCard = () => {
@@ -402,9 +408,9 @@ export default function Search() {
     }
     return searchResults.map((result, index) => (
       <SearchResultItem
-        key={index}
+        key={result.sermonDate + index}
         result={result}
-        onReadMessage={onReadMessage}
+        onReadMessage={() => onReadMessage(result.sermonDate, result.paragraph)}
         onCopyParagraph={onCopyParagraphClick}
         searchType={searchType}
         wordsToHighlight={wordsToHighlight}
@@ -484,10 +490,10 @@ export default function Search() {
         <ScrollToTop showUnder={260}>
           <ScrollUpButton aria-label="scroll up" />
         </ScrollToTop>
+
       </div>
 
-      <Footer></Footer>
-
+        <Footer></Footer>
       <ErrorAlert open={alertOpen} onClose={() => dispatch({ type: "SET_ALERT_OPEN", payload: false })} />
     </div>
   );

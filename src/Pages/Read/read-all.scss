@@ -1,62 +1,127 @@
-.center {
-  display: block;
-  padding-left: 2.5em;
-  padding-right: 2.5em;
-  padding-bottom: 2em;
-  height: 100vh;
+@import '../../colors.scss';
+
+.read-all-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centers content vertically */
+  padding: 2.5em 2.5em 2em;
+  min-height: 100vh;
+  background-image: url('../../../public/44.webp'); /* Ensure the image is in the public folder */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed; 
+  overflow-y: auto;
 }
 
-.title {
+.title-section {
   width: 100%;
-  padding-top: 5em;
+  padding-top: 1em; /* Adjust to account for fixed navbar */
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   h1 {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5em;
     text-transform: uppercase;
-    text-align: center;
+    font-size: 50px;
+    color: $dark-blue;
+
+    @media (max-width: 600px) {
+      font-size: 2rem;
+    }
   }
 
   p {
     margin-bottom: 3rem;
-    font-size: 20px;
+    font-size: 1.25rem;
+    color: $dark-blue;
+
+    @media (max-width: 600px) {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+  }
+
+  .error-message {
+    color: red;
+    font-size: 1rem;
+    margin-top: 1rem;
   }
 }
 
-.MuiDataGrid-root {
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
-  height: 65vh !important;
-}
+.data-grid-container {
+  width: 100%;
+  max-width: 1500px; /* Adjust as needed */
+  box-shadow: 0px 0px 30px $dark-blue;
+  background-color: #fff;
+  border-radius: 8px;
+  height: 65vh;
 
-.MuiIconButton-root {
-  color: black !important;
-}
+  @media (min-device-width: 300px) and (max-device-width: 1200px) and (orientation: landscape) {
+    height: 60vmax;
+  }
 
-@media only screen and (min-device-width: 300px) and (max-device-width: 1200px) and (orientation: landscape) {
-  .center {
-    padding-bottom: 5em;
-    height: 100%;
+  @media (max-width: 770px) {
+    height: 60vh;
+  }
+
+  @media (min-width: 2000px) {
+    height: 72vh;
+  }
+
+  .MuiDataGrid-toolbarContainer {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0.5em;
   }
 
   .MuiDataGrid-root {
-    height: 60vmax !important;
+    border: none;
+    border-radius: 8px;
+
+    .MuiDataGrid-cell {
+      white-space: normal;
+      word-wrap: break-word;
+    }
+
+    .MuiDataGrid-columnHeaders {
+      background-color: $mid-gray;
+      color: $dark-blue;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .MuiDataGrid-row:hover {
+      background-color: #f1f1f1;
+    }
+
+    .MuiDataGrid-footerContainer {
+      background-color: $very-light-gray;
+      color: $dark-blue;
+    }
   }
 }
 
-@media only screen and (max-width: 770px) {
-  .center {
-    padding-bottom: 5em;
-    height: 100%;
-  }
-}
-
-@media only screen and (min-width: 2000px) {
-  .center {
-    padding-bottom: 5em;
-    height: 100vh;
+@media (max-width: 600px) {
+  .data-grid-container {
+    height: 60vh;
+    max-width: 90vw;
   }
 
-  .MuiDataGrid-root {
-    height: 72vh !important;
+  .title-section {
+    padding-top: 3em;
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
   }
 }

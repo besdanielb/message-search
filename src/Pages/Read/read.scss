@@ -1,61 +1,93 @@
-.read {
-  &__container {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: column;
-    width: calc(min(80%, 110ch));
-    margin-top: 3.5em;
+@import '../../colors.scss';
 
-    ul {
-      list-style-type: none;
-      padding-inline-start: unset;
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2em;
+  min-height: 100vh;
+}
 
-      &:last-child {
-        margin-bottom: 2.5em;
-      }
+.read__container {
+  width: 100%;
+  max-width: 1200px;
+  background-color: #f7f7f7;
+  padding: 2em;
+  border-radius: 8px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  margin-top: 4em;
+}
 
-      li {
-        padding: 1em 1.3em;
-      }
+.read-message-title {
+  font-size: 2rem;
+  margin-bottom: 1.2em;
+  text-align: center;
+  display: flex;
+  justify-content: center;  
+  color: $dark-blue; /* Adjust as needed */
+}
 
-      p {
-        &:not(:first-child) {
-          margin-top: 1.5em;
-        }
-        color: rgba(0, 0, 0, 0.7);
-      }
+.loading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: $dark-blue;
+}
+
+.error {
+  text-align: center;
+  font-size: 1.2rem;
+  color: red;
+  margin: 1em 0;
+}
+
+
+ul {
+  list-style-type: none;
+  padding: 0;
+
+  li {
+    padding: 0.5em 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: justify;
+
+    .index {
+      font-weight: bold;
+      margin-right: 0.5em;
+      color: #193659; /* Adjust as needed */
     }
 
-    .highlight {
-      border-radius: 10px;
-      animation-duration: 0.25s;
-      border-left: 8px solid var(--yellow-color);
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
-        0 10px 10px rgba(0, 0, 0, 0.22);
+    p {
+      margin: 0;
+      color: #333;
     }
 
-    h1 {
-      text-transform: uppercase;
-      font-size: 3vmin;
-      max-width: 100%;
-      padding: 0 1.3rem;
+    &.highlight {
+      background-color: $mid-gray; /* Adjust highlight color as needed */
     }
   }
 }
 
-.index {
-  font-weight: bold;
+/* Scroll-to-top button styles */
+.read__container {
+  position: relative;
 }
 
-@media only screen and (max-width: 770px) {
+/* Responsive Design */
+@media (max-width: 600px) {
   .read__container {
-    ul:last-child {
-      margin-bottom: 5em;
-    }
+    padding: 1em;
+  }
 
-    h1 {
-      font-size: 2.5vmax;
+  .message-title {
+    font-size: 1.5rem;
+  }
+
+  li {
+    padding: 0.3em 0;
+
+    .index {
+      margin-right: 0.3em;
     }
   }
 }

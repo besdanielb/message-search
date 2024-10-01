@@ -28,6 +28,11 @@
   transition: all 0.3s ease;
 }
 
+.wrapper .option:hover {
+  background-color: $very-light-gray;
+  box-shadow: 0px 0px 20px $light-gray;
+}
+
 .wrapper .option .dot {
   height: 18px;
   width: 18px;

@@ -4,6 +4,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import IconButton from "@mui/material/IconButton";
 import ClearIcon from "@mui/icons-material/Clear";
+import { COLORS } from "../constants";
 
 export default function SearchInput(props) {
   return (
@@ -11,27 +12,27 @@ export default function SearchInput(props) {
       <TextField
         sx={{
           "& > *": {
-            margin: 1, 
+            margin: 1,
             width: "70vw",
             maxWidth: "63em",
-            borderRadius: "30px",
+            borderRadius: "10px",
             paddingLeft: "5px",
             "@media (max-width:600px)": {
               width: "90vw",
             },
           },
           "& label.Mui-focused": {
-            color: "var(--dark-color)",
+            color: COLORS.darkBlue,
           },
           "& .MuiInput-underline:after": {
-            borderBottomColor: "var(--grey-color)",
+            borderBottomColor: COLORS.darkBlue,
           },
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: "var(--dark-color)",
+              borderColor: COLORS.darkBlue,
             },
             "&.Mui-focused fieldset": {
-              borderColor: "var(--dark-color)",
+              borderColor: COLORS.darkBlue,
             },
             "&:hover fieldset": {
               cursor: "pointer",

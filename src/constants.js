@@ -15,6 +15,7 @@ export const SEMANTIC_SEARCH_TYPE = "semantic";
 export const SEARCH_RESULTS_STATE_NAME = "searchResults";
 export const SEARCH_TERM_STATE_NAME = "searchTerm";
 export const SEARCH_TYPE_STATE_NAME = "searchType";
+export const HINTS_STATE_NAME = "hint";
 
 export const COLORS = {
   lightGray: "#F2F4F8", // main background
