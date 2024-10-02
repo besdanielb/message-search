@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./typing-title.scss"; // Import the corresponding CSS
 
 const TypingTitle = ({ text, speed = 150 }) => {

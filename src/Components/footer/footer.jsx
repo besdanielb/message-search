@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { Apple, Email } from "@mui/icons-material";
 import { Fade, IconButton, Tooltip } from "@mui/material";
 import "./footer.scss";
-import { COLORS } from "../constants";
+import { COLORS } from "../../constants";
 
 export default function Footer() {
   // Open email client

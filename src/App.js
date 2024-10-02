@@ -1,6 +1,6 @@
 import "./App.scss";
-import React from "react";
 import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
+import Home from "./Pages/Home/home";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
 import ReadAll from "./Pages/Read/read-all";
@@ -22,14 +22,25 @@ function MainApp(props) {
 
   return (
     <BrowserRouter>
-      <Navbar></Navbar>
+      <Navbar />
       <Routes>
-      <Route exact path="/search" element={<Search></Search>} />
-      <Route exact path="/read" element={<Read></Read>} />
-      <Route exact path="/read-all" element={<ReadAll></ReadAll>} />
-      <Route path="*" element={<Navigate to="/search" />} />
+        {/* Home route with just the search input and related components */}
+        <Route path="/" element={<Home />} />
+
+        {/* Search results route */}
+        <Route path="/search" element={<Search />} />
+
+        {/* Dynamic Read route with date and ref parameters */}
+        <Route path="/read/:date/:ref" element={<Read />} />
+
+        {/* ReadAll route */}
+        <Route path="/read-all" element={<ReadAll />} />
+
+        {/* Fallback route redirects to Home */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
 export default App;

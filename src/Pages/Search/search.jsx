@@ -1,19 +1,12 @@
-import React, { useEffect, useReducer, useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  IconButton,
-} from "@mui/material";
-import {
-  ArrowBackIosNew as ArrowBackIosNewIcon,
-  GetApp as GetAppIcon,
-} from "@mui/icons-material";
+import { useEffect, useReducer, useCallback, useMemo, useState } from "react";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { Button } from "@mui/material";
+import { GetApp as GetAppIcon } from "@mui/icons-material";
 import ScrollToTop from "react-scroll-up";
 import "./search.scss";
-import SearchInput from "../../Components/search-input";
-import LoadingSkeleton from "../../Components/loader";
+import SearchBar from "../../Components/search-bar/search-bar";
+import LoadingSkeleton from "../../Components/skeleton/loader";
 import ScrollUpButton from "../../Components/scroll-up-button";
-import SearchTypeRadioButtons from "../../Components/search-type-radio-buttons";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
 import {
@@ -33,10 +26,8 @@ import {
   SORT_OPTIONS,
 } from "../../constants";
 import ErrorAlert from "./error-alert";
-import Footer from "../../Components/footer";
-import HintCard from "../../Components/hint-card";
-import ShowHintsButton from "../../Components/show-hints-button";
-import TypingTitle from "../../Components/typing-title";
+import Footer from "../../Components/footer/footer";
+import Hints from "../../Components/hints/hints";
 
 // Initial State for Reducer
 const initialState = {
@@ -93,6 +84,8 @@ export default function Search() {
   const [hintCardVisible, setHintCardVisible] = useState(false);
   const [showHintButton, setShowHintButton] = useState(false || getState(HINTS_STATE_NAME));
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const {
     searchTerm,
@@ -108,28 +101,49 @@ export default function Search() {
     sortBy,
   } = state;
 
-  // Load initial state from localStorage
+  // Redirection Logic: Redirect to Home if no query parameters
   useEffect(() => {
-    const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
-    const storedTerm = getState(SEARCH_TERM_STATE_NAME);
-    const storedType = getState(SEARCH_TYPE_STATE_NAME);
+    const query = searchParams.get("q");
+    const type = searchParams.get("type");
 
-    if (storedResults?.length > 0) {
-      dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
-      dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: storedResults });
-      dispatch({ type: "SET_SEARCH_TERM", payload: storedTerm });
-      dispatch({
-        type: "SET_WORDS_TO_HIGHLIGHT",
-        payload: storedTerm.split(" "),
-      });
-      dispatch({ type: "SET_SEARCH_TYPE", payload: storedType });
-      dispatch({ type: "SET_IS_ACTIVE", payload: true });
+    if (!query || !type || query.trim() === "" || type.trim() === "") {
+      navigate("/", { replace: true }); // Replace the current entry in the history stack
+    }
+  }, [searchParams, navigate]);
+
+  // Load initial state from URL or localStorage
+  useEffect(() => {
+    const urlSearchTerm = searchParams.get("q") || "";
+    const urlSearchType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
+
+    if (urlSearchTerm) {
+      dispatch({ type: "SET_SEARCH_TERM", payload: urlSearchTerm });
+      dispatch({ type: "SET_WORDS_TO_HIGHLIGHT", payload: urlSearchTerm.split(" ") });
+      dispatch({ type: "SET_SEARCH_TYPE", payload: urlSearchType });
+
+      // Check localStorage for cached results
+      const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
+      const storedTerm = getState(SEARCH_TERM_STATE_NAME);
+      const storedType = getState(SEARCH_TYPE_STATE_NAME);
+
+      if (
+        storedResults?.length > 0 &&
+        urlSearchTerm === storedTerm &&
+        urlSearchType === storedType
+      ) {
+        dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
+        dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: storedResults });
+        dispatch({ type: "SET_IS_ACTIVE", payload: true });
+      } else {
+        // Perform search
+        onSearch(null, urlSearchType, urlSearchTerm);
+      }
     }
     window.scrollTo(0, 0);
-  }, []);
+  }, [location.search]); // Trigger when query params change
 
   useEffect(() => {
-    if(!getState(HINTS_STATE_NAME)){
+    if (!getState(HINTS_STATE_NAME)) {
       const timer = setTimeout(() => {
         setHintCardVisible(true); // Show hint card after 1 second
       }, 1000);
@@ -141,8 +155,6 @@ export default function Search() {
   useEffect(() => {
     logEvent(analytics, "searchpage_visited");
   }, []);
-
-
 
   const handleCloseHintCard = () => {
     setHintCardVisible(false);
@@ -252,21 +264,23 @@ export default function Search() {
 
   // Handle search submission
   const onSearch = useCallback(
-    (event, typeOfSearch) => {
+    (event, typeOfSearch = state.searchType, term = state.searchTerm) => {
       if (event) event.preventDefault();
       resetStateFields();
       if (typeOfSearch) {
         dispatch({ type: "SET_SEARCH_TYPE", payload: typeOfSearch });
         saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
       }
-      const encodedSearchTerm = encodeURIComponent(searchTerm);
+      const encodedSearchTerm = encodeURIComponent(term);
       const url =
         typeOfSearch === SEMANTIC_SEARCH_TYPE
           ? `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodedSearchTerm}`
           : `${API_URLS.OTHER}${typeOfSearch}&query=${encodedSearchTerm}`;
       fetchSearchResults(url, typeOfSearch);
+      // Update the URL with query parameters
+      setSearchParams({ q: term, type: typeOfSearch });
     },
-    [fetchSearchResults, limit, resetStateFields, searchTerm]
+    [fetchSearchResults, limit, resetStateFields, setSearchParams, state.searchTerm, state.searchType]
   );
 
   // Handle input value change
@@ -280,20 +294,15 @@ export default function Search() {
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
-  }, []);
+    // Navigate to home
+    navigate('/');
+  }, [navigate]);
 
   // Navigate to read message
   const onReadMessage = useCallback(
     (messageDate, index) => {
       if (messageDate && index) {
-        navigate("/read", {
-          state: {
-            date: messageDate,
-            ref: index,
-            searchTerm,
-            searchType,
-          },
-        });
+        navigate(`/read/${messageDate}/${index}?q=${encodeURIComponent(searchTerm)}&type=${searchType}`);
       }
     },
     [navigate, searchTerm, searchType]
@@ -320,7 +329,6 @@ export default function Search() {
         saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
       } catch (error) {
-        console.error("Load more results error:", error);
         dispatch({ type: "SET_ALERT_OPEN", payload: true });
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
         dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
@@ -345,7 +353,7 @@ export default function Search() {
       saveState(SEARCH_TYPE_STATE_NAME, newSearchType);
 
       if (searchTerm) {
-        onSearch(null, newSearchType);
+        onSearch(null, newSearchType, searchTerm);
       }
     },
     [onSearch, searchTerm]
@@ -420,46 +428,25 @@ export default function Search() {
 
   return (
     <div className="container">
-       <HintCard visible={hintCardVisible} onClose={handleCloseHintCard} />
-       {showHintButton && <ShowHintsButton onClick={handleShowHintCard} />}
+      <Hints
+        hintCardVisible={hintCardVisible}
+        onCloseHintCard={handleCloseHintCard}
+        showHintButton={showHintButton}
+        onShowHintCard={handleShowHintCard}
+      />
       <div className="search__container" onKeyDown={handleKeyDown}>
-        {!isSearching && searchResults.length === 0 && !noResultsFound && (
-          <div className="search__container__title">
-          <TypingTitle text="Search The Message" speed={150} />
-        </div>
-        )}
 
-        <span style={{ position: "relative" }}>
-          
-          <div className="search__container__input-container" style={{marginTop: isSearching || searchClicked || searchResults.length > 0 ? '70px': '0'}}>
-          {searchClicked && (
-            <IconButton
-              aria-label="go back"
-              size="medium"
-              sx={{marginTop: "10px"}}
-              onClick={onClearInput}
-            >
-              <ArrowBackIosNewIcon />
-            </IconButton>
-          )}
-          <SearchInput
-            onSearch={(event) => onSearch(event, searchType)}
-            onSearchInputValueChange={onSearchInputValueChange}
-            onClearInput={onClearInput}
-            searchTerm={searchTerm}
-            aria-label="search input"
-            searchBook="Message"
-          />
-          </div>
-        </span>
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearch={(event) => onSearch(event, searchType, searchTerm)}
+          onSearchInputValueChange={onSearchInputValueChange}
+          onClearInput={onClearInput}
+          searchType={searchType}
+          onSearchTypeChange={onSearchTypeChange}
+          showBackButton={searchClicked || searchResults.length > 0}
+        />
 
-        {!noResultsFound && (
-          <SearchTypeRadioButtons
-            searchType={searchType}
-            onSearchTypeChange={onSearchTypeChange}
-          />
-        )}
-
+        {/* Optionally include SortOptions if needed */}
         {/*searchTerm && searchClicked && (
           <div className="info-div">
             <SortOptions sortBy={sortBy} handleSortChange={handleSortChange} />
@@ -493,7 +480,7 @@ export default function Search() {
 
       </div>
 
-        <Footer></Footer>
+      <Footer />
       <ErrorAlert open={alertOpen} onClose={() => dispatch({ type: "SET_ALERT_OPEN", payload: false })} />
     </div>
   );

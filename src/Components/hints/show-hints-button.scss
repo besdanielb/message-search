@@ -1,9 +1,9 @@
-@import '../colors.scss';
+@import '../../colors.scss';
 
 .show-hints-button {
   position: fixed;
-  left: 20px;
-  top: 240px;
+  left: 30px;
+  top: 155px;
   z-index: 2000; // Ensures the button stays on top
   background-color: #fff;
   border-radius: 50%;

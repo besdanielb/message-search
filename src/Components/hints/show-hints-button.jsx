@@ -1,8 +1,6 @@
-import React from "react";
 import { IconButton, Tooltip, Fade } from "@mui/material";
 import { Lightbulb as LightbulbIcon } from "@mui/icons-material";
 import "./show-hints-button.scss";
-import { COLORS } from "../constants";
 
 export default function ShowHintsButton({ onClick }) {
   return (

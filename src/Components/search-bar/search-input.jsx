@@ -1,10 +1,9 @@
-import React from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import IconButton from "@mui/material/IconButton";
 import ClearIcon from "@mui/icons-material/Clear";
-import { COLORS } from "../constants";
+import { COLORS } from "../../constants";
 
 export default function SearchInput(props) {
   return (

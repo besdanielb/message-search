@@ -9,43 +9,7 @@ $input-height: 3em;
   align-items: center;
   justify-content: center;
   padding: 0 20px;
-
-    &__label {
-      text-transform: uppercase;
-      text-align: center;
-      font-size: 50px;
-    }
-    &__title {
-      margin-bottom: 1.5em;
-      text-align: center;
-      
-      .typing-title {
-        color: $dark-blue;
-        margin: 0;
-      }
-    }
-
-    &__input-container {
-      width: 100%;
-      max-width: 800px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 2em;
-  
-      input {
-        width: 100%;
-        padding: 15px 20px;
-        font-size: 1.2rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        transition: box-shadow 0.3s ease;
-  
-        &:focus :hover {
-          outline: none;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-      }
-    }
+  margin-top: 20px;
 
     ul {
       list-style-type: none;

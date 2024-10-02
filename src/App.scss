@@ -1,8 +1,9 @@
 @import 'colors.scss';
 
 body {
-  background: var(--secondary-color);
-  box-sizing: content-box;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
 }
 
 .container {
@@ -70,6 +71,14 @@ nav {
 
 p {
   line-height: 1.5em;
+}
+
+h1, h2, h3 {
+  font-family: 'Roboto', sans-serif;
+}
+
+button {
+  cursor: pointer;
 }
 
 @media (max-width: 760px), (hover: none) and (pointer: coarse) {

@@ -1,20 +1,26 @@
-// src/Pages/ReadPage/Read.js
-
 import "./read.scss";
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import ScrollToTop from "react-scroll-up";
 import Highlighter from "react-highlight-words";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
-import ReadSkeleton from "../../Components/read-skeleton";
+import ReadSkeleton from "../../Components/skeleton/read-skeleton";
 
 export default function Read() {
+  // Extract URL parameters
+  const { date, ref } = useParams(); // :date and :ref from the URL
+  const [searchParams] = useSearchParams(); // Query parameters: q and type
+
+  // Extract query parameters
+  const searchTerm = searchParams.get("q") || "";
+  const searchType = searchParams.get("type") || "semantic"; // Default to 'semantic' if not provided
+
+  // State management
   const [messageToRead, setMessageToRead] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Loading state
   const [error, setError] = useState(null); // Error state
-  const location = useLocation();
 
   // Ref to track if the component is mounted
   const isMountedRef = useRef(false);
@@ -23,11 +29,11 @@ export default function Read() {
     isMountedRef.current = true;
 
     const fetchSermon = async () => {
-      if (location?.state?.date) {
+      if (date) {
         setIsLoading(true);
         setError(null);
 
-        const url = `https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/ReadingSermonFromMySQL?sermon=${location.state.date}`;
+        const url = `https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/ReadingSermonFromMySQL?sermon=${date}`;
 
         try {
           const response = await fetch(url);
@@ -35,10 +41,11 @@ export default function Read() {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
           const results = await response.json();
+
           if (isMountedRef.current) {
             setMessageToRead(results);
             logEvent(analytics, "read_sermon", {
-              sermon_date: location.state.date,
+              sermon_date: date,
               sermon_title: results[0]?.title,
             });
           }
@@ -60,15 +67,16 @@ export default function Read() {
     return () => {
       isMountedRef.current = false;
     };
-  }, [location?.state?.date]);
+  }, [date]); // Re-run when 'date' parameter changes
 
   // Effect to handle scrolling after messages are set
   useEffect(() => {
     if (messageToRead.length > 0) {
-      executeScroll(location?.state?.ref);
+      executeScroll(ref);
     }
-  }, [messageToRead, location?.state?.ref]);
+  }, [messageToRead, ref]);
 
+  // Function to scroll to a specific paragraph
   const executeScroll = (i) => {
     const element = document.getElementById(i) || document.getElementById(1);
 
@@ -117,13 +125,14 @@ export default function Read() {
     };
   }, [messageToRead]);
 
+  // Function to render the sermon list
   const renderSermonList = () => {
-    if (location?.state?.searchType === "semantic") {
+    if (searchType === "semantic") {
       return messageToRead.map((entry) => (
         <li
           key={entry.paragraph}
           id={entry.paragraph}
-          className={+location?.state?.ref === entry.paragraph ? "highlight" : ""}
+          className={+ref === entry.paragraph ? "highlight" : ""}
         >
           <p>
             <span className="index">{entry.paragraph}</span> {entry.section}
@@ -132,7 +141,7 @@ export default function Read() {
       ));
     } else {
       return messageToRead.map((entry) =>
-        entry.paragraph === location?.state?.ref ? (
+        entry.paragraph === ref ? (
           <li key={entry.paragraph} id={entry.paragraph} className="highlight">
             <p>
               <span className="index">{entry.paragraph} </span>
@@ -141,7 +150,7 @@ export default function Read() {
                   backgroundColor: "yellow",
                   color: "black",
                 }}
-                searchWords={location?.state?.searchTerm?.split(" ")}
+                searchWords={searchTerm.split(" ")}
                 autoEscape={true}
                 textToHighlight={entry.section}
               />

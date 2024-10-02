@@ -80,7 +80,7 @@ export default function Navbar(props) {
                 width: "100%",
               },
             }}
-            onClick={() => navigate("/search")}
+            onClick={() => navigate("/")}
           >
             Search
           </Button>

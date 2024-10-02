@@ -1,4 +1,3 @@
-import React from "react";
 import "./search-type-radio-buttons.scss";
 
 export default function SearchTypeRadioButtons(props) {
