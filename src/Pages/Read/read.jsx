@@ -1,6 +1,8 @@
+// src/Pages/Read/Read.js
+
 import "./read.scss";
 import { useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ScrollUpButton from "../../Components/scroll-up-button";
 import ScrollToTop from "react-scroll-up";
 import Highlighter from "react-highlight-words";
@@ -24,16 +26,28 @@ export default function Read() {
 
   // Ref to track if the component is mounted
   const isMountedRef = useRef(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     isMountedRef.current = true;
+
+    console.log(`Navigating to Read Component with date: ${date}, ref: ${ref}`);
+
+    if (!date) {
+      // If date parameter is missing, redirect to Home or show an error
+      navigate("/", { replace: true });
+      return;
+    }
 
     const fetchSermon = async () => {
       if (date) {
         setIsLoading(true);
         setError(null);
 
-        const url = `https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/ReadingSermonFromMySQL?sermon=${date}`;
+        // Adjust the API URL based on whether 'ref' is present
+        const url = ref
+          ? `https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/ReadingSermonFromMySQL?sermon=${date}&ref=${ref}`
+          : `https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/ReadingSermonFromMySQL?sermon=${date}`;
 
         try {
           const response = await fetch(url);
@@ -67,12 +81,15 @@ export default function Read() {
     return () => {
       isMountedRef.current = false;
     };
-  }, [date]); // Re-run when 'date' parameter changes
+  }, [date, ref, navigate]);
 
   // Effect to handle scrolling after messages are set
   useEffect(() => {
-    if (messageToRead.length > 0) {
+    if (messageToRead.length > 0 && ref) {
       executeScroll(ref);
+    } else if (messageToRead.length > 0) {
+      // If ref is not provided, scroll to the first paragraph
+      executeScroll(1);
     }
   }, [messageToRead, ref]);
 

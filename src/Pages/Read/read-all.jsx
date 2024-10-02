@@ -31,11 +31,16 @@ export default function ReadAll() {
   const navigate = useNavigate();
   const MESSAGES_STATE_NAME = "messages";
 
-  // Handle reading a message
   const onReadMessage = useCallback((params) => {
-    navigate("/read", {
-      state: { date: params?.row?.date },
-    });
+    const { date, paragraph } = params.row;
+
+    // Ensure both date and paragraph are present
+    if (date) {
+      console.log(`/read/${date}${paragraph ? "/"+paragraph : ""}`);
+      navigate(`/read/${date}${paragraph ? "/"+paragraph : ""}`);
+    } else {
+      console.error("Missing date or paragraph information for navigation.");
+    }
   }, [navigate]);
 
   // Define table columns using useMemo
@@ -78,6 +83,7 @@ export default function ReadAll() {
       id: index,
       title: message.sermonTitle,
       date: message.sermonDate,
+      paragraph: message.paragraph,
     }));
   }, [messages]);
 

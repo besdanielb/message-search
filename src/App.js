@@ -33,6 +33,9 @@ function MainApp(props) {
         {/* Dynamic Read route with date and ref parameters */}
         <Route path="/read/:date/:ref" element={<Read />} />
 
+        {/* Dynamic Read route with only date parameter */}
+        <Route path="/read/:date" element={<Read />} />
+
         {/* ReadAll route */}
         <Route path="/read-all" element={<ReadAll />} />
 

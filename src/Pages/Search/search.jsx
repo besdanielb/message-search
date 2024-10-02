@@ -15,7 +15,6 @@ import {
   getState,
 } from "../../Providers/localStorageProvider";
 import SearchResultItem from "./search-result-item";
-//import SortOptions from "./sort-options";
 import {
   API_URLS,
   COLORS,
@@ -83,7 +82,9 @@ function reducer(state, action) {
 export default function Search() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [hintCardVisible, setHintCardVisible] = useState(false);
-  const [showHintButton, setShowHintButton] = useState(false || getState(HINTS_STATE_NAME));
+  const [showHintButton, setShowHintButton] = useState(
+    false || getState(HINTS_STATE_NAME)
+  );
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -99,93 +100,7 @@ export default function Search() {
     noResultsFound,
     alertOpen,
     searchClicked,
-    sortBy,
   } = state;
-
-  // Redirection Logic: Redirect to Home if no query parameters
-  useEffect(() => {
-    const query = searchParams.get("q");
-    const type = searchParams.get("type");
-
-    if (!query || !type || query.trim() === "" || type.trim() === "") {
-      navigate("/", { replace: true }); // Replace the current entry in the history stack
-    }
-  }, [searchParams, navigate]);
-
-  // Load initial state from URL or localStorage
-  useEffect(() => {
-    const urlSearchTerm = searchParams.get("q") || "";
-    const urlSearchType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
-
-    if (urlSearchTerm) {
-      dispatch({ type: "SET_SEARCH_TERM", payload: urlSearchTerm });
-      dispatch({ type: "SET_WORDS_TO_HIGHLIGHT", payload: urlSearchTerm.split(" ") });
-      dispatch({ type: "SET_SEARCH_TYPE", payload: urlSearchType });
-
-      // Check localStorage for cached results
-      const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
-      const storedTerm = getState(SEARCH_TERM_STATE_NAME);
-      const storedType = getState(SEARCH_TYPE_STATE_NAME);
-
-      if (
-        storedResults?.length > 0 &&
-        urlSearchTerm === storedTerm &&
-        urlSearchType === storedType
-      ) {
-        dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
-        dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: storedResults });
-        dispatch({ type: "SET_IS_ACTIVE", payload: true });
-      } else {
-        // Perform search
-        onSearch(null, urlSearchType, urlSearchTerm);
-      }
-    }
-    window.scrollTo(0, 0);
-  }, [location.search]); // Trigger when query params change
-
-  useEffect(() => {
-    if (!getState(HINTS_STATE_NAME)) {
-      const timer = setTimeout(() => {
-        setHintCardVisible(true); // Show hint card after 1 second
-      }, 1000);
-      return () => clearTimeout(timer); // Cleanup timer on unmount
-    }
-  }, []);
-
-  // Log page visit on mount
-  useEffect(() => {
-    logEvent(analytics, "searchpage_visited");
-  }, []);
-
-  const handleCloseHintCard = () => {
-    setHintCardVisible(false);
-    setShowHintButton(true); 
-    saveState(HINTS_STATE_NAME, true);
-  };
-
-  const handleShowHintCard = () => {
-    setHintCardVisible(true); // Show the hint card
-    setShowHintButton(false); // Hide the "Show Hints" button
-  };
-
-  // Handler to prevent default key down behavior (if needed)
-  const handleKeyDown = useCallback((e) => {
-    // Implement any key down logic if necessary
-  }, []);
-
-  // Reset search-related state fields
-  const resetStateFields = useCallback(() => {
-    dispatch({
-      type: "SET_WORDS_TO_HIGHLIGHT",
-      payload: [],
-    });
-    dispatch({ type: "SET_IS_SEARCHING", payload: true });
-    dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
-    dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: [] });
-    dispatch({ type: "SET_IS_ACTIVE", payload: false });
-    dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
-    dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
-  }, [searchTerm]);
 
   // Parse API results
   const parseResults = useCallback((results) => {
@@ -199,6 +114,17 @@ export default function Search() {
         ...entry,
       };
     });
+  }, []);
+
+  const resetStateFields = useCallback(() => {
+    dispatch({
+      type: "SET_WORDS_TO_HIGHLIGHT",
+      payload: [],
+    });
+    dispatch({ type: "SET_IS_SEARCHING", payload: true });
+    dispatch({ type: "SET_IS_ACTIVE", payload: false });
+    dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
+    dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
   }, []);
 
   // Fetch search results from API
@@ -263,7 +189,6 @@ export default function Search() {
     [parseResults, searchTerm]
   );
 
-  // Handle search submission
   const onSearch = useCallback(
     (event, typeOfSearch = state.searchType, term = state.searchTerm) => {
       if (event) event.preventDefault();
@@ -278,11 +203,119 @@ export default function Search() {
           ? `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodedSearchTerm}`
           : `${API_URLS.OTHER}${typeOfSearch}&query=${encodedSearchTerm}`;
       fetchSearchResults(url, typeOfSearch);
-      // Update the URL with query parameters
-      setSearchParams({ q: term, type: typeOfSearch });
+
+      const currentQ = searchParams.get("q") || "";
+      const currentType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
+
+      if (currentQ !== term || currentType !== typeOfSearch) {
+        setSearchParams({ q: term, type: typeOfSearch });
+      }
     },
-    [fetchSearchResults, limit, resetStateFields, setSearchParams, state.searchTerm, state.searchType]
+    [
+      fetchSearchResults,
+      limit,
+      resetStateFields,
+      setSearchParams,
+      state.searchTerm,
+      state.searchType,
+      searchParams,
+    ]
   );
+
+  // Redirection Logic: Redirect to Home if no query parameters
+  useEffect(() => {
+    const query = searchParams.get("q");
+    const type = searchParams.get("type");
+
+    if (!query || !type || query.trim() === "" || type.trim() === "") {
+      navigate("/", { replace: true }); // Replace the current entry in the history stack
+    }
+  }, [searchParams, navigate]);
+
+  // Load initial state from URL or localStorage
+  // Inside Search.js
+
+  useEffect(() => {
+    const urlSearchTerm = searchParams.get("q") || "";
+    const urlSearchType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
+
+    if (urlSearchTerm) {
+      // Check if the current state already matches the URL parameters
+      if (
+        urlSearchTerm !== state.searchTerm ||
+        urlSearchType !== state.searchType
+      ) {
+        dispatch({ type: "SET_SEARCH_TERM", payload: urlSearchTerm });
+        dispatch({
+          type: "SET_WORDS_TO_HIGHLIGHT",
+          payload: urlSearchTerm.split(" "),
+        });
+        dispatch({ type: "SET_SEARCH_TYPE", payload: urlSearchType });
+
+        // Check localStorage for cached results
+        const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
+        const storedTerm = getState(SEARCH_TERM_STATE_NAME);
+        const storedType = getState(SEARCH_TYPE_STATE_NAME);
+
+        if (
+          storedResults?.length > 0 &&
+          urlSearchTerm === storedTerm &&
+          urlSearchType === storedType
+        ) {
+          dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
+          dispatch({
+            type: "SET_DEFAULT_SEARCH_RESULTS",
+            payload: storedResults,
+          });
+          dispatch({ type: "SET_IS_ACTIVE", payload: true });
+        } else {
+          // Perform search only if necessary
+          onSearch(null, urlSearchType, urlSearchTerm);
+        }
+      }
+    } else {
+      // If no search term is present, ensure the user is on the Home page
+      navigate("/", { replace: true });
+    }
+    window.scrollTo(0, 0);
+  }, [
+    location.search,
+    navigate,
+    onSearch,
+    state.searchTerm,
+    state.searchType,
+    searchParams,
+  ]);
+
+  useEffect(() => {
+    if (!getState(HINTS_STATE_NAME)) {
+      const timer = setTimeout(() => {
+        setHintCardVisible(true); // Show hint card after 1 second
+      }, 1000);
+      return () => clearTimeout(timer); // Cleanup timer on unmount
+    }
+  }, []);
+
+  // Log page visit on mount
+  useEffect(() => {
+    logEvent(analytics, "searchpage_visited");
+  }, []);
+
+  const handleCloseHintCard = () => {
+    setHintCardVisible(false);
+    setShowHintButton(true);
+    saveState(HINTS_STATE_NAME, true);
+  };
+
+  const handleShowHintCard = () => {
+    setHintCardVisible(true); // Show the hint card
+    setShowHintButton(false); // Hide the "Show Hints" button
+  };
+
+  // Handler to prevent default key down behavior (if needed)
+  const handleKeyDown = useCallback((e) => {
+    // Implement any key down logic if necessary
+  }, []);
 
   // Handle input value change
   const onSearchInputValueChange = useCallback((event) => {
@@ -296,14 +329,18 @@ export default function Search() {
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
     // Navigate to home
-    navigate('/');
+    navigate("/");
   }, [navigate]);
 
   // Navigate to read message
   const onReadMessage = useCallback(
     (messageDate, index) => {
       if (messageDate && index) {
-        navigate(`/read/${messageDate}/${index}?q=${encodeURIComponent(searchTerm)}&type=${searchType}`);
+        navigate(
+          `/read/${messageDate}/${index}?q=${encodeURIComponent(
+            searchTerm
+          )}&type=${searchType}`
+        );
       }
     },
     [navigate, searchTerm, searchType]
@@ -390,8 +427,8 @@ export default function Search() {
           break;
         case SORT_OPTIONS.DEFAULT:
         default:
-          sortedResults.sort((a, b) =>
-            new Date(a.sermonDate) - new Date(b.sermonDate)
+          sortedResults.sort(
+            (a, b) => new Date(a.sermonDate) - new Date(b.sermonDate)
           );
           break;
       }
@@ -413,7 +450,11 @@ export default function Search() {
   const renderedSearchResults = useMemo(() => {
     if (isSearching) return null;
     if (noResultsFound) {
-      return <h3 className="no-results-found" style={{paddingTop: '20px'}}>No results found. Please try a different search.</h3>;
+      return (
+        <h3 className="no-results-found" style={{ paddingTop: "20px" }}>
+          No results found. Please try a different search.
+        </h3>
+      );
     }
 
     return searchResults.map((result, index) => (
@@ -426,7 +467,15 @@ export default function Search() {
         wordsToHighlight={wordsToHighlight}
       />
     ));
-  }, [isSearching, noResultsFound, searchResults, onReadMessage, onCopyParagraphClick, searchType, wordsToHighlight]);
+  }, [
+    isSearching,
+    noResultsFound,
+    searchResults,
+    onReadMessage,
+    onCopyParagraphClick,
+    searchType,
+    wordsToHighlight,
+  ]);
 
   return (
     <div className="container">
@@ -437,7 +486,6 @@ export default function Search() {
         onShowHintCard={handleShowHintCard}
       />
       <div className="search__container" onKeyDown={handleKeyDown}>
-
         <SearchBar
           searchTerm={searchTerm}
           onSearch={(event) => onSearch(event, searchType, searchTerm)}
@@ -462,29 +510,35 @@ export default function Search() {
         </ul>
 
         {searchTerm &&
-            searchResults.length > 0 &&
-            searchType === SEMANTIC_SEARCH_TYPE && (
-              <Button
-                className="load-more-button"
-                size="medium"
-                variant="contained"
-                aria-label="load more results"
-                onClick={onLoadMore}
-                endIcon={<GetAppIcon />}
-                sx={{ marginBottom: "100px", backgroundColor: COLORS.darkBlue, color: COLORS.midGray }}
-              >
-                Load more
-              </Button>
-            )}
+          searchResults.length > 0 &&
+          searchType === SEMANTIC_SEARCH_TYPE && (
+            <Button
+              className="load-more-button"
+              size="medium"
+              variant="contained"
+              aria-label="load more results"
+              onClick={onLoadMore}
+              endIcon={<GetAppIcon />}
+              sx={{
+                marginBottom: "100px",
+                backgroundColor: COLORS.darkBlue,
+                color: COLORS.midGray,
+              }}
+            >
+              Load more
+            </Button>
+          )}
 
         <ScrollToTop showUnder={260}>
           <ScrollUpButton aria-label="scroll up" />
         </ScrollToTop>
-
       </div>
 
       <Footer />
-      <ErrorAlert open={alertOpen} onClose={() => dispatch({ type: "SET_ALERT_OPEN", payload: false })} />
+      <ErrorAlert
+        open={alertOpen}
+        onClose={() => dispatch({ type: "SET_ALERT_OPEN", payload: false })}
+      />
     </div>
   );
 }
