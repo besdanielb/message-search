@@ -42,11 +42,11 @@ export default function Navbar(props) {
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
-          {/* Logo */}
           <Typography
             variant="h6"
-            sx={{ fontSize: "1.5rem", fontWeight: "bold", color: scrolled
-							? COLORS.lightGray : COLORS.darkBlue }}
+            sx={{ fontSize: "2rem", fontFamily: "Great Vibes", fontWeight: "bold", color: scrolled
+							? COLORS.lightGray : COLORS.darkBlue, ":hover": { cursor: "pointer" } }}
+              onClick={() => navigate("/")}
           >
             Message Search
           </Typography>
