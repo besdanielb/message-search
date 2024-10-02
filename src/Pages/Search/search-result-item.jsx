@@ -95,7 +95,7 @@ export default function SearchResultItem({
         </span>
       </h5>
       <div className="underline"></div>
-      <div className="paragraph-text">
+      <div style={{marginTop: "10px"}}>
         {searchType !== SEMANTIC_SEARCH_TYPE ? (
           <Highlighter
             highlightStyle={{ backgroundColor: COLORS.midGray, color: "black", padding: "2px 1px 2px 3px"  }}

@@ -398,7 +398,7 @@ export default function Search() {
   );
 
   // Handle sort option change
-  const handleSortChange = useCallback(
+  /*const handleSortChange = useCallback(
     (event) => {
       const selectedSort = event.target.value;
       dispatch({ type: "SET_SORT_BY", payload: selectedSort });
@@ -436,7 +436,7 @@ export default function Search() {
       dispatch({ type: "SET_SEARCH_RESULTS", payload: sortedResults });
     },
     [searchResults]
-  );
+  );*/
 
   // Handle copying paragraph text
   const onCopyParagraphClick = useCallback((result) => {
@@ -449,13 +449,6 @@ export default function Search() {
   // Memoized Search Results
   const renderedSearchResults = useMemo(() => {
     if (isSearching) return null;
-    if (noResultsFound) {
-      return (
-        <h3 className="no-results-found" style={{ paddingTop: "20px" }}>
-          No results found. Please try a different search.
-        </h3>
-      );
-    }
 
     return searchResults.map((result, index) => (
       <SearchResultItem
@@ -469,7 +462,6 @@ export default function Search() {
     ));
   }, [
     isSearching,
-    noResultsFound,
     searchResults,
     onReadMessage,
     onCopyParagraphClick,
@@ -505,9 +497,16 @@ export default function Search() {
 
         {isSearching && !noResultsFound && <LoadingSkeleton />}
 
+        {/* Conditionally render "No results found" outside of the <ul> */}
+      {noResultsFound ? (
+        <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
+          No results found. Please try a different search.
+        </h4>
+      ) : (
         <ul className={isActive ? "transition" : ""}>
           {renderedSearchResults}
         </ul>
+      )}
 
         {searchTerm &&
           searchResults.length > 0 &&
