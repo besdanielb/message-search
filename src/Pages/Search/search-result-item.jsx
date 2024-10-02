@@ -7,7 +7,7 @@ import {
   FileCopy,
   ReadMore,
 } from "@mui/icons-material";
-import { COLORS, EXACT_SEARCH_TYPE, SEMANTIC_SEARCH_TYPE } from "../../constants";
+import { COLORS, SEMANTIC_SEARCH_TYPE } from "../../constants";
 import Highlighter from "react-highlight-words";
 
 export default function SearchResultItem({
@@ -85,10 +85,9 @@ export default function SearchResultItem({
             </IconButton>
           </Tooltip>
         <Tooltip title="Read more" placement="top" arrow>
-          <IconButton aria-label="Read more">
+          <IconButton aria-label="Read more" onClick={() => onReadMessage(result.sermonDate, result.paragraph)}>
             <ReadMore
-              fontSize="large" 
-              onClick={() => onReadMessage(result.sermonDate, result.paragraph)}
+              fontSize="large"
               sx={{ color: COLORS.darkBlue }}
             ></ReadMore>
           </IconButton>
@@ -96,7 +95,7 @@ export default function SearchResultItem({
         </span>
       </h5>
       <div className="underline"></div>
-      <p className="paragraph-text">
+      <div className="paragraph-text">
         {searchType !== SEMANTIC_SEARCH_TYPE ? (
           <Highlighter
             highlightStyle={{ backgroundColor: COLORS.midGray, color: "black", padding: "2px 1px 2px 3px"  }}
@@ -110,7 +109,7 @@ export default function SearchResultItem({
             {result.section}
           </Typography>
         )}
-      </p>
+      </div>
     </li>
   );
 }
