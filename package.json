@@ -59,7 +59,9 @@
     "nodemon": "^3.1.7",
     "npm-run-all": "4.1.5",
     "pino-colada": "^2.2.2",
-    "sass": "^1.79.4"
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.79.4",
+    "sass-loader": "^16.0.2"
   },
-  "buildDate": 1727893855048
+  "buildDate": 1727897667943
 }

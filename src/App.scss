@@ -6,24 +6,6 @@ body {
   box-sizing: border-box;
 }
 
-.container {
-  background: $light-gray;
-  transition: 1s;
-  transform-origin: left center;
-  min-height: 100vh;
-  height: -moz-available; /* WebKit-based browsers will ignore this. */
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-attachment: fixed;
-  overflow-y: auto;
-}
-
 nav {
   position: absolute;
   margin-top: 80%;

@@ -7,11 +7,6 @@
       "src": "/logo.png",
       "type": "image/png",
       "sizes": "120x120"
-    },
-    {
-      "src": "/logo-highres.png",
-      "type": "image/png",
-      "sizes": "1200x1200"
     }
   ],
   "start_url": "/serch",

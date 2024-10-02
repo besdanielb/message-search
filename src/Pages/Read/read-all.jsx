@@ -158,7 +158,7 @@ export default function ReadAll() {
   }, []);
 
   return (
-    <div className="read-all-container" style={{backgroundImage: `url(${process.env.PUBLIC_URL}/44.webp)`}}>
+    <div className="read-all-container">
       <div className="title-section">
         <h1>Read a Message</h1>
         {error && <div className="error-message">{error}</div>}

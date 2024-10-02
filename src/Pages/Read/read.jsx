@@ -184,10 +184,8 @@ export default function Read() {
     }
   };
 
-
-
   return (
-    <section className="container" style={{backgroundImage: `url(${process.env.PUBLIC_URL}/44.webp)`}}>
+    <section className="container">
       <div className="read__container">
         {isLoading && <ReadSkeleton />}
         {error && <div className="error">{error}</div>}

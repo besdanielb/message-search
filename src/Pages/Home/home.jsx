@@ -80,7 +80,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="home-container" style={{backgroundImage: `url(${process.env.PUBLIC_URL}/44.webp)`}}>
+    <div className="home-container">
       <div className="home-background">
       </div>
       <div className="home-content">
