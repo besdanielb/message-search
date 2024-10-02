@@ -12,7 +12,6 @@ export const API_URLS = {
     "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/search?type=",
 };
 export const SEMANTIC_SEARCH_TYPE = "semantic";
-export const EXACT_SEARCH_TYPE = "exact";
 export const SEARCH_RESULTS_STATE_NAME = "searchResults";
 export const SEARCH_TERM_STATE_NAME = "searchTerm";
 export const SEARCH_TYPE_STATE_NAME = "searchType";
