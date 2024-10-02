@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
 import "./home.scss";
@@ -92,7 +92,7 @@ export default function Home() {
           onClearInput={handleClearInput}
           searchType={searchType}
           onSearchTypeChange={handleSearchTypeChange}
-          showBackButton={false} // No back button on Home
+          showBackButton={false} 
         />
         <Hints
           hintCardVisible={hintCardVisible}

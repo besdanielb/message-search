@@ -115,6 +115,13 @@ $input-height: 3em;
   }
 }
 
+.load-more-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
 @media only screen and (max-height: 770px) and (min-width: 1100px) {
   .search {
     &__container {

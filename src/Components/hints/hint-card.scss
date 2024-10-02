@@ -6,6 +6,7 @@
   top: 100px;
   z-index: 1000;
   width: 400px;
+  height: 250px;
 
   .hint-card-animation {
     position: absolute;
@@ -37,6 +38,7 @@
     position: relative;
     z-index: 1;
     overflow: hidden;
+    height: 250px;
 
 		.hint-card__content {
       display: flex;
@@ -64,10 +66,14 @@
     }
 
     .hint-description {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
       margin-top: 10px;
       font-size: 1.1rem;
       line-height: 1.5;
       color: #555;
+      height: 100%;
     }
 
     .hint-card__controls {

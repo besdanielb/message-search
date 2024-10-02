@@ -7,7 +7,7 @@ import {
   FileCopy,
   ReadMore,
 } from "@mui/icons-material";
-import { COLORS, SEMANTIC_SEARCH_TYPE } from "../../constants";
+import { COLORS, EXACT_SEARCH_TYPE, SEMANTIC_SEARCH_TYPE } from "../../constants";
 import Highlighter from "react-highlight-words";
 
 export default function SearchResultItem({
@@ -73,7 +73,7 @@ export default function SearchResultItem({
   return (
     <li>
       <h5 className="message-title">
-        {getParagraphRatingIcon(result.distance)} {result.sermonDate} |{" "}
+        {searchType === SEMANTIC_SEARCH_TYPE && getParagraphRatingIcon(result.distance)} {result.sermonDate} |{" "}
         {result.sermonTitle}
         <span className="copy-button">
           <Tooltip title="Copy paragraph" placement="top" arrow>
@@ -87,6 +87,7 @@ export default function SearchResultItem({
         <Tooltip title="Read more" placement="top" arrow>
           <IconButton aria-label="Read more">
             <ReadMore
+              fontSize="large" 
               onClick={() => onReadMessage(result.sermonDate, result.paragraph)}
               sx={{ color: COLORS.darkBlue }}
             ></ReadMore>
@@ -98,7 +99,7 @@ export default function SearchResultItem({
       <p className="paragraph-text">
         {searchType !== SEMANTIC_SEARCH_TYPE ? (
           <Highlighter
-            activeStyle={{ backgroundColor: "yellow", color: "black" }}
+            highlightStyle={{ backgroundColor: COLORS.midGray, color: "black", padding: "2px 1px 2px 3px"  }}
             searchWords={wordsToHighlight}
             autoEscape
             textToHighlight={`${result.paragraph} ${result.section}`}

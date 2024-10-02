@@ -9,9 +9,9 @@ import {
 import "./hint-card.scss"; // Custom styles
 
 const hints = [
-  "The 'Semantic' search uses AI to find related results in the whole Message, based on meaning. E.g. queries with “Holy Spirit” will also return results with “Holy Ghost”.",
-  "The 'Exact' search type looks for exact matches of your search term within the Message database.",
-  "The 'All Words' search type ensures all words in your query are included in the results.",
+  "The 'Semantic' search uses AI to find related results in the whole Message, based on meaning. Queries with 'Holy Spirit' will also return results with 'Holy Ghost'.",
+  "The 'Exact' search looks for exact matches of your search term within the Message database. Queries with 'Holy Spirit' will return results that contain exactly 'Holy Spirit'.",
+  "The 'All Words' search type ensures all words in your query are included in the results. Queries with 'Holy Spirit' will return results that contains 'Holy Spirit', 'Holy' and 'Spirit'.",
 ];
 
 export default function HintCard({ visible, onClose }) {

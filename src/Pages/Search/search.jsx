@@ -18,6 +18,7 @@ import SearchResultItem from "./search-result-item";
 //import SortOptions from "./sort-options";
 import {
   API_URLS,
+  COLORS,
   HINTS_STATE_NAME,
   SEARCH_RESULTS_STATE_NAME,
   SEARCH_TERM_STATE_NAME,
@@ -176,7 +177,7 @@ export default function Search() {
   const resetStateFields = useCallback(() => {
     dispatch({
       type: "SET_WORDS_TO_HIGHLIGHT",
-      payload: searchTerm.trim().split(" "),
+      payload: [],
     });
     dispatch({ type: "SET_IS_SEARCHING", payload: true });
     dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
@@ -412,8 +413,9 @@ export default function Search() {
   const renderedSearchResults = useMemo(() => {
     if (isSearching) return null;
     if (noResultsFound) {
-      return <h3 className="no-results-found">No results found. Please try a different search.</h3>;
+      return <h3 className="no-results-found" style={{paddingTop: '20px'}}>No results found. Please try a different search.</h3>;
     }
+
     return searchResults.map((result, index) => (
       <SearchResultItem
         key={result.sermonDate + index}
@@ -457,22 +459,23 @@ export default function Search() {
 
         <ul className={isActive ? "transition" : ""}>
           {renderedSearchResults}
+        </ul>
 
-          {searchTerm &&
+        {searchTerm &&
             searchResults.length > 0 &&
             searchType === SEMANTIC_SEARCH_TYPE && (
               <Button
                 className="load-more-button"
                 size="medium"
-                variant="outlined"
+                variant="contained"
                 aria-label="load more results"
                 onClick={onLoadMore}
                 endIcon={<GetAppIcon />}
+                sx={{ marginBottom: "100px", backgroundColor: COLORS.darkBlue, color: COLORS.midGray }}
               >
                 Load more
               </Button>
             )}
-        </ul>
 
         <ScrollToTop showUnder={260}>
           <ScrollUpButton aria-label="scroll up" />
