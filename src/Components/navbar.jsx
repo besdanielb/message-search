@@ -12,6 +12,7 @@ import {
   List,
   ListItemText,
   Divider,
+  Container,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -65,6 +66,7 @@ export default function Navbar(props) {
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
+        <Container maxWidth="lg" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography
             variant="h6"
             sx={{
@@ -154,6 +156,7 @@ export default function Navbar(props) {
           >
             <MenuIcon />
           </IconButton>
+          </Container>
         </Toolbar>
       </AppBar>
 
@@ -164,7 +167,6 @@ export default function Navbar(props) {
             width: 250,
             background: "linear-gradient(to bottom, rgba(25, 54, 89, 0.1), rgba(25, 54, 89, 0.2))",
             height: "100%",
-            paddingTop: 2,
           }}
           role="presentation"
           onClick={toggleDrawer(false)}
@@ -174,17 +176,11 @@ export default function Navbar(props) {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "flex-end",
               alignItems: "center",
-              padding: "0 16px",
+              padding: "5px 16px",
             }}
           >
-            <Typography
-              variant="h6"
-              sx={{ fontFamily: "Great Vibes", fontSize: "2rem", color: COLORS.darkBlue }}
-            >
-              Menu
-            </Typography>
             <IconButton onClick={toggleDrawer(false)} sx={{ color: COLORS.darkBlue }}>
               <CloseIcon />
             </IconButton>

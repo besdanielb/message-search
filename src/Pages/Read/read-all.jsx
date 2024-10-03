@@ -9,7 +9,7 @@ import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
 import { COLORS } from "../../constants";
 import { ReadMore } from "@mui/icons-material";
-import { useMediaQuery, useTheme } from "@mui/material";
+import { Tooltip, useMediaQuery, useTheme } from "@mui/material";
 
 // Utility function to escape RegExp special characters
 const escapeRegExp = (value) => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -61,12 +61,13 @@ export default function ReadAll() {
     },
     {
       field: "read",
-      headerName: "",
+      headerName: "Read",
       sortable: false,
-      width: 65,
+      width: 90,
       disableColumnMenu: true,
       disableClickEventBubbling: true,
       renderCell: (params) => (
+        <Tooltip title="Read more" placement="top" >
         <IconButton
           aria-label="read message"
           color="default"
@@ -75,6 +76,7 @@ export default function ReadAll() {
         >
           <ReadMore sx={{color: COLORS.darkBlue, fontSize: "25px"}}/>
         </IconButton>
+        </Tooltip>
       ),
     },
   ], [onReadMessage]);
@@ -183,6 +185,9 @@ export default function ReadAll() {
           localeText={{
             noRowsLabel: "No Messages found",
           }}
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? "even-row" : "odd-row"
+          }
         />
       </div>
     </div>

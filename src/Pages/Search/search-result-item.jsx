@@ -1,4 +1,11 @@
-import { IconButton, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import {
   SentimentSatisfiedTwoTone as SentimentSatisfiedTwoToneIcon,
   SentimentDissatisfiedTwoTone as SentimentDissatisfiedTwoToneIcon,
@@ -17,6 +24,11 @@ export default function SearchResultItem({
   searchType,
   wordsToHighlight,
 }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
   const getParagraphRatingIcon = (distance) => {
     if (distance <= 0.55) {
       return (
@@ -24,7 +36,7 @@ export default function SearchResultItem({
           title="This is a really good result!"
           placement="top"
           arrow
-          style={{ marginRight: "5px" }}
+          sx={{ marginRight: "10px" }}
         >
           <MoodTwoToneIcon color="success" />
         </Tooltip>
@@ -34,7 +46,7 @@ export default function SearchResultItem({
         <Tooltip title="This is a good result!" placement="top" arrow>
           <SentimentSatisfiedTwoToneIcon
             color="success"
-            style={{ opacity: "0.5", marginRight: "5px" }}
+            sx={{ opacity: "0.5", marginRight: "10px" }}
           />
         </Tooltip>
       );
@@ -43,7 +55,7 @@ export default function SearchResultItem({
         <Tooltip title="This result is not the best." placement="top" arrow>
           <SentimentDissatisfiedTwoToneIcon
             color="warning"
-            style={{ opacity: "0.5", marginRight: "5px" }}
+            sx={{ opacity: "0.5", marginRight: "5px" }}
           />
         </Tooltip>
       );
@@ -54,7 +66,7 @@ export default function SearchResultItem({
           placement="top"
           arrow
         >
-          <MoodBadTwoToneIcon color="warning" style={{ marginRight: "5px" }} />
+          <MoodBadTwoToneIcon color="warning" sx={{ marginRight: "5px" }} />
         </Tooltip>
       );
     } else {
@@ -64,7 +76,7 @@ export default function SearchResultItem({
           placement="top"
           arrow
         >
-          <MoodBadTwoToneIcon color="error" style={{ marginRight: "5px" }} />
+          <MoodBadTwoToneIcon color="error" sx={{ marginRight: "10px" }} />
         </Tooltip>
       );
     }
@@ -72,44 +84,83 @@ export default function SearchResultItem({
 
   return (
     <li>
-      <h5 className="message-title">
-        {searchType === SEMANTIC_SEARCH_TYPE && getParagraphRatingIcon(result.distance)} {result.sermonDate} |{" "}
-        {result.sermonTitle}
-        <span className="copy-button">
-          <Tooltip title="Copy paragraph" placement="top" arrow>
-            <IconButton
-              aria-label="copy paragraph"
-              onClick={() => onCopyParagraph(result)}
-            >
-              <FileCopy fontSize="medium" sx={{ color: COLORS.darkBlue }} />
-            </IconButton>
-          </Tooltip>
-        <Tooltip title="Read more" placement="top" arrow>
-          <IconButton aria-label="Read more" onClick={() => onReadMessage(result.sermonDate, result.paragraph)}>
-            <ReadMore
-              fontSize="large"
-              sx={{ color: COLORS.darkBlue }}
-            ></ReadMore>
-          </IconButton>
-          </Tooltip>
-        </span>
-      </h5>
-      <div className="underline"></div>
-      <div style={{marginTop: "10px"}}>
-        {searchType !== SEMANTIC_SEARCH_TYPE ? (
-          <Highlighter
-            highlightStyle={{ backgroundColor: COLORS.midGray, color: "black", padding: "2px 1px 2px 3px"  }}
-            searchWords={wordsToHighlight}
-            autoEscape
-            textToHighlight={`${result.paragraph} ${result.section}`}
-          />
-        ) : (
-          <Typography textAlign="justify">
-            <strong style={{marginRight: '10px'}}>{result.paragraph}</strong>
-            {result.section}
-          </Typography>
-        )}
-      </div>
+      <Box
+        onClick={
+          isMobile
+            ? () => onReadMessage(result.sermonDate, result.paragraph)
+            : null
+        }
+        sx={{ position: "relative", padding: "3px", borderRadius: "10px", backgroundColor: COLORS.veryLightGray, cursor: isMobile ? "pointer" : "default" }}
+      >
+        <h5 className="message-title">
+          {searchType === SEMANTIC_SEARCH_TYPE && getParagraphRatingIcon(result.distance)}{" "}
+          <Box sx={{ width: { xs: "100%", md: "65%" } }}>
+            {result.sermonDate} | {result.sermonTitle}
+          </Box>
+
+          {/* Icons for Tablet and Desktop */}
+          {(isTablet || isDesktop) && (
+            <Box className="copy-button" sx={{
+              display: isTablet ? "flex" : "none",
+              position: isDesktop ? "absolute" : "static",
+              alignItems: "center",
+              opacity: isDesktop ? 0 : 1,
+              transition: "opacity 0.3s ease",
+              "&:hover": {
+                opacity: 1,
+              },
+            }}>
+              <Tooltip title="Copy paragraph" placement="top" arrow>
+                <IconButton
+                  aria-label="copy paragraph"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering the parent onClick
+                    onCopyParagraph(result);
+                  }}
+                >
+                  <FileCopy fontSize="medium" sx={{ color: COLORS.darkBlue }} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Read more" placement="top" arrow>
+                <IconButton
+                  aria-label="Read more"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent triggering the parent onClick
+                    onReadMessage(result.sermonDate, result.paragraph);
+                  }}
+                >
+                  <ReadMore
+                    fontSize="large"
+                    sx={{ color: COLORS.darkBlue }}
+                  ></ReadMore>
+                </IconButton>
+              </Tooltip>
+            </Box>
+          )}
+        </h5>
+        <div className="underline"></div>
+        <div style={{ marginTop: "10px" }}>
+          {searchType !== SEMANTIC_SEARCH_TYPE ? (
+            <Highlighter
+              highlightStyle={{
+                backgroundColor: COLORS.midGray,
+                color: "black",
+                padding: "2px 1px 2px 3px",
+              }}
+              searchWords={wordsToHighlight}
+              autoEscape
+              textToHighlight={`${result.paragraph} ${result.section}`}
+            />
+          ) : (
+            <Typography textAlign="justify">
+              <strong style={{ marginRight: "10px" }}>
+                {result.paragraph}
+              </strong>
+              {result.section}
+            </Typography>
+          )}
+        </div>
+      </Box>
     </li>
   );
 }

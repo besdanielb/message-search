@@ -16,6 +16,7 @@
 }
 
 .title-section {
+  margin-top: 3.5em;
   width: 100%;
   padding-top: 1em;
   text-align: center;
@@ -77,22 +78,27 @@
       white-space: normal;
       word-wrap: break-word;
       font-family: 'Roboto', sans-serif; 
+      font-size: 15px;
     }
 
     .MuiDataGrid-columnHeaders {
       color: $dark-blue;
-      font-size: 1rem;
+      font-size: 1.2rem;
       font-weight: bold;
     }
 
     .MuiDataGrid-row {
-      &:nth-of-type(even) {
-        background-color: $light-gray;
-      }
-
       &:hover {
         background-color: $mid-gray;
       }
+    }
+
+    .even-row {
+      background-color: $light-gray;
+    }
+
+    .odd-row {
+      background-color: "white";
     }
 
     .MuiDataGrid-footerContainer {
@@ -114,7 +120,7 @@
   }
 
   .title-section {
-    padding-top: 3em;
+    padding-top: 1em;
 
     h1 {
       font-size: 2rem;

@@ -142,13 +142,16 @@ $input-height: 3em;
   margin-bottom: 60px;
 }
 
+@media only screen and (min-width: 960px) { /* MUI's default md breakpoint */
+  li:hover .copy-button {
+    display: flex;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+}
+
 
 @media only screen and (min-width: 793px) {
-  h1 {
-    letter-spacing: 5px;
-    margin-bottom: 1rem;
-    text-align: start;
-  }
 
   .search {
     &__container {
