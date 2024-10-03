@@ -142,36 +142,6 @@ $input-height: 3em;
   margin-bottom: 60px;
 }
 
-@media only screen and (max-height: 770px) and (min-width: 1100px) {
-  .search {
-    &__container {
-      margin-bottom: 6em;
-    }
-  }
-}
-
-@media only screen and (max-width: 500px) {
-  .search {
-    &__container {
-      &__title {
-        &__h2 {
-          font-size: 7vmin;
-        }
-
-        &__h1 {
-          font-size: 16vmin;
-        }
-        &__description {
-          font-size: 4vmin;
-          margin: 1em 2em;
-        }
-      }
-    }
-  }
-  .info-div {
-    flex-direction: column;
-  }
-}
 
 @media only screen and (min-width: 793px) {
   h1 {

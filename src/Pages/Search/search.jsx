@@ -1,3 +1,5 @@
+// src/Pages/Search/Search.js
+
 import { useEffect, useReducer, useCallback, useMemo, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@mui/material";
@@ -81,6 +83,10 @@ function reducer(state, action) {
 
 export default function Search() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  
+  // New state for inputValue
+  const [inputValue, setInputValue] = useState(state.searchTerm);
+  
   const [hintCardVisible, setHintCardVisible] = useState(false);
   const [showHintButton, setShowHintButton] = useState(
     false || getState(HINTS_STATE_NAME)
@@ -140,7 +146,7 @@ export default function Search() {
 
         if (
           typeOfSearch === SEMANTIC_SEARCH_TYPE &&
-          results?.searchSamples.length > 0
+          results?.searchSamples?.length > 0
         ) {
           parsedResults = parseResults(results);
         }
@@ -189,8 +195,9 @@ export default function Search() {
     [parseResults, searchTerm]
   );
 
+  // Modified onSearch to use inputValue
   const onSearch = useCallback(
-    (event, typeOfSearch = state.searchType, term = state.searchTerm) => {
+    (event, typeOfSearch = state.searchType, term = inputValue) => {
       if (event) event.preventDefault();
       resetStateFields();
       if (typeOfSearch) {
@@ -210,13 +217,16 @@ export default function Search() {
       if (currentQ !== term || currentType !== typeOfSearch) {
         setSearchParams({ q: term, type: typeOfSearch });
       }
+
+      // Update the searchTerm in the state to match the submitted input
+      dispatch({ type: "SET_SEARCH_TERM", payload: term });
     },
     [
       fetchSearchResults,
       limit,
       resetStateFields,
       setSearchParams,
-      state.searchTerm,
+      inputValue, // Use inputValue instead of state.searchTerm
       state.searchType,
       searchParams,
     ]
@@ -233,8 +243,6 @@ export default function Search() {
   }, [searchParams, navigate]);
 
   // Load initial state from URL or localStorage
-  // Inside Search.js
-
   useEffect(() => {
     const urlSearchTerm = searchParams.get("q") || "";
     const urlSearchType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
@@ -251,6 +259,9 @@ export default function Search() {
           payload: urlSearchTerm.split(" "),
         });
         dispatch({ type: "SET_SEARCH_TYPE", payload: urlSearchType });
+
+        // Sync inputValue with searchTerm from URL
+        setInputValue(urlSearchTerm);
 
         // Check localStorage for cached results
         const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
@@ -317,9 +328,9 @@ export default function Search() {
     // Implement any key down logic if necessary
   }, []);
 
-  // Handle input value change
+  // Modified input change handler to update inputValue
   const onSearchInputValueChange = useCallback((event) => {
-    dispatch({ type: "SET_SEARCH_TERM", payload: event.target.value });
+    setInputValue(event.target.value);
   }, []);
 
   // Clear search input and reset state
@@ -328,6 +339,7 @@ export default function Search() {
     removeState(SEARCH_TERM_STATE_NAME);
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
+    setInputValue(""); // Reset inputValue
     // Navigate to home
     navigate("/");
   }, [navigate]);
@@ -397,47 +409,6 @@ export default function Search() {
     [onSearch, searchTerm]
   );
 
-  // Handle sort option change
-  /*const handleSortChange = useCallback(
-    (event) => {
-      const selectedSort = event.target.value;
-      dispatch({ type: "SET_SORT_BY", payload: selectedSort });
-
-      const sortedResults = [...searchResults];
-      switch (selectedSort) {
-        case SORT_OPTIONS.TITLE_ASC:
-          sortedResults.sort((a, b) =>
-            a.sermonTitle.localeCompare(b.sermonTitle)
-          );
-          break;
-        case SORT_OPTIONS.TITLE_DEC:
-          sortedResults.sort((a, b) =>
-            b.sermonTitle.localeCompare(a.sermonTitle)
-          );
-          break;
-        case SORT_OPTIONS.DATE_ASC:
-          sortedResults.sort(
-            (a, b) => new Date(a.sermonDate) - new Date(b.sermonDate)
-          );
-          break;
-        case SORT_OPTIONS.DATE_DEC:
-          sortedResults.sort(
-            (a, b) => new Date(b.sermonDate) - new Date(a.sermonDate)
-          );
-          break;
-        case SORT_OPTIONS.DEFAULT:
-        default:
-          sortedResults.sort(
-            (a, b) => new Date(a.sermonDate) - new Date(b.sermonDate)
-          );
-          break;
-      }
-
-      dispatch({ type: "SET_SEARCH_RESULTS", payload: sortedResults });
-    },
-    [searchResults]
-  );*/
-
   // Handle copying paragraph text
   const onCopyParagraphClick = useCallback((result) => {
     const textToCopy = `${result.sermonDate} | ${result.sermonTitle}\n${result.paragraph} ${result.section}`;
@@ -471,16 +442,17 @@ export default function Search() {
 
   return (
     <div className="container">
-      <Hints
+      <Hints 
         hintCardVisible={hintCardVisible}
         onCloseHintCard={handleCloseHintCard}
         showHintButton={showHintButton}
         onShowHintCard={handleShowHintCard}
+        isSearchPage={true}
       />
       <div className="search__container" onKeyDown={handleKeyDown}>
         <SearchBar
-          searchTerm={searchTerm}
-          onSearch={(event) => onSearch(event, searchType, searchTerm)}
+          searchTerm={inputValue} // Use inputValue instead of searchTerm
+          onSearch={(event) => onSearch(event, searchType, inputValue)} // Pass inputValue to onSearch
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchType={searchType}
@@ -498,15 +470,15 @@ export default function Search() {
         {isSearching && !noResultsFound && <LoadingSkeleton />}
 
         {/* Conditionally render "No results found" outside of the <ul> */}
-      {noResultsFound ? (
-        <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
-          No results found. Please try a different search.
-        </h4>
-      ) : (
-        <ul className={isActive ? "transition" : ""}>
-          {renderedSearchResults}
-        </ul>
-      )}
+        {noResultsFound ? (
+          <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
+            No results found. Please try a different search.
+          </h4>
+        ) : (
+          <ul className={isActive ? "transition" : ""}>
+            {renderedSearchResults}
+          </ul>
+        )}
 
         {searchTerm &&
           searchResults.length > 0 &&

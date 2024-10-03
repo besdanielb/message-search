@@ -17,3 +17,9 @@
 	flex-direction: column;
   padding: 20px;
 }
+
+@media screen and (max-width: 760px) {
+	.home-content {
+		padding: 0px;
+	}
+}

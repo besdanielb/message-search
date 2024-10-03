@@ -83,18 +83,18 @@ input[type="radio"] {
   color: $very-light-gray;
 }
 
-@media (max-width: 660px) {
+@media (max-width: 760px) {
   .wrapper {
     display: flex;
     flex-direction: column;
     height: 25%;
     width: 90%;
-    margin-top: 0.5em;
+    margin-top: 2.3em;
   }
 
   .wrapper .option {
     justify-content: flex-start;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .wrapper .option .dot {

@@ -3,7 +3,7 @@
 .show-hints-button {
   position: fixed;
   left: 30px;
-  top: 170px;
+  top: 200px;
   z-index: 2000; // Ensures the button stays on top
   background-color: #fff;
   border-radius: 50%;
@@ -15,11 +15,11 @@
   }
 
   svg {
-    color: $soft-blue; // Lightbulb color
+    color: $soft-blue; 
   }
 
-  @media (max-width: 600px) {
-    left: 5px;
+  @media (max-width: 760px) {
+    left: 20px;
     top: 100px;
 
     .MuiIconButton-root {
@@ -28,7 +28,7 @@
     }
 
     svg {
-      font-size: 1.8rem; // Smaller icon size for mobile
+      font-size: 1.8rem; 
     }
   }
 }

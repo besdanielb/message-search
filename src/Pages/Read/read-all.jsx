@@ -1,15 +1,15 @@
-// src/Pages/ReadAll/ReadAll.js
-
 import "./read-all.scss";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
 import IconButton from "@mui/material/IconButton";
 import { DataGrid } from "@mui/x-data-grid";
 import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 import { saveState, getState } from "../../Providers/localStorageProvider";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
+import { COLORS } from "../../constants";
+import { ReadMore } from "@mui/icons-material";
+import { useMediaQuery, useTheme } from "@mui/material";
 
 // Utility function to escape RegExp special characters
 const escapeRegExp = (value) => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
@@ -24,14 +24,16 @@ const debounce = (func, wait) => {
 };
 
 export default function ReadAll() {
+  const theme = useTheme();
   const [messages, setMessages] = useState([]);
   const [searchText, setSearchText] = useState("");
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); 
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const MESSAGES_STATE_NAME = "messages";
 
   const onReadMessage = useCallback((params) => {
+   
     const { date, paragraph } = params.row;
 
     // Ensure both date and paragraph are present
@@ -55,27 +57,27 @@ export default function ReadAll() {
       field: "date",
       headerName: "Date",
       sortable: true,
-      hide: isMobile,
       flex: 1,
     },
     {
       field: "read",
       headerName: "",
       sortable: false,
-      width: 60,
+      width: 65,
       disableColumnMenu: true,
       disableClickEventBubbling: true,
       renderCell: (params) => (
         <IconButton
           aria-label="read message"
           color="default"
+          size="medium"
           onClick={() => onReadMessage(params)}
         >
-          <MenuBookIcon />
+          <ReadMore sx={{color: COLORS.darkBlue, fontSize: "25px"}}/>
         </IconButton>
       ),
     },
-  ], [isMobile, onReadMessage]);
+  ], [onReadMessage]);
 
   // Memoize rows based on messages
   const rows = useMemo(() => {
@@ -99,22 +101,12 @@ export default function ReadAll() {
   }, [rows, searchText]);
 
   // Handle search input changes with debounce
-  const requestSearch = useCallback(
+  const requestSearch = useCallback(() =>
     debounce((searchValue) => {
       setSearchText(searchValue);
     }, 300),
     []
   );
-
-  // Handle window resize with debounce
-  useEffect(() => {
-    const handleResize = debounce(() => {
-      setIsMobile(window.innerWidth <= 768);
-    }, 200);
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // Fetch messages from API or load from localStorage
   useEffect(() => {
@@ -165,6 +157,13 @@ export default function ReadAll() {
       </div>
       <div className="data-grid-container">
         <DataGrid
+         initialState={{
+          columns: {
+            columnVisibilityModel: {
+              date: !isMobile,
+            },
+          },
+        }}
           disableRowSelectionOnClick
           rows={filteredRows}
           columns={TABLE_COLUMNS}

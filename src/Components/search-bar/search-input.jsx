@@ -10,6 +10,7 @@ export default function SearchInput(props) {
     <form className="search__form" noValidate autoComplete="off">
       <TextField
         sx={{
+          marginTop: "25px",
           "& > *": {
             margin: 1,
             width: "70vw",

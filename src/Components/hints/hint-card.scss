@@ -108,14 +108,15 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .hint-card-wrapper {
-    width: 90%;
+    width: 80%;
     left: 5%;
     top: 80px;
+    height: 260px;
 
     .hint-card {
-      height: 200px; // Adjust height for smaller screens
+      height: 260px;
     }
 
     .hint-title {
