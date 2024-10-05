@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 2.5em 2.5em 2em;
+  padding: 55px 2.5em 2.5em 2em;
   min-height: 100vh;
   background-image: url('../../assets/44.png'); 
   background-size: cover;
@@ -48,7 +48,7 @@
   box-shadow: 0px 4px 20px $dark-blue;
   background-color: $white;
   border-radius: 8px;
-  height: 65vh;
+  height: 80vh;
 
   @media (min-device-width: 300px) and (max-device-width: 1200px) and (orientation: landscape) {
     height: 60vmax;
@@ -59,7 +59,7 @@
   }
 
   @media (min-width: 2000px) {
-    height: 72vh;
+    height: 85vh;
   }
 
   .MuiDataGrid-toolbarContainer {
@@ -68,23 +68,53 @@
     padding: 0.5em;
     background-color: $mid-gray;
     border-bottom: 1px solid $dark-blue;
+    height: 50px;
   }
 
   .MuiDataGrid-root {
     border: none;
     border-radius: 8px;
 
+    .MuiInput-root {
+      color: $mid-gray;
+
+      &:hover  {
+        border-bottom: 1px solid $mid-gray;
+      }      
+    }
+
+    .MuiInput-underline:after {
+      border-bottom: 1px solid $mid-gray ; 
+    }
+
+    .MuiInput-underline:hover:before {
+      border-bottom: 1px solid $dark-blue ;
+    }
+
+    .MuiInputBase-root:focus {
+      outline: none;
+    }
+
+    .MuiDataGrid-columnHeader {
+      background-color: $dark-blue; // Replace with your desired color
+      color: $mid-gray; // Header text color
+      font-size: 20px;
+      font-weight: bold;
+      font-family: monospace;
+
+      .MuiIconButton-sizeSmall {
+        color: $mid-gray,
+      }
+    }
+  
     .MuiDataGrid-cell {
+      color: $dark-blue; // Header text color
       white-space: normal;
       word-wrap: break-word;
       font-family: 'Roboto', sans-serif; 
       font-size: 15px;
-    }
-
-    .MuiDataGrid-columnHeaders {
-      color: $dark-blue;
-      font-size: 1.2rem;
-      font-weight: bold;
+      border-top-color: $light-gray;
+      font-family: monospace;
     }
 
     .MuiDataGrid-row {
@@ -98,13 +128,25 @@
     }
 
     .odd-row {
-      background-color: "white";
+      background-color: $very-light-gray;
     }
 
     .MuiDataGrid-footerContainer {
       background-color: $mid-gray;
       color: $dark-blue;
-      border-top: 1px solid $dark-blue;
+      border-top: 1px solid $mid-gray;
+    }
+
+    .MuiTablePagination-selectLabel{
+      font-family: monospace;
+    }
+
+    .MuiTablePagination-toolbar {
+      color: $dark-blue;
+    }
+
+    .MuiDataGrid-toolbarContainer {
+      background-color: $dark-blue;
     }
 
     .MuiDataGrid-iconButtonContainer {

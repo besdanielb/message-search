@@ -4,17 +4,17 @@
   display: inline-block;
   white-space: nowrap;
   overflow: hidden;
-  font-size: 4rem;
+  font-size: clamp(7vmin, 8vmin, 40px);
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   color: $dark-blue;
+  margin-bottom: 0;
 }
 
 .cursor {
   display: inline-block;
   background-color: $dark-blue;
   width: 0.1em;
-  margin-left: -5px;
   animation: blink 1s step-end infinite;
 }
 
@@ -26,8 +26,9 @@
 @media (max-width: 760px), (hover: none) {
   .typing-title {
     white-space: wrap;
-    font-size: 2.8rem;
-    height: 110px;
+    font-size: 4.8vh;
+    height: 14vmax;
+    width: 85%;
   }
 
   .cursor {

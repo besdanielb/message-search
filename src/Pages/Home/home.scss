@@ -1,3 +1,5 @@
+@import '../../colors.scss';
+
 .home-container {
   position: relative;
   width: 100%;
@@ -8,6 +10,7 @@
   background-image: url('../../assets/44.png'); /* Update the path */
   background-size: cover;
   background-position: center;
+	overflow: hidden;
 }
 
 .home-content {
@@ -18,8 +21,8 @@
   padding: 20px;
 }
 
-@media screen and (max-width: 760px) {
-	.home-content {
+@media screen and (max-width: 793px) {
+  .home-container {
 		padding: 0px;
-	}
+  }
 }

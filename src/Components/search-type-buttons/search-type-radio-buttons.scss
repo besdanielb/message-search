@@ -8,24 +8,28 @@
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  margin-top: 2.5em;
+  margin-top: 3em;
   margin-bottom: 1.5em;
 }
 
 .wrapper .option {
   background: $light-gray;
+  min-width: 180px;
   height: 100%;
-  width: 100%;
-  max-width: 175px;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   margin: 0 10px;
   border-radius: 5px;
   cursor: pointer;
   padding: 0 10px;
   border: 2px solid $mid-gray;
   transition: all 0.3s ease;
+  
+
+  @media screen and (max-width: 760px) {
+    width: 180px;
+  }
 }
 
 .wrapper .option:hover {
@@ -34,11 +38,13 @@
 }
 
 .wrapper .option .dot {
+ 
   height: 18px;
   width: 18px;
   background: $mid-gray;
   border-radius: 50%;
   position: relative;
+  margin: 0px 15px;
 }
 .wrapper .option .dot::before {
   position: absolute;

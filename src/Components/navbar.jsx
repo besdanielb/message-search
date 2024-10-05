@@ -66,11 +66,11 @@ export default function Navbar(props) {
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Container maxWidth="lg" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <Container maxWidth="xl" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography
             variant="h6"
             sx={{
-              fontSize: "3vmax",
+              fontSize: "2.5vmax",
               fontFamily: "Great Vibes",
               fontWeight: "bold",
               color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
@@ -88,7 +88,7 @@ export default function Navbar(props) {
                 height: "40px",
                 position: "relative",
                 color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-                fontSize: "1.2rem",
+                fontSize: "clamp(20px, 1.3vmax, 30px)",
                 marginLeft: 2,
                 textTransform: "capitalize",
                 padding: "6px 12px",
@@ -119,7 +119,7 @@ export default function Navbar(props) {
                 height: "40px",
                 position: "relative",
                 color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-                fontSize: "1.2rem",
+                fontSize: "clamp(20px, 1.3vmax, 30px)",
                 marginLeft: 2,
                 textTransform: "capitalize",
                 padding: "6px 12px",
@@ -164,8 +164,8 @@ export default function Navbar(props) {
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
         <Box
           sx={{
-            width: 250,
-            background: "linear-gradient(to bottom, rgba(25, 54, 89, 0.1), rgba(25, 54, 89, 0.2))",
+            width: 200,
+            background: "linear-gradient(to right, rgba(25, 54, 89, 0.96), rgba(25, 54, 89, 0.9))",
             height: "100%",
           }}
           role="presentation"
@@ -176,17 +176,19 @@ export default function Navbar(props) {
           <Box
             sx={{
               display: "flex",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               alignItems: "center",
               padding: "5px 16px",
             }}
           >
-            <IconButton onClick={toggleDrawer(false)} sx={{ color: COLORS.darkBlue }}>
+            <h3 style={{color: COLORS.midGray}}>Menu</h3>
+           
+            <IconButton onClick={toggleDrawer(false)} sx={{ color: COLORS.midGray }}>
               <CloseIcon />
             </IconButton>
           </Box>
 
-          <Divider />
+          <Divider  sx={{ borderColor: COLORS.grayBlue }}/>
 
           {/* Menu Links */}
           <List>
@@ -196,7 +198,7 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: COLORS.darkBlue,
+                  color: COLORS.midGray,
                 }}
               />
             </ListItemButton>
@@ -206,7 +208,7 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: COLORS.darkBlue,
+                  color: COLORS.midGray,
                 }}
               />
             </ListItemButton>

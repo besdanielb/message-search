@@ -9,7 +9,6 @@ export default function SearchBar({
   onClearInput,
   searchType,
   onSearchTypeChange,
-  showBackButton,
 }) {
   return (
     <div className="search-bar-container">

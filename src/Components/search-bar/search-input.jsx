@@ -25,7 +25,7 @@ export default function SearchInput(props) {
             color: COLORS.darkBlue,
           },
           "& .MuiInput-underline:after": {
-            borderBottomColor: COLORS.darkBlue,
+            borderColor: COLORS.darkBlue,
           },
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
@@ -36,7 +36,7 @@ export default function SearchInput(props) {
             },
             "&:hover fieldset": {
               cursor: "pointer",
-              boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.2)",
+              boxShadow: "0px 4px 10px rgba(25, 54, 89, 0.5)",
             },
           },
         }}

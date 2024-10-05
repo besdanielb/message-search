@@ -14,15 +14,6 @@ import { Tooltip, useMediaQuery, useTheme } from "@mui/material";
 // Utility function to escape RegExp special characters
 const escapeRegExp = (value) => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 
-// Debounce function to limit the rate of function calls
-const debounce = (func, wait) => {
-  let timeout;
-  return (...args) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-};
-
 export default function ReadAll() {
   const theme = useTheme();
   const [messages, setMessages] = useState([]);
@@ -61,13 +52,13 @@ export default function ReadAll() {
     },
     {
       field: "read",
-      headerName: "Read",
+      headerName: "",
       sortable: false,
       width: 90,
       disableColumnMenu: true,
       disableClickEventBubbling: true,
       renderCell: (params) => (
-        <Tooltip title="Read more" placement="top" >
+        <Tooltip title="Read Message" placement="top" >
         <IconButton
           aria-label="read message"
           color="default"
@@ -101,14 +92,6 @@ export default function ReadAll() {
       );
     });
   }, [rows, searchText]);
-
-  // Handle search input changes with debounce
-  const requestSearch = useCallback(() =>
-    debounce((searchValue) => {
-      setSearchText(searchValue);
-    }, 300),
-    []
-  );
 
   // Fetch messages from API or load from localStorage
   useEffect(() => {
@@ -154,9 +137,9 @@ export default function ReadAll() {
   return (
     <div className="read-all-container">
       <div className="title-section">
-        <h1>Read a Message</h1>
         {error && <div className="error-message">{error}</div>}
       </div>
+      
       <div className="data-grid-container">
         <DataGrid
          initialState={{
@@ -171,12 +154,14 @@ export default function ReadAll() {
           columns={TABLE_COLUMNS}
           disableSelectionOnClick
           loading={messages.length === 0 && !error}
-          components={{ Toolbar: QuickSearchToolbar }}
-          componentsProps={{
+          slots={{
+            toolbar: QuickSearchToolbar,
+          }}
+          slotProps={{
             toolbar: {
               value: searchText,
-              onChange: (event) => requestSearch(event.target.value),
-              clearSearch: () => requestSearch(""),
+              onChange: (event) => setSearchText(event.target.value),
+              clearSearch: () => setSearchText(""),
             },
           }}
           pagination

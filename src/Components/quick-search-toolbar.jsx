@@ -1,40 +1,23 @@
-import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import ClearIcon from "@mui/icons-material/Clear";
-import SearchIcon from "@mui/icons-material/Search";
-import { styled } from '@mui/material/styles';
-import { GridToolbarContainer } from '@mui/x-data-grid';
-
-const StyledGridToolbarContainer = styled(GridToolbarContainer)(() => ({
-  padding: 1,
-  display: 'flex',
-  justifyContent: 'flex-start',
-}));
+import { GridToolbarContainer, GridToolbarQuickFilter } from '@mui/x-data-grid';
+import { Button } from '@mui/material';
+import { COLORS } from '../constants';
 
 export default function QuickSearchToolbar(props) {
-  const { value, onChange, clearSearch } = props;
 
   return (
-    <StyledGridToolbarContainer>
-      <TextField
+    <GridToolbarContainer sx={{':focus': {borderBottom: '3px solid white'}}}>
+      <GridToolbarQuickFilter
+        value={props.value}
+        onChange={props.onChange}
         variant="standard"
-        value={value}
-        onChange={onChange}
-        placeholder="Search…"
-        InputProps={{
-          startAdornment: <SearchIcon fontSize="small" />,
-          endAdornment: value ? (
-            <IconButton
-              aria-label="clear search"
-              onClick={clearSearch}
-              size="small"
-            >
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          ) : null,
-        }}
-        sx={{ width: '25ch' }}
+        placeholder="Search by Message title or date"
+        sx={{ margin: '0.1em 0.3em' , width: "90%"}}
       />
-    </StyledGridToolbarContainer>
+      {props.value && (
+        <Button onClick={props.clearSearch} sx={{ marginLeft: '1em', color: COLORS.midGray }}>
+          Clear
+        </Button>
+      )}
+    </GridToolbarContainer>
   );
 }
