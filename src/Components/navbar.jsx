@@ -201,7 +201,7 @@ export default function Navbar(props) {
           sx={{
             width: 200,
             background:
-              "linear-gradient(to right, rgba(25, 54, 89, 0.96), rgba(25, 54, 89, 0.9))",
+              "linear-gradient(to right, var(--drawer-1), var(--drawer-2))",
             height: "100%",
           }}
           role="presentation"
@@ -217,9 +217,9 @@ export default function Navbar(props) {
               padding: "5px 16px",
             }}
           >
-            <h3 style={{ color: 'var(--border-color)' }}>Menu</h3>
+            <h3 style={{ color: 'var(--text-color)' }}>Menu</h3>
 
-            <IconButton onClick={toggleDrawer(false)} sx={{ color: 'var(--border-color)' }}>
+            <IconButton onClick={toggleDrawer(false)} sx={{ color: 'var(--text-color)' }}>
               <CloseIcon />
             </IconButton>
           </Box>
@@ -234,7 +234,7 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: 'var(--border-color)',
+                  color: 'var(--text-color)',
                 }}
               />
             </ListItemButton>
@@ -244,14 +244,14 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: 'var(--border-color)',
+                  color: 'var(--text-color)',
                 }}
               />
             </ListItemButton>
           </List>
 
           {/* Theme Toggle in Drawer (Optional) */}
-          <Box sx={{ padding: "16px" }}>
+          <Box sx={{ padding: "0px 16px" }}>
             <FormControlLabel
               control={
                 <Switch
@@ -263,7 +263,7 @@ export default function Navbar(props) {
               }
               label="Dark Mode"
               sx={{
-                color: 'var(--border-color)',
+                color: 'var(--text-color)',
               }}
             />
           </Box>
