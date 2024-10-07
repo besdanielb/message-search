@@ -8,11 +8,16 @@ import { logEvent } from "firebase/analytics";
 import { analytics } from "./index";
 import withClearCache from "./ClearCache";
 import Navbar from "./Components/navbar";
+import { ThemeProvider } from "./Providers/themeContext";
 
 const ClearCacheComponent = withClearCache(MainApp);
 
 function App() {
-  return <ClearCacheComponent />;
+  return (
+    <ThemeProvider>
+      <ClearCacheComponent />
+    </ThemeProvider>
+  );
 }
 
 function MainApp(props) {

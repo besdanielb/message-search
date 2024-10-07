@@ -1,6 +1,6 @@
 // src/components/Navbar.js
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -13,17 +13,21 @@ import {
   ListItemText,
   Divider,
   Container,
+  Switch, // Import Switch
+  FormControlLabel, // Import FormControlLabel
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import ListItemButton from "@mui/material/ListItemButton"; // Import ListItemButton
+import ListItemButton from "@mui/material/ListItemButton";
 import { useNavigate } from "react-router-dom";
-import { COLORS } from "../constants";
+import { ThemeContext } from "../Providers/themeContext"; // Import ThemeContext
 
 export default function Navbar(props) {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
+
+  const { theme, toggleTheme } = useContext(ThemeContext); // Consume ThemeContext
 
   // Listen for scroll events to change the AppBar background color
   useEffect(() => {
@@ -61,101 +65,132 @@ export default function Navbar(props) {
         sx={{
           transition: "background-color 0.3s ease",
           background: scrolled
-            ? "rgba(25, 54, 89, 0.9)"
-            : "linear-gradient(to right, rgba(25, 54, 89, 0.1), rgba(25, 54, 89, 0.2))",
+            ? "var(--text-color)"
+            : "linear-gradient(to right, var(--nav-bar-1), var(--nav-bar-2))",
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Container maxWidth="xl" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography
-            variant="h6"
+          <Container
+            maxWidth="xl"
             sx={{
-              fontSize: "2.5vmax",
-              fontFamily: "Great Vibes",
-              fontWeight: "bold",
-              color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-              ":hover": { cursor: "pointer" },
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
             }}
-            onClick={() => navigate("/")}
           >
-            Message Search
-          </Typography>
-
-          {/* Desktop Navigation Items */}
-          <Box className="navbar-buttons" sx={{ display: { xs: "none", md: "flex" } }}>
-            <Button
+            <Typography
+              variant="h6"
               sx={{
-                height: "40px",
-                position: "relative",
-                color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-                fontSize: "clamp(20px, 1.3vmax, 30px)",
-                marginLeft: 2,
-                textTransform: "capitalize",
-                padding: "6px 12px",
-                overflow: "hidden",
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  width: "0%",
-                  height: "2px",
-                  backgroundColor: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-                  transition: "width 0.3s ease",
-                },
-                "&:hover::after": {
-                  width: "100%",
-                },
-                "&:hover": {
-                  backgroundColor: "transparent",
-                },
+                fontSize: "2.5vmax",
+                fontFamily: "Great Vibes",
+                fontWeight: "bold",
+                color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
+                ":hover": { cursor: "pointer" },
               }}
               onClick={() => navigate("/")}
             >
-              Search
-            </Button>
-            <Button
-              sx={{
-                height: "40px",
-                position: "relative",
-                color: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-                fontSize: "clamp(20px, 1.3vmax, 30px)",
-                marginLeft: 2,
-                textTransform: "capitalize",
-                padding: "6px 12px",
-                overflow: "hidden",
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  bottom: 0,
-                  left: 0,
-                  width: "0%",
-                  height: "2px",
-                  backgroundColor: scrolled ? COLORS.lightGray : COLORS.darkBlue,
-                  transition: "width 0.3s ease",
-                },
-                "&:hover::after": {
-                  width: "100%",
-                },
-                "&:hover": {
-                  backgroundColor: "transparent",
-                },
-              }}
-              onClick={() => navigate("/read-all")}
-            >
-              Read
-            </Button>
-          </Box>
+              Message Search
+            </Typography>
 
-          {/* Mobile Menu Icon */}
-          <IconButton
-            edge="start"
-            sx={{ display: { xs: "block", md: "none" }, color: "#fff" }}
-            aria-label="menu"
-            onClick={toggleDrawer(true)}
-          >
-            <MenuIcon />
-          </IconButton>
+            {/* Desktop Navigation Items */}
+            <Box
+              className="navbar-buttons"
+              sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+            >
+              <Button
+                sx={{
+                  height: "40px",
+                  position: "relative",
+                  color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
+                  fontSize: "clamp(20px, 1.3vmax, 30px)",
+                  marginLeft: 2,
+                  textTransform: "capitalize",
+                  padding: "6px 12px",
+                  overflow: "hidden",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    width: "0%",
+                    height: "2px",
+                    backgroundColor: scrolled
+                      ? 'var(--background-color)'
+                      : 'var(--text-color)',
+                    transition: "width 0.3s ease",
+                  },
+                  "&:hover::after": {
+                    width: "100%",
+                  },
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+                onClick={() => navigate("/")}
+              >
+                Search
+              </Button>
+              <Button
+                sx={{
+                  height: "40px",
+                  position: "relative",
+                  color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
+                  fontSize: "clamp(20px, 1.3vmax, 30px)",
+                  marginLeft: 2,
+                  textTransform: "capitalize",
+                  padding: "6px 12px",
+                  overflow: "hidden",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    width: "0%",
+                    height: "2px",
+                    backgroundColor: scrolled
+                      ? 'var(--background-color)'
+                      : 'var(--text-color)',
+                    transition: "width 0.3s ease",
+                  },
+                  "&:hover::after": {
+                    width: "100%",
+                  },
+                  "&:hover": {
+                    backgroundColor: "transparent",
+                  },
+                }}
+                onClick={() => navigate("/read-all")}
+              >
+                Read
+              </Button>
+
+              {/* Theme Toggle Switch */}
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={theme === "dark"}
+                    onChange={toggleTheme}
+                    name="themeToggle"
+                    color="default"
+                  />
+                }
+                label="Dark Mode"
+                sx={{
+                  marginLeft: 2,
+                  color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
+                }}
+              />
+            </Box>
+
+            {/* Mobile Menu Icon */}
+            <IconButton
+              edge="start"
+              sx={{ display: { xs: "block", md: "none" }, color: "#fff" }}
+              aria-label="menu"
+              onClick={toggleDrawer(true)}
+            >
+              <MenuIcon />
+            </IconButton>
           </Container>
         </Toolbar>
       </AppBar>
@@ -165,7 +200,8 @@ export default function Navbar(props) {
         <Box
           sx={{
             width: 200,
-            background: "linear-gradient(to right, rgba(25, 54, 89, 0.96), rgba(25, 54, 89, 0.9))",
+            background:
+              "linear-gradient(to right, rgba(25, 54, 89, 0.96), rgba(25, 54, 89, 0.9))",
             height: "100%",
           }}
           role="presentation"
@@ -181,14 +217,14 @@ export default function Navbar(props) {
               padding: "5px 16px",
             }}
           >
-            <h3 style={{color: COLORS.midGray}}>Menu</h3>
-           
-            <IconButton onClick={toggleDrawer(false)} sx={{ color: COLORS.midGray }}>
+            <h3 style={{ color: 'var(--border-color)' }}>Menu</h3>
+
+            <IconButton onClick={toggleDrawer(false)} sx={{ color: 'var(--border-color)' }}>
               <CloseIcon />
             </IconButton>
           </Box>
 
-          <Divider  sx={{ borderColor: COLORS.grayBlue }}/>
+          <Divider sx={{ borderColor: 'var(--disabled-color)' }} />
 
           {/* Menu Links */}
           <List>
@@ -198,7 +234,7 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: COLORS.midGray,
+                  color: 'var(--border-color)',
                 }}
               />
             </ListItemButton>
@@ -208,11 +244,29 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: COLORS.midGray,
+                  color: 'var(--border-color)',
                 }}
               />
             </ListItemButton>
           </List>
+
+          {/* Theme Toggle in Drawer (Optional) */}
+          <Box sx={{ padding: "16px" }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={theme === "dark"}
+                  onChange={toggleTheme}
+                  name="themeToggleDrawer"
+                  color="default"
+                />
+              }
+              label="Dark Mode"
+              sx={{
+                color: 'var(--border-color)',
+              }}
+            />
+          </Box>
         </Box>
       </Drawer>
     </>

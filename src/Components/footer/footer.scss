@@ -1,7 +1,5 @@
-@import '../../colors.scss';
-
 .contacts {
-  background-color: $very-light-gray;
+  background-color: var(--background-color);
 	display: flex;
   align-items: center;
   justify-content: center;

@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { Apple, Email } from "@mui/icons-material";
 import { Fade, IconButton, Tooltip } from "@mui/material";
 import "./footer.scss";
-import { COLORS } from "../../constants";
 
 export default function Footer() {
   // Open email client
@@ -27,7 +26,7 @@ export default function Footer() {
         arrow
       >
         <IconButton aria-label="download ios app" size="medium">
-          <Apple fontSize="medium" sx={{color: COLORS.darkBlue}}/>
+          <Apple fontSize="medium" sx={{color: 'var(--text-color)'}}/>
         </IconButton>
       </Tooltip>
       <Tooltip
@@ -41,7 +40,7 @@ export default function Footer() {
           size="medium"
           onClick={openEmailClient}
         >
-          <Email fontSize="medium" sx={{color: COLORS.darkBlue}} />
+          <Email fontSize="medium" sx={{color: 'var(--text-color)'}} />
         </IconButton>
       </Tooltip>
     </div>

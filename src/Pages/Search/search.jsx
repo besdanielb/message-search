@@ -19,7 +19,6 @@ import {
 import SearchResultItem from "./search-result-item";
 import {
   API_URLS,
-  COLORS,
   HINTS_STATE_NAME,
   SEARCH_RESULTS_STATE_NAME,
   SEARCH_TERM_STATE_NAME,
@@ -441,7 +440,7 @@ export default function Search() {
   ]);
 
   return (
-    <div className="container">
+    <div className="search-container">
       <Hints 
         hintCardVisible={hintCardVisible}
         onCloseHintCard={handleCloseHintCard}
@@ -492,8 +491,8 @@ export default function Search() {
               endIcon={<GetAppIcon />}
               sx={{
                 marginBottom: "100px",
-                backgroundColor: COLORS.darkBlue,
-                color: COLORS.midGray,
+                backgroundColor: 'var(--text-color)',
+                color: 'var(--border-color)',
               }}
             >
               Load more

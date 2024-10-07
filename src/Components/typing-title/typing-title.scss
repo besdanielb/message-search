@@ -1,5 +1,3 @@
-@import '../../colors.scss';
-
 .typing-title {
   display: inline-block;
   white-space: nowrap;
@@ -7,14 +5,14 @@
   font-size: clamp(7vmin, 8vmin, 40px);
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
-  color: $dark-blue;
+  color: var(--text-color);
   margin-bottom: 0;
 }
 
 .cursor {
   display: inline-block;
-  background-color: $dark-blue;
-  width: 0.1em;
+  background-color: var(--text-color);
+  width: 7px;
   animation: blink 1s step-end infinite;
 }
 

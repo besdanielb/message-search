@@ -3,9 +3,12 @@ import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
 import IconButton from "@mui/material/IconButton";
 import ClearIcon from "@mui/icons-material/Clear";
-import { COLORS } from "../../constants";
+import { useContext } from "react";
+import { ThemeContext } from "../../Providers/themeContext";
 
 export default function SearchInput(props) {
+  const { theme } = useContext(ThemeContext); 
+
   return (
     <form className="search__form" noValidate autoComplete="off">
       <TextField
@@ -22,21 +25,23 @@ export default function SearchInput(props) {
             },
           },
           "& label.Mui-focused": {
-            color: COLORS.darkBlue,
+            color: 'var(--text-color)',
           },
           "& .MuiInput-underline:after": {
-            borderColor: COLORS.darkBlue,
+            borderColor: 'var(--text-color)',
           },
           "& .MuiOutlinedInput-root": {
             "& fieldset": {
-              borderColor: COLORS.darkBlue,
+              border: '3px solid var(--text-color)',
             },
             "&.Mui-focused fieldset": {
-              borderColor: COLORS.darkBlue,
+              border: '3px solid var(--text-color)',
+              color: 'var(--text-color)',
             },
             "&:hover fieldset": {
               cursor: "pointer",
-              boxShadow: "0px 4px 10px rgba(25, 54, 89, 0.5)",
+              borderColor: 'var(--text-color)',
+              boxShadow:  theme === 'dark' ? 'none' : "0px 4px 10px var(--hover-input)",
             },
           },
         }}
@@ -55,7 +60,7 @@ export default function SearchInput(props) {
                   onClick={props.onClearInput}
                   aria-label="clear search"
                 >
-                  <ClearIcon />
+                  <ClearIcon sx={{color: "var(--text-color)"}} />
                 </IconButton>
               ) : (
                 <></>
@@ -66,7 +71,7 @@ export default function SearchInput(props) {
                 onClick={props.onSearch}
                 disabled={!props.searchTerm}
               >
-                <SearchIcon />
+                <SearchIcon  sx={{color: "var(--text-color)"}}/>
               </IconButton>
             </InputAdornment>
           ),

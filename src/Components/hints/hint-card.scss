@@ -1,5 +1,3 @@
-@import '../../colors.scss';
-
 .hint-card-wrapper {
   position: fixed;
   left: 20px;
@@ -14,7 +12,7 @@
     left: -10px;
     right: -10px;
     bottom: -10px;
-    background: linear-gradient(45deg, $mid-gray, $dark-blue);
+    background: linear-gradient(45deg, var(--border-color), var(--text-color));
     border-radius: 15px;
     filter: blur(8px);
     animation: glow 2s infinite alternate;
@@ -32,7 +30,7 @@
   }
 
   .hint-card {
-    background: rgba(255,255,255,0.9);
+    background: var(--background-color);
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     position: relative;
@@ -57,10 +55,10 @@
       display: flex;
       align-items: center;
       font-weight: 600;
-      color: #333;
+      color: var(--text-color);
 
       .hint-icon {
-        color: $soft-blue;
+        color: var(--accent-color);
         margin-right: 8px;
       }
     }
@@ -72,7 +70,7 @@
       margin-top: 10px;
       font-size: 1.1rem;
       line-height: 1.5;
-      color: #555;
+      color: var(--text-color);
       height: 100%;
     }
 
@@ -84,20 +82,20 @@
       .small-hint-button {
         border-radius: 15px;
         padding: 5px 15px;
-        font-size: 0.8rem; /* Smaller font size */
-        background: linear-gradient(135deg, $dark-blue, $gray-blue);
-        color: #fff;
+        font-size: 0.8rem;
+        background: linear-gradient(135deg, var(--text-color), var(--disabled-color));
+        color: var(--background-color);
         text-transform: none;
         transition: background 0.3s;
         box-shadow: none;
 
         &:hover {
-          background: linear-gradient(135deg, $soft-blue, $dark-blue);
+          background: linear-gradient(135deg, var(--accent-color), var(--text-color));
         }
 
         &:disabled {
           background: #ccc;
-          color: #666;
+          color: var(--disabled-color);
         }
 
         svg {

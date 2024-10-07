@@ -1,10 +1,8 @@
-@import '../../colors.scss';
-
 $input-height: 3em;
 
 
-.container {
-  background: $light-gray;
+.search-container {
+  background: var(--background-color);
   transition: 1s;
   transform-origin: left center;
   min-height: 100vh;
@@ -20,6 +18,7 @@ $input-height: 3em;
   background-position: center;
   background-attachment: fixed;
   overflow-y: auto;
+  padding-top: 30px;
 }
 
 .search {
@@ -42,7 +41,8 @@ $input-height: 3em;
         padding: 1em 1.3em;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         border-radius: 10px;
-        background-color: $very-light-gray;
+        background-color: var(--input-background);
+        color: var(--text-color);
 
         &:first-child {
           margin-top: 1.5em;
@@ -56,8 +56,8 @@ $input-height: 3em;
           cursor: pointer;
           animation-name: example;
           animation-duration: 0.3s;
-          box-shadow: 0 0px 20px $dark-blue,
-            0 0px 15px $light-gray;
+          box-shadow: 0 0px 20px var(--text-color),
+            0 0px 15px var(--background-color);
         }
       }
 
@@ -65,16 +65,25 @@ $input-height: 3em;
         &:not(:first-child) {
           margin-top: 1em;
         }
-        color: rgba(0, 0, 0, 0.7);
+        color: var(--text-color);
       }
 
       .underline {
         width: 4em;
         margin-top: 10px;
-        border-bottom: 4px solid $gray-blue;
+        border-bottom: 4px solid var(--disabled-color);
       }
     }
   }
+}
+
+#search-input-label {
+  color: var(--text-color);
+}
+
+#search-input {
+  color: var(--text-color);
+  font-weight: bold;
 }
 
 .copy-button {
@@ -103,7 +112,7 @@ $input-height: 3em;
   font-weight: bold;
   display: flex;
   align-items: center;
-  color: $dark-blue; 
+  color: var(--text-color); 
 }
 
 .makeStyles-margin-2 {

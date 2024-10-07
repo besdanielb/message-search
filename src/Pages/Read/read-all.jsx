@@ -7,7 +7,6 @@ import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 import { saveState, getState } from "../../Providers/localStorageProvider";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
-import { COLORS } from "../../constants";
 import { ReadMore } from "@mui/icons-material";
 import { Tooltip, useMediaQuery, useTheme } from "@mui/material";
 
@@ -52,7 +51,7 @@ export default function ReadAll() {
     },
     {
       field: "read",
-      headerName: "",
+      headerName: "Read",
       sortable: false,
       width: 90,
       disableColumnMenu: true,
@@ -61,11 +60,9 @@ export default function ReadAll() {
         <Tooltip title="Read Message" placement="top" >
         <IconButton
           aria-label="read message"
-          color="default"
-          size="medium"
           onClick={() => onReadMessage(params)}
         >
-          <ReadMore sx={{color: COLORS.darkBlue, fontSize: "25px"}}/>
+          <ReadMore sx={{color: 'var(--text-color)', fontSize: "30px"}}/>
         </IconButton>
         </Tooltip>
       ),

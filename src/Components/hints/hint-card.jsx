@@ -45,7 +45,7 @@ export default function HintCard({ visible, onClose }) {
                 Hint #{currentHint + 1}
               </Typography>
               <IconButton aria-label="close" onClick={handleClose}>
-                <Close />
+                <Close sx={{color: "var(--text-color)"}}/>
               </IconButton>
             </div>
             <Typography variant="body1" className="hint-description">

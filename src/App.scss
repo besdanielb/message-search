@@ -1,5 +1,3 @@
-@import 'colors.scss';
-
 body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
@@ -12,7 +10,7 @@ p {
 
 h1, h2, h3, h4 {
   font-family: 'Roboto', sans-serif;
-  color: $dark-blue;
+  color: var(--text-color);
 }
 
 button {

@@ -1,11 +1,9 @@
-@import '../../colors.scss';
-
 .show-hints-button {
   position: fixed;
   left: 30px;
   top: 200px;
   z-index: 3; // Ensures the button stays on top
-  background-color: #fff;
+  background-color: var(--background-color);
   border-radius: 50%;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 
@@ -15,7 +13,7 @@
   }
 
   svg {
-    color: $soft-blue; 
+    color: var(--accent-color); 
   }
 
   @media (max-width: 760px) {

@@ -14,7 +14,7 @@ import {
   FileCopy,
   ReadMore,
 } from "@mui/icons-material";
-import { COLORS, SEMANTIC_SEARCH_TYPE } from "../../constants";
+import { SEMANTIC_SEARCH_TYPE } from "../../constants";
 import Highlighter from "react-highlight-words";
 
 export default function SearchResultItem({
@@ -76,7 +76,7 @@ export default function SearchResultItem({
           placement="top"
           arrow
         >
-          <MoodBadTwoToneIcon color="error" sx={{ marginRight: "10px" }} />
+          <MoodBadTwoToneIcon color="var(--error-color)" sx={{ marginRight: "10px" }} />
         </Tooltip>
       );
     }
@@ -90,7 +90,7 @@ export default function SearchResultItem({
             ? () => onReadMessage(result.sermonDate, result.paragraph)
             : null
         }
-        sx={{ position: "relative", padding: "3px", borderRadius: "10px", backgroundColor: COLORS.veryLightGray, cursor: isMobile ? "pointer" : "default" }}
+        sx={{ position: "relative", padding: "3px", borderRadius: "10px", backgroundColor: 'var(--input-background)', cursor: isMobile ? "pointer" : "default" }}
       >
         <h5 className="message-title">
           {searchType === SEMANTIC_SEARCH_TYPE && getParagraphRatingIcon(result.distance)}{" "}
@@ -118,7 +118,7 @@ export default function SearchResultItem({
                     onCopyParagraph(result);
                   }}
                 >
-                  <FileCopy fontSize="medium" sx={{ color: COLORS.darkBlue }} />
+                  <FileCopy fontSize="medium" sx={{ color: 'var(--text-color)' }} />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Read more" placement="top" arrow>
@@ -131,7 +131,7 @@ export default function SearchResultItem({
                 >
                   <ReadMore
                     fontSize="large"
-                    sx={{ color: COLORS.darkBlue }}
+                    sx={{ color: 'var(--text-color)' }}
                   ></ReadMore>
                 </IconButton>
               </Tooltip>
@@ -143,8 +143,8 @@ export default function SearchResultItem({
           {searchType !== SEMANTIC_SEARCH_TYPE ? (
             <Highlighter
               highlightStyle={{
-                backgroundColor: COLORS.midGray,
-                color: "black",
+                backgroundColor: 'var(--border-color)',
+                color: 'var(--background-color)',
                 padding: "2px 1px 2px 3px",
               }}
               searchWords={wordsToHighlight}

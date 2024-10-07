@@ -185,7 +185,7 @@ export default function Read() {
   };
 
   return (
-    <section className="container">
+    <section className="read-container">
       <div className="read__container">
         {isLoading && <ReadSkeleton />}
         {error && <div className="error">{error}</div>}

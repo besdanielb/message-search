@@ -1,19 +1,39 @@
 :root {
-  --dark-color: #193659;
-  --gray-color: #9fa6b0;
-  --secondary-color: #DADDE3;
-  overflow-x: hidden;
+  // Light Theme Colors
+  --background-color: #F2F4F8;
+  --text-color: #193659;
+  --border-color: #DADDE3;
+  --input-background:  #ECEFF4;
+  --accent-color: #0f5bac;
+  --disabled-color: #9fa6b0;
+  --hover-color: #8cb1d3;
+  --error-color:  #ff4d4f;
+  --nav-bar-1: #19365909;
+  --nav-bar-2: #19365933; 
+  --hover-input: #19365980; 
 }
 
-mark {
-  background: var(--yellow-color);
-  color: black;
+[data-theme="dark"] {
+  // Dark Theme Colors
+  --background-color: #282828;
+  --text-color: #cacaca;
+  --border-color: #3f3f3f;
+  --input-background: #212121;
+  --accent-color: #57789b;
+  --disabled-color: #757575;
+  --hover-color: #3E517A;
+  --error-color:  #ff4d4f;
+  --nav-bar-1: #282f371f;
+  --nav-bar-2: #19212b8e; 
+  --hover-input: #121212; 
+  
 }
 
 body {
   font-family: "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 *,
@@ -21,6 +41,10 @@ body {
 *::before {
   box-sizing: border-box;
   margin: 0;
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-color);
 }
 
 h1 {

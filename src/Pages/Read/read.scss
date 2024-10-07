@@ -1,17 +1,21 @@
-@import '../../colors.scss';
-
-.container {
+.read-container {
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 2em;
   min-height: 100vh;
+  background: var(--background-color);
+  background-image: url('../../assets/44.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 .read__container {
   width: 100%;
   max-width: 1200px;
-  background-color: #f7f7f7;
+  background-color: var(--background-color);
   padding: 2em;
   border-radius: 8px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
@@ -25,19 +29,19 @@
   text-align: center;
   display: flex;
   justify-content: center;  
-  color: $dark-blue; /* Adjust as needed */
+  color: var(--text-color); /* Adjust as needed */
 }
 
 .loading {
   text-align: center;
   font-size: 1.2rem;
-  color: $dark-blue;
+  color: var(--text-color);
 }
 
 .error {
   text-align: center;
   font-size: 1.2rem;
-  color: red;
+  color: var(--error-color);
   margin: 1em 0;
 }
 
@@ -48,22 +52,22 @@ ul {
 
   li {
     padding: 0.5em 10px;
-    border-bottom: 1px solid #ddd;
     text-align: justify;
 
     .index {
       font-weight: bold;
       margin-right: 0.5em;
-      color: #193659; /* Adjust as needed */
+      color: var(--text-color); /* Adjust as needed */
     }
 
     p {
       margin: 0;
-      color: #333;
+      color: var(--text-color);
     }
 
     &.highlight {
-      background-color: $mid-gray; /* Adjust highlight color as needed */
+      background-color: var(--border-color); /* Adjust highlight color as needed */
+      color: var(--text-color);
     }
   }
 }
