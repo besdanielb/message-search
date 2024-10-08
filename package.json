@@ -10,6 +10,7 @@
     "@mui/styles": "^6.1.1",
     "@mui/utils": "^6.1.2",
     "@mui/x-data-grid": "^7.18.0",
+    "aos": "^2.3.4",
     "cors": "2.8.5",
     "firebase": "^10.14.0",
     "moment": "^2.30.1",

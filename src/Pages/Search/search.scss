@@ -2,7 +2,7 @@ $input-height: 3em;
 
 
 .search-container {
-  background: var(--background-color);
+  background-color: var(--background-color);
   transition: 1s;
   transform-origin: left center;
   min-height: 100vh;
@@ -19,6 +19,7 @@ $input-height: 3em;
   background-attachment: fixed;
   overflow-y: auto;
   padding-top: 30px;
+  transition: background-color 0.8s ease, color 0.8s ease;
 }
 
 .search {

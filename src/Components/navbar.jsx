@@ -13,14 +13,14 @@ import {
   ListItemText,
   Divider,
   Container,
-  Switch, // Import Switch
-  FormControlLabel, // Import FormControlLabel
+  Tooltip, 
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import ListItemButton from "@mui/material/ListItemButton";
 import { useNavigate } from "react-router-dom";
 import { ThemeContext } from "../Providers/themeContext"; // Import ThemeContext
+import { DarkMode, LightMode } from "@mui/icons-material";
 
 export default function Navbar(props) {
   const [scrolled, setScrolled] = useState(false);
@@ -65,7 +65,7 @@ export default function Navbar(props) {
         sx={{
           transition: "background-color 0.3s ease",
           background: scrolled
-            ? "var(--text-color)"
+            ? "var(--nav-bar-scrolled)"
             : "linear-gradient(to right, var(--nav-bar-1), var(--nav-bar-2))",
         }}
       >
@@ -81,10 +81,12 @@ export default function Navbar(props) {
             <Typography
               variant="h6"
               sx={{
-                fontSize: "2.5vmax",
+                fontSize: "2.2vmax",
                 fontFamily: "Great Vibes",
                 fontWeight: "bold",
-                color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
+                color: scrolled
+                  ? "var(--background-color)"
+                  : "var(--text-color)",
                 ":hover": { cursor: "pointer" },
               }}
               onClick={() => navigate("/")}
@@ -101,8 +103,10 @@ export default function Navbar(props) {
                 sx={{
                   height: "40px",
                   position: "relative",
-                  color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
-                  fontSize: "clamp(20px, 1.3vmax, 30px)",
+                  color: scrolled
+                    ? "var(--background-color)"
+                    : "var(--text-color)",
+                  fontSize: "clamp(20px, 1.2vmax, 30px)",
                   marginLeft: 2,
                   textTransform: "capitalize",
                   padding: "6px 12px",
@@ -115,8 +119,8 @@ export default function Navbar(props) {
                     width: "0%",
                     height: "2px",
                     backgroundColor: scrolled
-                      ? 'var(--background-color)'
-                      : 'var(--text-color)',
+                      ? "var(--background-color)"
+                      : "var(--text-color)",
                     transition: "width 0.3s ease",
                   },
                   "&:hover::after": {
@@ -134,8 +138,10 @@ export default function Navbar(props) {
                 sx={{
                   height: "40px",
                   position: "relative",
-                  color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
-                  fontSize: "clamp(20px, 1.3vmax, 30px)",
+                  color: scrolled
+                    ? "var(--background-color)"
+                    : "var(--text-color)",
+                  fontSize: "clamp(20px, 1.2vmax, 30px)",
                   marginLeft: 2,
                   textTransform: "capitalize",
                   padding: "6px 12px",
@@ -148,8 +154,8 @@ export default function Navbar(props) {
                     width: "0%",
                     height: "2px",
                     backgroundColor: scrolled
-                      ? 'var(--background-color)'
-                      : 'var(--text-color)',
+                      ? "var(--background-color)"
+                      : "var(--text-color)",
                     transition: "width 0.3s ease",
                   },
                   "&:hover::after": {
@@ -163,23 +169,13 @@ export default function Navbar(props) {
               >
                 Read
               </Button>
-
-              {/* Theme Toggle Switch */}
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={theme === "dark"}
-                    onChange={toggleTheme}
-                    name="themeToggle"
-                    color="default"
-                  />
-                }
-                label="Dark Mode"
-                sx={{
-                  marginLeft: 2,
-                  color: scrolled ? 'var(--background-color)' : 'var(--text-color)',
-                }}
-              />
+              <Tooltip title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"} arrow>
+              <IconButton size="normal" onClick={toggleTheme} sx={{color: scrolled
+                      ? "var(--background-color)"
+                      : "var(--text-color)", marginLeft: "25px"}} aria-label="Switch theme">
+                {theme === "dark" ? <LightMode /> : <DarkMode />}
+              </IconButton>
+              </Tooltip>
             </Box>
 
             {/* Mobile Menu Icon */}
@@ -217,14 +213,17 @@ export default function Navbar(props) {
               padding: "5px 16px",
             }}
           >
-            <h3 style={{ color: 'var(--text-color)' }}>Menu</h3>
+            <h3 style={{ color: "var(--text-color)" }}>Menu</h3>
 
-            <IconButton onClick={toggleDrawer(false)} sx={{ color: 'var(--text-color)' }}>
+            <IconButton
+              onClick={toggleDrawer(false)}
+              sx={{ color: "var(--text-color)" }}
+            >
               <CloseIcon />
             </IconButton>
           </Box>
 
-          <Divider sx={{ borderColor: 'var(--disabled-color)' }} />
+          <Divider sx={{ borderColor: "var(--disabled-color)" }} />
 
           {/* Menu Links */}
           <List>
@@ -234,7 +233,7 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: 'var(--text-color)',
+                  color: "var(--text-color)",
                 }}
               />
             </ListItemButton>
@@ -244,28 +243,16 @@ export default function Navbar(props) {
                 primaryTypographyProps={{
                   fontSize: "1.2rem",
                   fontWeight: "bold",
-                  color: 'var(--text-color)',
+                  color: "var(--text-color)",
                 }}
               />
             </ListItemButton>
           </List>
 
-          {/* Theme Toggle in Drawer (Optional) */}
-          <Box sx={{ padding: "0px 16px" }}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={theme === "dark"}
-                  onChange={toggleTheme}
-                  name="themeToggleDrawer"
-                  color="default"
-                />
-              }
-              label="Dark Mode"
-              sx={{
-                color: 'var(--text-color)',
-              }}
-            />
+          <Box sx={{ margin: "0px 16px" }}>
+          <IconButton onClick={toggleTheme} sx={{color: theme === "dark" ? '#D7DC2C9a' : '#282828'}} aria-label="Switch theme">
+                {theme === "dark" ? <LightMode /> : <DarkMode />}
+              </IconButton>
           </Box>
         </Box>
       </Drawer>

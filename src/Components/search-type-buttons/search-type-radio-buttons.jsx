@@ -29,7 +29,7 @@ export default function SearchTypeRadioButtons(props) {
       />
       <label htmlFor="option-1" className="option option-1">
         <div className="dot"></div>
-        <span>Semantic</span>
+        <span>AI Search</span>
       </label>
 
       <label htmlFor="option-2" className="option option-2">

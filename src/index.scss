@@ -10,6 +10,7 @@
   --error-color:  #ff4d4f;
   --nav-bar-1: #19365909;
   --nav-bar-2: #19365933; 
+  --nav-bar-scrolled: #193659e1;
   --hover-input: #19365980; 
   --drawer-2: #19365909;
   --drawer-1: #19365933; 
@@ -27,16 +28,20 @@
   --error-color:  #ff4d4f;
   --nav-bar-1: #282f371f;
   --nav-bar-2: #19212b8e; 
+  --nav-bar-scrolled: #cacacad5;
   --hover-input: #121212; 
   --drawer-1: #212121;
   --drawer-2: #30333b; 
+}
+
+:root, [data-theme="dark"], body {
+  transition: background-color 0.8s ease, color 0.8s ease; 
 }
 
 body {
   font-family: "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
 }
 
 *,

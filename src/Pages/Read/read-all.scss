@@ -12,6 +12,7 @@
   background-position: center;
   background-attachment: fixed; 
   overflow-y: auto;
+  transition: background-color 0.8s ease, color 0.8s ease;
 }
 
 .title-section {

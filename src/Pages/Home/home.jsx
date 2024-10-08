@@ -99,7 +99,6 @@ export default function Home() {
           onCloseHintCard={handleCloseHintCard}
           showHintButton={showHintButton}
           onShowHintCard={handleShowHintCard}
-					isSearchPage={false}
         />
       </div>
 			<Footer />
