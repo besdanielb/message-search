@@ -16,6 +16,8 @@ import {
 } from "@mui/icons-material";
 import { SEMANTIC_SEARCH_TYPE } from "../../constants";
 import Highlighter from "react-highlight-words";
+import AOS from "aos";
+import { useEffect } from "react";
 
 export default function SearchResultItem({
   result,
@@ -28,6 +30,10 @@ export default function SearchResultItem({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
+  useEffect(() => {
+    AOS.refresh();
+  }, [result]);
 
   const getParagraphRatingIcon = (distance) => {
     if (distance <= 0.55) {
@@ -76,40 +82,52 @@ export default function SearchResultItem({
           placement="top"
           arrow
         >
-          <MoodBadTwoToneIcon color="var(--error-color)" sx={{ marginRight: "10px" }} />
+          <MoodBadTwoToneIcon
+            color="var(--error-color)"
+            sx={{ marginRight: "10px" }}
+          />
         </Tooltip>
       );
     }
   };
 
   return (
-    <li>
+    <li data-aos="fade-up">
       <Box
         onClick={
           isMobile
             ? () => onReadMessage(result.sermonDate, result.paragraph)
             : null
         }
-        sx={{ position: "relative", padding: "3px", borderRadius: "10px", backgroundColor: 'var(--input-background)', cursor: isMobile ? "pointer" : "default" }}
+        sx={{
+          position: "relative",
+          padding: "3px",
+          borderRadius: "10px",
+          backgroundColor: "var(--input-background)",
+          cursor: isMobile ? "pointer" : "default",
+        }}
       >
         <h5 className="message-title">
-          {searchType === SEMANTIC_SEARCH_TYPE && getParagraphRatingIcon(result.distance)}{" "}
+          {searchType === SEMANTIC_SEARCH_TYPE &&
+            getParagraphRatingIcon(result.distance)}{" "}
           <Box sx={{ width: { xs: "100%", md: "65%" } }}>
             {result.sermonDate} | {result.sermonTitle}
           </Box>
-
           {/* Icons for Tablet and Desktop */}
           {(isTablet || isDesktop) && (
-            <Box className="copy-button" sx={{
-              display: isTablet ? "flex" : "none",
-              position: isDesktop ? "absolute" : "static",
-              alignItems: "center",
-              opacity: isDesktop ? 0 : 1,
-              transition: "opacity 0.3s ease",
-              "&:hover": {
-                opacity: 1,
-              },
-            }}>
+            <Box
+              className="copy-button"
+              sx={{
+                display: isTablet ? "flex" : "none",
+                position: isDesktop ? "absolute" : "static",
+                alignItems: "center",
+                opacity: isDesktop ? 0 : 1,
+                transition: "opacity 0.3s ease",
+                "&:hover": {
+                  opacity: 1,
+                },
+              }}
+            >
               <Tooltip title="Copy paragraph" placement="top" arrow>
                 <IconButton
                   aria-label="copy paragraph"
@@ -118,7 +136,10 @@ export default function SearchResultItem({
                     onCopyParagraph(result);
                   }}
                 >
-                  <FileCopy fontSize="medium" sx={{ color: 'var(--text-color)' }} />
+                  <FileCopy
+                    fontSize="medium"
+                    sx={{ color: "var(--text-color)" }}
+                  />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Read more" placement="top" arrow>
@@ -131,7 +152,7 @@ export default function SearchResultItem({
                 >
                   <ReadMore
                     fontSize="large"
-                    sx={{ color: 'var(--text-color)' }}
+                    sx={{ color: "var(--text-color)" }}
                   ></ReadMore>
                 </IconButton>
               </Tooltip>
@@ -143,8 +164,8 @@ export default function SearchResultItem({
           {searchType !== SEMANTIC_SEARCH_TYPE ? (
             <Highlighter
               highlightStyle={{
-                backgroundColor: 'var(--border-color)',
-                color: 'var(--background-color)',
+                backgroundColor: "var(--border-color)",
+                color: "var(--background-color)",
                 padding: "2px 1px 2px 3px",
               }}
               searchWords={wordsToHighlight}

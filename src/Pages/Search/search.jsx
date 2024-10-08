@@ -29,6 +29,8 @@ import {
 import ErrorAlert from "./error-alert";
 import Footer from "../../Components/footer/footer";
 import Hints from "../../Components/hints/hints";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 // Initial State for Reducer
 const initialState = {
@@ -230,6 +232,15 @@ export default function Search() {
       searchParams,
     ]
   );
+
+  useEffect(() => {
+    AOS.init({
+      duration: 800, 
+      easing: "ease-in-out", 
+      once: true, 
+      mirror: false, 
+    });
+  }, []);
 
   // Redirection Logic: Redirect to Home if no query parameters
   useEffect(() => {
