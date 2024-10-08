@@ -1,5 +1,3 @@
-// src/Pages/Search/Search.js
-
 import { useEffect, useReducer, useCallback, useMemo, useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@mui/material";
@@ -32,7 +30,6 @@ import Hints from "../../Components/hints/hints";
 import AOS from "aos";
 import "aos/dist/aos.css";
 
-// Initial State for Reducer
 const initialState = {
   searchTerm: "",
   wordsToHighlight: [],
@@ -48,7 +45,6 @@ const initialState = {
   sortBy: SORT_OPTIONS.DEFAULT,
 };
 
-// Reducer Function
 function reducer(state, action) {
   switch (action.type) {
     case "SET_SEARCH_TERM":
@@ -85,7 +81,6 @@ function reducer(state, action) {
 export default function Search() {
   const [state, dispatch] = useReducer(reducer, initialState);
   
-  // New state for inputValue
   const [inputValue, setInputValue] = useState(state.searchTerm);
   
   const [hintCardVisible, setHintCardVisible] = useState(false);
@@ -109,7 +104,6 @@ export default function Search() {
     searchClicked,
   } = state;
 
-  // Parse API results
   const parseResults = useCallback((results) => {
     return results?.searchSamples.map((entry) => {
       const sermonInfo = entry?.externalId?.split("/");
@@ -134,7 +128,6 @@ export default function Search() {
     dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
   }, []);
 
-  // Fetch search results from API
   const fetchSearchResults = useCallback(
     async (url, typeOfSearch) => {
       try {
@@ -196,7 +189,6 @@ export default function Search() {
     [parseResults, searchTerm]
   );
 
-  // Modified onSearch to use inputValue
   const onSearch = useCallback(
     (event, typeOfSearch = state.searchType, term = inputValue) => {
       if (event) event.preventDefault();
@@ -219,7 +211,6 @@ export default function Search() {
         setSearchParams({ q: term, type: typeOfSearch });
       }
 
-      // Update the searchTerm in the state to match the submitted input
       dispatch({ type: "SET_SEARCH_TERM", payload: term });
     },
     [
@@ -227,7 +218,7 @@ export default function Search() {
       limit,
       resetStateFields,
       setSearchParams,
-      inputValue, // Use inputValue instead of state.searchTerm
+      inputValue,
       state.searchType,
       searchParams,
     ]
@@ -242,46 +233,61 @@ export default function Search() {
     });
   }, []);
 
-  // Redirection Logic: Redirect to Home if no query parameters
   useEffect(() => {
     const query = searchParams.get("q");
     const type = searchParams.get("type");
 
     if (!query || !type || query.trim() === "" || type.trim() === "") {
-      navigate("/", { replace: true }); // Replace the current entry in the history stack
+      navigate("/", { replace: true });
     }
   }, [searchParams, navigate]);
 
-  // Load initial state from URL or localStorage
   useEffect(() => {
-    const urlSearchTerm = searchParams.get("q") || "";
-    const urlSearchType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
+    if (searchTerm) {
+      let highlightWords = [];
+      if (searchType === "exact") {
+        highlightWords = [searchTerm]; // Highlight the entire phrase for exact matches
+      } else if (searchType === "allwords") {
+        highlightWords = searchTerm.split(" "); // Split into words for all words search
+      } else {
+        highlightWords = searchTerm.split(" "); // Default behavior for other search types
+      }
+      dispatch({
+        type: "SET_WORDS_TO_HIGHLIGHT",
+        payload: highlightWords,
+      });
+    } else {
+      dispatch({
+        type: "SET_WORDS_TO_HIGHLIGHT",
+        payload: [],
+      });
+    }
+  }, [searchTerm, searchType]);
 
-    if (urlSearchTerm) {
-      // Check if the current state already matches the URL parameters
+  useEffect(() => {
+    const query = searchParams.get("q");
+    const type = searchParams.get("type");
+
+    if (!query || !type || query.trim() === "" || type.trim() === "") {
+      navigate("/", { replace: true });
+    } else {
       if (
-        urlSearchTerm !== state.searchTerm ||
-        urlSearchType !== state.searchType
+        query !== state.searchTerm ||
+        type !== state.searchType
       ) {
-        dispatch({ type: "SET_SEARCH_TERM", payload: urlSearchTerm });
-        dispatch({
-          type: "SET_WORDS_TO_HIGHLIGHT",
-          payload: urlSearchTerm.split(" "),
-        });
-        dispatch({ type: "SET_SEARCH_TYPE", payload: urlSearchType });
+        dispatch({ type: "SET_SEARCH_TERM", payload: query });
+        dispatch({ type: "SET_SEARCH_TYPE", payload: type });
 
-        // Sync inputValue with searchTerm from URL
-        setInputValue(urlSearchTerm);
+        setInputValue(query);
 
-        // Check localStorage for cached results
         const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
         const storedTerm = getState(SEARCH_TERM_STATE_NAME);
         const storedType = getState(SEARCH_TYPE_STATE_NAME);
 
         if (
           storedResults?.length > 0 &&
-          urlSearchTerm === storedTerm &&
-          urlSearchType === storedType
+          query === storedTerm &&
+          type === storedType
         ) {
           dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
           dispatch({
@@ -290,13 +296,9 @@ export default function Search() {
           });
           dispatch({ type: "SET_IS_ACTIVE", payload: true });
         } else {
-          // Perform search only if necessary
-          onSearch(null, urlSearchType, urlSearchTerm);
+          onSearch(null, type, query);
         }
       }
-    } else {
-      // If no search term is present, ensure the user is on the Home page
-      navigate("/", { replace: true });
     }
     window.scrollTo(0, 0);
   }, [
@@ -307,13 +309,13 @@ export default function Search() {
     state.searchType,
     searchParams,
   ]);
-
+  
   useEffect(() => {
     if (!getState(HINTS_STATE_NAME)) {
       const timer = setTimeout(() => {
-        setHintCardVisible(true); // Show hint card after 1 second
+        setHintCardVisible(true); 
       }, 1000);
-      return () => clearTimeout(timer); // Cleanup timer on unmount
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -329,8 +331,8 @@ export default function Search() {
   };
 
   const handleShowHintCard = () => {
-    setHintCardVisible(true); // Show the hint card
-    setShowHintButton(false); // Hide the "Show Hints" button
+    setHintCardVisible(true); 
+    setShowHintButton(false);
   };
 
   // Handler to prevent default key down behavior (if needed)
@@ -461,8 +463,8 @@ export default function Search() {
       />
       <div className="search__container" onKeyDown={handleKeyDown}>
         <SearchBar
-          searchTerm={inputValue} // Use inputValue instead of searchTerm
-          onSearch={(event) => onSearch(event, searchType, inputValue)} // Pass inputValue to onSearch
+          searchTerm={inputValue}
+          onSearch={(event) => onSearch(event, searchType, inputValue)} 
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchType={searchType}
@@ -470,7 +472,6 @@ export default function Search() {
           showBackButton={searchClicked || searchResults.length > 0}
         />
 
-        {/* Optionally include SortOptions if needed */}
         {/*searchTerm && searchClicked && (
           <div className="info-div">
             <SortOptions sortBy={sortBy} handleSortChange={handleSortChange} />
@@ -479,7 +480,6 @@ export default function Search() {
 
         {isSearching && !noResultsFound && <LoadingSkeleton />}
 
-        {/* Conditionally render "No results found" outside of the <ul> */}
         {noResultsFound ? (
           <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
             No results found. Please try a different search.

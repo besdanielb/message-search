@@ -17,7 +17,8 @@ import {
 import { SEMANTIC_SEARCH_TYPE } from "../../constants";
 import Highlighter from "react-highlight-words";
 import AOS from "aos";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { ThemeContext } from "../../Providers/themeContext";
 
 export default function SearchResultItem({
   result,
@@ -30,6 +31,10 @@ export default function SearchResultItem({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+
+  const {theme: contextTheme} = useContext(ThemeContext);
+
+  console.log(wordsToHighlight);
 
   useEffect(() => {
     AOS.refresh();
@@ -164,8 +169,8 @@ export default function SearchResultItem({
           {searchType !== SEMANTIC_SEARCH_TYPE ? (
             <Highlighter
               highlightStyle={{
-                backgroundColor: "var(--border-color)",
-                color: "var(--background-color)",
+                backgroundColor: contextTheme === "dark" ? "#3f3f3f" : "#8cb1d39a" ,
+                color: contextTheme === "dark" ? "#F2F4F8": "#282828" ,
                 padding: "2px 1px 2px 3px",
               }}
               searchWords={wordsToHighlight}

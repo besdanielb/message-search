@@ -64,6 +64,7 @@ export default function Navbar(props) {
         elevation={0}
         sx={{
           transition: "background-color 0.3s ease",
+          zIndex: 99,
           background: scrolled
             ? "var(--nav-bar-scrolled)"
             : "linear-gradient(to right, var(--nav-bar-1), var(--nav-bar-2))",
