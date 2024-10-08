@@ -34,8 +34,6 @@ export default function SearchResultItem({
 
   const {theme: contextTheme} = useContext(ThemeContext);
 
-  console.log(wordsToHighlight);
-
   useEffect(() => {
     AOS.refresh();
   }, [result]);

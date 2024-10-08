@@ -150,14 +150,6 @@ $input-height: 3em;
   margin-bottom: 60px;
 }
 
-.loading-more {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  width: 100%;
-}
-
 @media only screen and (min-width: 960px) {
   li:hover .copy-button {
     display: flex;
