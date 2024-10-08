@@ -182,7 +182,7 @@ export default function Navbar(props) {
             {/* Mobile Menu Icon */}
             <IconButton
               edge="start"
-              sx={{ display: { xs: "block", md: "none" }, color: "#fff" }}
+              sx={{ display: { xs: "block", md: "none" }, color: "var(--text-color)" }}
               aria-label="menu"
               onClick={toggleDrawer(true)}
             >

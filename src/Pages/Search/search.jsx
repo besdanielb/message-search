@@ -80,9 +80,9 @@ function reducer(state, action) {
 
 export default function Search() {
   const [state, dispatch] = useReducer(reducer, initialState);
-  
+
   const [inputValue, setInputValue] = useState(state.searchTerm);
-  
+
   const [hintCardVisible, setHintCardVisible] = useState(false);
   const [showHintButton, setShowHintButton] = useState(
     false || getState(HINTS_STATE_NAME)
@@ -374,11 +374,13 @@ export default function Search() {
   const onLoadMore = useCallback(
     async (event) => {
       if (event) event.preventDefault();
-      const newLimit = limit + 10;
+
       const encodedSearchTerm = encodeURIComponent(searchTerm);
-      const url = `${API_URLS.SEMANTIC}?limit=${newLimit}&query=${encodedSearchTerm}`;
+      const url = `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodedSearchTerm}`;
+      
+      // Set isSearching to true to show the LoadingSkeleton
       dispatch({ type: "SET_IS_SEARCHING", payload: true });
-      dispatch({ type: "SET_LIMIT", payload: newLimit });
+      
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -386,14 +388,29 @@ export default function Search() {
         }
         const results = await response.json();
         const parsedResults = parseResults(results);
+        
+        // Append the new results to the existing searchResults
         const updatedResults = [...searchResults, ...parsedResults];
         dispatch({ type: "SET_SEARCH_RESULTS", payload: updatedResults });
+        
+        // Update the defaultSearchResults if necessary
+        dispatch({
+          type: "SET_DEFAULT_SEARCH_RESULTS",
+          payload: updatedResults,
+        });
+        
+        // Save the updated results to local storage
         saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
+        
+        // Update the limit in the state
+        dispatch({ type: "SET_LIMIT", payload: limit });
+        
+        // Set isSearching to false to hide the LoadingSkeleton
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
       } catch (error) {
+        console.error("Load more error:", error);
         dispatch({ type: "SET_ALERT_OPEN", payload: true });
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
-        dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
       }
     },
     [limit, parseResults, searchResults, searchTerm]
@@ -431,8 +448,6 @@ export default function Search() {
 
   // Memoized Search Results
   const renderedSearchResults = useMemo(() => {
-    if (isSearching) return null;
-
     return searchResults.map((result, index) => (
       <SearchResultItem
         key={result.sermonDate + index}
@@ -444,7 +459,6 @@ export default function Search() {
       />
     ));
   }, [
-    isSearching,
     searchResults,
     onReadMessage,
     onCopyParagraphClick,
@@ -472,22 +486,26 @@ export default function Search() {
           showBackButton={searchClicked || searchResults.length > 0}
         />
 
-        {/*searchTerm && searchClicked && (
+        {/* Optional: Uncomment if you implement sort options
+        {searchTerm && searchClicked && (
           <div className="info-div">
             <SortOptions sortBy={sortBy} handleSortChange={handleSortChange} />
           </div>
-        )*/}
-
-        {isSearching && !noResultsFound && <LoadingSkeleton />}
+        )}
+        */}
 
         {noResultsFound ? (
           <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
             No results found. Please try a different search.
           </h4>
         ) : (
-          <ul className={isActive ? "transition" : ""}>
-            {renderedSearchResults}
-          </ul>
+          <>
+            <ul className={isActive ? "transition" : ""}>
+              {renderedSearchResults}
+            </ul>
+            {/* Show LoadingSkeleton below the results when loading more */}
+            {isSearching && <LoadingSkeleton />}
+          </>
         )}
 
         {searchTerm &&
@@ -504,9 +522,12 @@ export default function Search() {
                 marginBottom: "100px",
                 backgroundColor: 'var(--text-color)',
                 color: 'var(--border-color)',
+                opacity: isSearching ? 0.6 : 1,
+                pointerEvents: isSearching ? 'none' : 'auto',
               }}
+              disabled={isSearching}
             >
-              Load more
+              {isSearching ? "Loading..." : "Load more"}
             </Button>
           )}
 
