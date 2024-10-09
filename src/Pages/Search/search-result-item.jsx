@@ -103,7 +103,7 @@ export default function SearchResultItem({
               placement="top"
               arrow
             >
-              <Box sx={{ width: 40, height: 40, marginRight: '10px' }}>
+              <Box sx={{ width: 35, height: 35, marginRight: '10px' }}>
                 <CircularProgressbar
                   value={Math.round(mappedDistance)}
                   text={`${ Math.round(mappedDistance)}`}
@@ -117,7 +117,7 @@ export default function SearchResultItem({
               </Box>
             </Tooltip>
           )}
-          <Box sx={{ width: { xs: "100%", md: "65%" } }}>
+          <Box sx={{ width: { xs: "100%", md: "75%" } }}>
             {result.sermonDate} | {result.sermonTitle}
           </Box>
           {/* Icons for Tablet and Desktop */}
