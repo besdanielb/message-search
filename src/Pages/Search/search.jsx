@@ -441,9 +441,9 @@ export default function Search() {
 
   // Memoized Search Results
   const renderedSearchResults = useMemo(() => {
-    return searchResults.map((result) => (
+    return searchResults.map((result, index) => (
       <SearchResultItem
-        key={`${result.sermonDate}-${result.paragraph}`}
+        key={`${result.sermonDate}-${result.paragraph}-${index}`}
         result={result}
         onReadMessage={() => onReadMessage(result.sermonDate, result.paragraph)}
         onCopyParagraph={onCopyParagraphClick}

@@ -7,10 +7,6 @@ import {
   useTheme,
 } from "@mui/material";
 import {
-  SentimentSatisfiedTwoTone as SentimentSatisfiedTwoToneIcon,
-  SentimentDissatisfiedTwoTone as SentimentDissatisfiedTwoToneIcon,
-  MoodTwoTone as MoodTwoToneIcon,
-  MoodBadTwoTone as MoodBadTwoToneIcon,
   FileCopy,
   ReadMore,
 } from "@mui/icons-material";
@@ -19,6 +15,8 @@ import Highlighter from "react-highlight-words";
 import AOS from "aos";
 import { useContext, useEffect } from "react";
 import { ThemeContext } from "../../Providers/themeContext";
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 export default function SearchResultItem({
   result,
@@ -31,6 +29,21 @@ export default function SearchResultItem({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  
+  // Corrected: Remove multiplication by 100
+  const originalDistance = result.distance * 100; // Assumes result.distance is between 0-70
+
+  const convertDistanceScore = (distanceScore) => {
+    // Clamp the distanceScore between 0 and 70
+    const clampedDistance = Math.max(0, Math.min(distanceScore, 70));
+    
+    // Perform the linear transformation
+    const newScore = 100 - (clampedDistance / 70) * 100 + 40 ;
+    
+    return newScore;
+  };
+
+  const mappedDistance = convertDistanceScore(originalDistance); // Mapped to 0-100
 
   const {theme: contextTheme} = useContext(ThemeContext);
 
@@ -38,59 +51,32 @@ export default function SearchResultItem({
     AOS.refresh();
   }, [result]);
 
-  const getParagraphRatingIcon = (distance) => {
-    if (distance <= 0.55) {
-      return (
-        <Tooltip
-          title="This is a really good result!"
-          placement="top"
-          arrow
-          sx={{ marginRight: "10px" }}
-        >
-          <MoodTwoToneIcon color="success" />
-        </Tooltip>
-      );
-    } else if (distance <= 0.63) {
-      return (
-        <Tooltip title="This is a good result!" placement="top" arrow>
-          <SentimentSatisfiedTwoToneIcon
-            color="success"
-            sx={{ opacity: "0.5", marginRight: "10px" }}
-          />
-        </Tooltip>
-      );
-    } else if (distance <= 0.7) {
-      return (
-        <Tooltip title="This result is not the best." placement="top" arrow>
-          <SentimentDissatisfiedTwoToneIcon
-            color="warning"
-            sx={{ opacity: "0.5", marginRight: "5px" }}
-          />
-        </Tooltip>
-      );
-    } else if (distance <= 0.8) {
-      return (
-        <Tooltip
-          title="This result is not good, maybe try a different search."
-          placement="top"
-          arrow
-        >
-          <MoodBadTwoToneIcon color="warning" sx={{ marginRight: "5px" }} />
-        </Tooltip>
-      );
+  const getDistanceColor = (mappedDistance) => {
+    if (mappedDistance >= 65) { // Strong green for best scores
+      return '#4CAF50';
+    } else if (mappedDistance >= 55) {
+      return '#81C784';
+    } else if (mappedDistance >= 50) {
+      return '#FFEB3B';
+    } else if (mappedDistance >= 30) {
+      return '#FF9800';
     } else {
-      return (
-        <Tooltip
-          title="This result is really bad, try a different search or add more words to your search text"
-          placement="top"
-          arrow
-        >
-          <MoodBadTwoToneIcon
-            color="var(--error-color)"
-            sx={{ marginRight: "10px" }}
-          />
-        </Tooltip>
-      );
+      return '#F44336';
+    }
+  };
+
+  // Function to get tooltip text based on mapped distance
+  const getTooltipText = (mappedDistance) => {
+    if (mappedDistance >= 65) {
+      return "This is a good result!";
+    } else if (mappedDistance >= 55) {
+      return "This is an ok result.";
+    } else if (mappedDistance >= 50) {
+      return "This result is not very good.";
+    } else if (mappedDistance >= 30) {
+      return "This result is not good, maybe try a different search.";
+    } else {
+      return "This result is bad, try a different search or add more words to your search text.";
     }
   };
 
@@ -111,8 +97,26 @@ export default function SearchResultItem({
         }}
       >
         <h5 className="message-title">
-          {searchType === SEMANTIC_SEARCH_TYPE &&
-            getParagraphRatingIcon(result.distance)}{" "}
+          {searchType === SEMANTIC_SEARCH_TYPE && (
+            <Tooltip
+              title={getTooltipText(mappedDistance)}
+              placement="top"
+              arrow
+            >
+              <Box sx={{ width: 40, height: 40, marginRight: '10px' }}>
+                <CircularProgressbar
+                  value={Math.round(mappedDistance)}
+                  text={`${ Math.round(mappedDistance)}`}
+                  styles={buildStyles({
+                    pathColor: getDistanceColor(mappedDistance),
+                    textColor: contextTheme === "dark" ? "#F2F4F8" : "#282828",
+                    trailColor: "#d6d6d6",
+                    textSize: '28px',
+                  })}
+                /> 
+              </Box>
+            </Tooltip>
+          )}
           <Box sx={{ width: { xs: "100%", md: "65%" } }}>
             {result.sermonDate} | {result.sermonTitle}
           </Box>
@@ -156,7 +160,7 @@ export default function SearchResultItem({
                   <ReadMore
                     fontSize="large"
                     sx={{ color: "var(--text-color)" }}
-                  ></ReadMore>
+                  />
                 </IconButton>
               </Tooltip>
             </Box>
