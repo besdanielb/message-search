@@ -1,18 +1,50 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, Button, Slide, IconButton } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  Slide,
+  IconButton,
+  Box,
+} from "@mui/material";
 import {
   ArrowBack as ArrowBackIcon,
   ArrowForward as ArrowForwardIcon,
-	Close,
-	Lightbulb,
+  Close,
+  Lightbulb,
 } from "@mui/icons-material";
 import "./hint-card.scss"; // Custom styles
+import { buildStyles, CircularProgressbar } from "react-circular-progressbar";
 
 const hints = [
   "The 'AI search' finds related results in the whole Message, based on meaning. Queries with 'Holy Spirit' will also return results with 'Holy Ghost'.",
   "The 'Exact' search looks for exact matches of your search term within the Message database. Queries with 'Holy Spirit' will return results that contain exactly 'Holy Spirit'.",
   "The 'All Words' search type ensures all words in your query are included in the results. Queries with 'Holy Spirit' will return results that contains 'Holy Spirit', 'Holy' and 'Spirit'.",
-  "On every AI result you'll see a percentage score. This score represents the relevance of the result to your query. The higher the score, the more relevant the result is.",
+  <Box sx={{ display: "inline-block" }}>
+    <Box
+      sx={{
+        width: 25,
+        height: 20,
+        marginRight: "10px",
+        display: "inline-block",
+      }}
+    >
+      <CircularProgressbar
+        value={70}
+        text={70}
+        styles={buildStyles({
+          pathColor: "#4CAF50",
+          textColor: "#282828",
+          trailColor: "#d6d6d6",
+          textSize: "28px",
+        })}
+      />
+    </Box>
+    On every AI result you'll see a percentage score that represents the
+    relevance of the result to your query. The higher the score, the more
+    relevant the result is.
+  </Box>,
 ];
 
 export default function HintCard({ visible, onClose }) {
@@ -30,14 +62,20 @@ export default function HintCard({ visible, onClose }) {
     }
   };
 
-	const handleClose = () => {
+  const handleClose = () => {
     onClose();
   };
 
   return (
-    <Slide direction="right"  in={visible} mountOnEnter unmountOnExit timeout={500}>
+    <Slide
+      direction="right"
+      in={visible}
+      mountOnEnter
+      unmountOnExit
+      timeout={500}
+    >
       <div className="hint-card-wrapper">
-			<div className="hint-card-animation"></div>
+        <div className="hint-card-animation"></div>
         <Card className="hint-card">
           <CardContent className="hint-card__content">
             <div className="hint-card__header">
@@ -46,20 +84,20 @@ export default function HintCard({ visible, onClose }) {
                 Hint #{currentHint + 1}
               </Typography>
               <IconButton aria-label="close" onClick={handleClose}>
-                <Close sx={{color: "var(--text-color)"}}/>
+                <Close sx={{ color: "var(--text-color)" }} />
               </IconButton>
             </div>
             <Typography variant="body1" className="hint-description">
               {hints[currentHint]}
             </Typography>
             <div className="hint-card__controls">
-						<Button
+              <Button
                 onClick={prevHint}
                 disabled={currentHint === 0}
                 startIcon={<ArrowBackIcon />}
                 variant="contained"
                 className="small-hint-button"
-								size="small"
+                size="small"
               >
                 Prev
               </Button>
@@ -69,7 +107,7 @@ export default function HintCard({ visible, onClose }) {
                 endIcon={<ArrowForwardIcon />}
                 variant="contained"
                 className="small-hint-button"
-								size="small"
+                size="small"
               >
                 Next
               </Button>
