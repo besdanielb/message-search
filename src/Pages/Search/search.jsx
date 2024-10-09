@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useCallback, useMemo, useState } from "react";
+import { useEffect, useReducer, useCallback, useMemo, useState, useRef } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button } from "@mui/material";
 import { GetApp as GetAppIcon } from "@mui/icons-material";
@@ -38,6 +38,7 @@ const initialState = {
   isSearching: false,
   isActive: false,
   limit: 20,
+  offset: 0, // Added offset
   searchType: SEMANTIC_SEARCH_TYPE,
   noResultsFound: false,
   alertOpen: false,
@@ -61,6 +62,8 @@ function reducer(state, action) {
       return { ...state, isActive: action.payload };
     case "SET_LIMIT":
       return { ...state, limit: action.payload };
+    case "SET_OFFSET": // New case
+      return { ...state, offset: action.payload };
     case "SET_SEARCH_TYPE":
       return { ...state, searchType: action.payload };
     case "SET_NO_RESULTS_FOUND":
@@ -98,11 +101,15 @@ export default function Search() {
     isSearching,
     isActive,
     limit,
+    offset,
     searchType,
     noResultsFound,
     alertOpen,
     searchClicked,
   } = state;
+
+  const listRef = useRef(null);
+  const loadMoreButtonRef = useRef(null);
 
   const parseSemanticResults = useCallback((results) => {
     return results?.searchSamples?.map((entry) => {
@@ -130,6 +137,7 @@ export default function Search() {
     dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
     dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
     dispatch({ type: "SET_SEARCH_RESULTS", payload: [] }); // Clear existing results
+    dispatch({ type: "SET_OFFSET", payload: 0 }); // Reset offset
   }, []);
 
   const fetchSearchResults = useCallback(
@@ -191,8 +199,8 @@ export default function Search() {
       const encodedSearchTerm = encodeURIComponent(term);
       const url =
         typeOfSearch === SEMANTIC_SEARCH_TYPE
-          ? `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodedSearchTerm}`
-          : `${API_URLS.OTHER}${typeOfSearch}&query=${encodedSearchTerm}`;
+          ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=0&query=${encodedSearchTerm}` // Start from offset 0
+          : `${API_URLS.OTHER}${typeOfSearch}&limit=${limit}&offset=0&query=${encodedSearchTerm}`;
       fetchSearchResults(url, typeOfSearch);
 
       const currentQ = searchParams.get("q") || "";
@@ -363,41 +371,49 @@ export default function Search() {
     async (event) => {
       if (event) event.preventDefault();
 
+      const newOffset = offset + limit;
       const encodedSearchTerm = encodeURIComponent(searchTerm);
-      const url = `${API_URLS.SEMANTIC}?limit=${limit}&query=${encodedSearchTerm}`;
+      const url =
+        searchType === SEMANTIC_SEARCH_TYPE
+          ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=${newOffset}&query=${encodedSearchTerm}`
+          : `${API_URLS.OTHER}${searchType}&limit=${limit}&offset=${newOffset}&query=${encodedSearchTerm}`;
       
       // Set isSearching to true to show the LoadingSkeleton
       dispatch({ type: "SET_IS_SEARCHING", payload: true });
-      
+
+      // Capture the current scroll position
+      const currentScrollY = window.scrollY;
+
       try {
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(`Error: ${response.statusText}`);
         }
         const results = await response.json();
-        const parsedResults = parseSemanticResults(results); // Assuming Load More is only for Semantic
+        let parsedResults = [];
 
-        // Append the new results to the existing searchResults
-        const updatedResults = [...searchResults, ...parsedResults];
-        dispatch({ type: "SET_SEARCH_RESULTS", payload: updatedResults });
+        if (searchType === SEMANTIC_SEARCH_TYPE) {
+          parsedResults = parseSemanticResults(results);
+        } else if (searchType === "exact" || searchType === "allwords") {
+          parsedResults = parseNonSemanticResults(results);
+        }
 
-        // Update the defaultSearchResults if necessary
-        dispatch({
-          type: "SET_DEFAULT_SEARCH_RESULTS",
-          payload: updatedResults,
-        });
+        if (parsedResults.length === 0) {
+          // No more results to load
+          dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
+        } else {
+          const updatedResults = [...searchResults, ...parsedResults];
+          dispatch({ type: "SET_SEARCH_RESULTS", payload: updatedResults });
+          dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: updatedResults });
+          saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
+          dispatch({ type: "SET_OFFSET", payload: newOffset });
+        }
 
-        // Save the updated results to local storage
-        saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
+        // Hide LoadingSkeleton after fetching
+        dispatch({ type: "SET_IS_SEARCHING", payload: false });
 
-        // Update the limit in the state (increase by 20)
-        dispatch({ type: "SET_LIMIT", payload: limit + 20 });
-
-        // Introduce a slight delay to ensure LoadingSkeleton is visible
-        setTimeout(() => {
-          dispatch({ type: "SET_IS_SEARCHING", payload: false });
-          console.log("Set isSearching to false after Load More");
-        }, 300); // 300ms delay
+        // Restore the scroll position to where it was before loading more
+        window.scrollTo(0, currentScrollY);
       } catch (error) {
         console.error("Load more error:", error);
         dispatch({ type: "SET_ALERT_OPEN", payload: true });
@@ -405,7 +421,7 @@ export default function Search() {
         dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
       }
     },
-    [limit, parseSemanticResults, searchResults, searchTerm]
+    [offset, limit, searchType, searchTerm, parseSemanticResults, parseNonSemanticResults, searchResults]
   );
 
   // Handle search type change
@@ -489,14 +505,14 @@ export default function Search() {
 
         {/* Prioritize LoadingSkeleton when searching */}
         {isSearching ? 
-            <LoadingSkeleton />
+          <LoadingSkeleton />
          : noResultsFound ? (
           <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
             No results found. Please try a different search.
           </h4>
         ) : (
           <>
-            <ul className={isActive ? "transition" : ""}>
+            <ul className={isActive ? "transition" : ""} ref={listRef}>
               {renderedSearchResults}
             </ul>
             {/* Load More Button for Semantic Searches */}
@@ -518,6 +534,7 @@ export default function Search() {
                     pointerEvents: isSearching ? 'none' : 'auto',
                   }}
                   disabled={isSearching}
+                  ref={loadMoreButtonRef}
                 >
                   {isSearching ? "Loading..." : "Load more"}
                 </Button>
