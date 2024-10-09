@@ -29,6 +29,8 @@ import Footer from "../../Components/footer/footer";
 import Hints from "../../Components/hints/hints";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import Lottie from 'lottie-react';
+import noResultsAnimation from '../../assets/animation.json'; 
 
 const initialState = {
   searchTerm: "",
@@ -507,9 +509,10 @@ export default function Search() {
         {isSearching ? 
           <LoadingSkeleton />
          : noResultsFound ? (
-          <h4 className="no-results-found" style={{ paddingTop: "20px" }}>
-            No results found. Please try a different search.
-          </h4>
+          <div className="no-results-found">
+            <Lottie animationData={noResultsAnimation} className="no-results-animation" />
+            <h4>No results found. Please try a different search.</h4>
+          </div>
         ) : (
           <>
             <ul className={isActive ? "transition" : ""} ref={listRef}>

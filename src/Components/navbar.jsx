@@ -82,7 +82,7 @@ export default function Navbar(props) {
             <Typography
               variant="h6"
               sx={{
-                fontSize: "2.2vmax",
+                fontSize: "clamp(20px, 2.2vmax, 30px)",
                 fontFamily: "Great Vibes",
                 fontWeight: "bold",
                 color: scrolled
