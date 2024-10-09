@@ -9,9 +9,10 @@ import {
 import "./hint-card.scss"; // Custom styles
 
 const hints = [
-  "The 'AI' search finds related results in the whole Message, based on meaning. Queries with 'Holy Spirit' will also return results with 'Holy Ghost'.",
+  "The 'AI search' finds related results in the whole Message, based on meaning. Queries with 'Holy Spirit' will also return results with 'Holy Ghost'.",
   "The 'Exact' search looks for exact matches of your search term within the Message database. Queries with 'Holy Spirit' will return results that contain exactly 'Holy Spirit'.",
   "The 'All Words' search type ensures all words in your query are included in the results. Queries with 'Holy Spirit' will return results that contains 'Holy Spirit', 'Holy' and 'Spirit'.",
+  "On every AI result you'll see a percentage score. This score represents the relevance of the result to your query. The higher the score, the more relevant the result is.",
 ];
 
 export default function HintCard({ visible, onClose }) {
