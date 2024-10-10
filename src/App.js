@@ -9,6 +9,7 @@ import { analytics } from "./index";
 import withClearCache from "./ClearCache";
 import Navbar from "./Components/navbar";
 import { ThemeProvider } from "./Providers/themeContext";
+import ErrorBoundary from "./Components/errorBoundary/error-boundary";
 
 const ClearCacheComponent = withClearCache(MainApp);
 
@@ -28,6 +29,7 @@ function MainApp(props) {
   return (
     <BrowserRouter>
       <Navbar />
+      <ErrorBoundary>
       <Routes>
         {/* Home route with just the search input and related components */}
         <Route path="/" element={<Home />} />
@@ -47,6 +49,7 @@ function MainApp(props) {
         {/* Fallback route redirects to Home */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

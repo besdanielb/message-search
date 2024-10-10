@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useCallback, useMemo, useState, useRef } from "react";
+import React, { useEffect, useReducer, useCallback, useMemo, useState, useRef } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 import { GetApp as GetAppIcon } from "@mui/icons-material";
@@ -32,6 +32,7 @@ import "aos/dist/aos.css";
 import Lottie from 'lottie-react';
 import noResultsAnimation from '../../assets/animation.json'; 
 
+// Initial state for the reducer
 const initialState = {
   searchTerm: "",
   wordsToHighlight: [],
@@ -40,7 +41,7 @@ const initialState = {
   isSearching: false,
   isActive: false,
   limit: 20,
-  offset: 0, // Added offset
+  offset: 0,
   searchType: SEMANTIC_SEARCH_TYPE,
   noResultsFound: false,
   alertOpen: false,
@@ -48,6 +49,7 @@ const initialState = {
   sortBy: SORT_OPTIONS.DEFAULT,
 };
 
+// Reducer function to manage state transitions
 function reducer(state, action) {
   switch (action.type) {
     case "SET_SEARCH_TERM":
@@ -64,7 +66,7 @@ function reducer(state, action) {
       return { ...state, isActive: action.payload };
     case "SET_LIMIT":
       return { ...state, limit: action.payload };
-    case "SET_OFFSET": // New case
+    case "SET_OFFSET":
       return { ...state, offset: action.payload };
     case "SET_SEARCH_TYPE":
       return { ...state, searchType: action.payload };
@@ -84,18 +86,22 @@ function reducer(state, action) {
 }
 
 export default function Search() {
+  // Initialize reducer
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  
+  // Local state for input value
   const [inputValue, setInputValue] = useState(state.searchTerm);
-
+  
+  // Local states for hint card visibility
   const [hintCardVisible, setHintCardVisible] = useState(false);
-  const [showHintButton, setShowHintButton] = useState(
-    false || getState(HINTS_STATE_NAME)
-  );
+  const [showHintButton, setShowHintButton] = useState(!getState(HINTS_STATE_NAME));
+  
+  // React Router hooks
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // Destructure state for easy access
   const {
     searchTerm,
     wordsToHighlight,
@@ -110,9 +116,11 @@ export default function Search() {
     searchClicked,
   } = state;
 
+  // Refs for list and load more button
   const listRef = useRef(null);
   const loadMoreButtonRef = useRef(null);
 
+  // Parse semantic search results
   const parseSemanticResults = useCallback((results) => {
     return results?.searchSamples?.map((entry) => {
       const sermonInfo = entry?.externalId?.split("/");
@@ -126,20 +134,23 @@ export default function Search() {
     }) || [];
   }, []);
 
+  // Parse non-semantic search results
   const parseNonSemanticResults = useCallback((results) => {
     return Array.isArray(results) ? results : [];
   }, []);
 
+  // Reset state fields before a new search
   const resetStateFields = useCallback(() => {
     dispatch({ type: "SET_WORDS_TO_HIGHLIGHT", payload: [] });
     dispatch({ type: "SET_IS_SEARCHING", payload: true });
     dispatch({ type: "SET_IS_ACTIVE", payload: false });
     dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
     dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
-    dispatch({ type: "SET_SEARCH_RESULTS", payload: [] }); // Clear existing results
-    dispatch({ type: "SET_OFFSET", payload: 0 }); // Reset offset
+    dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
+    dispatch({ type: "SET_OFFSET", payload: 0 });
   }, []);
 
+  // Fetch search results from the API
   const fetchSearchResults = useCallback(
     async (url, typeOfSearch) => {
       try {
@@ -167,11 +178,12 @@ export default function Search() {
           dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
         }
 
-        // Introduce a slight delay to ensure LoadingSkeleton is visible
+        // Delay to ensure LoadingSkeleton is visible
         setTimeout(() => {
           dispatch({ type: "SET_IS_SEARCHING", payload: false });
         }, 300); // 300ms delay
 
+        // Log the search event
         logEvent(analytics, "search_query", {
           searchType: typeOfSearch,
           query: searchTerm,
@@ -186,18 +198,22 @@ export default function Search() {
     [parseSemanticResults, parseNonSemanticResults, searchTerm]
   );
 
+  // Handle search action
   const onSearch = useCallback(
     (event, typeOfSearch = state.searchType, term = inputValue) => {
       if (event) event.preventDefault();
       resetStateFields();
+      
       if (typeOfSearch) {
         dispatch({ type: "SET_SEARCH_TYPE", payload: typeOfSearch });
       }
+
       const encodedSearchTerm = encodeURIComponent(term);
       const url =
         typeOfSearch === SEMANTIC_SEARCH_TYPE
-          ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=0&query=${encodedSearchTerm}` // Start from offset 0
+          ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=0&query=${encodedSearchTerm}`
           : `${API_URLS.OTHER}${typeOfSearch}&limit=${limit}&offset=0&query=${encodedSearchTerm}`;
+      
       fetchSearchResults(url, typeOfSearch);
 
       const currentQ = searchParams.get("q") || "";
@@ -220,6 +236,7 @@ export default function Search() {
     ]
   );
 
+  // Initialize AOS for animations
   useEffect(() => {
     AOS.init({
       duration: 800, 
@@ -229,6 +246,7 @@ export default function Search() {
     });
   }, []);
 
+  // Redirect to home if query params are missing or invalid
   useEffect(() => {
     const query = searchParams.get("q");
     const type = searchParams.get("type");
@@ -238,16 +256,12 @@ export default function Search() {
     }
   }, [searchParams, navigate]);
 
+  // Update words to highlight based on search term and type
   useEffect(() => {
     if (searchTerm) {
-      let highlightWords = [];
-      if (searchType === "exact") {
-        highlightWords = [searchTerm]; // Highlight the entire phrase for exact matches
-      } else if (searchType === "allwords") {
-        highlightWords = searchTerm.split(" "); // Split into words for all words search
-      } else {
-        highlightWords = searchTerm.split(" "); // Default behavior for other search types
-      }
+      const highlightWords = searchType === "exact" 
+        ? [searchTerm] 
+        : searchTerm.split(" ");
       dispatch({
         type: "SET_WORDS_TO_HIGHLIGHT",
         payload: highlightWords,
@@ -260,6 +274,7 @@ export default function Search() {
     }
   }, [searchTerm, searchType]);
 
+  // Sync URL params with state and perform search
   useEffect(() => {
     const query = searchParams.get("q");
     const type = searchParams.get("type");
@@ -267,10 +282,7 @@ export default function Search() {
     if (!query || !type || query.trim() === "" || type.trim() === "") {
       navigate("/", { replace: true });
     } else {
-      if (
-        query !== state.searchTerm ||
-        type !== state.searchType
-      ) {
+      if (query !== state.searchTerm || type !== state.searchType) {
         dispatch({ type: "SET_SEARCH_TERM", payload: query });
         dispatch({ type: "SET_SEARCH_TYPE", payload: type });
 
@@ -288,7 +300,8 @@ export default function Search() {
     state.searchType,
     searchParams,
   ]);
-  
+
+  // Show hint card if not previously shown
   useEffect(() => {
     if (!getState(HINTS_STATE_NAME)) {
       const timer = setTimeout(() => {
@@ -303,23 +316,25 @@ export default function Search() {
     logEvent(analytics, "searchpage_visited");
   }, []);
 
+  // Handle closing the hint card
   const handleCloseHintCard = () => {
     setHintCardVisible(false);
     setShowHintButton(true);
     saveState(HINTS_STATE_NAME, true);
   };
 
+  // Handle showing the hint card
   const handleShowHintCard = () => {
     setHintCardVisible(true); 
     setShowHintButton(false);
   };
 
-  // Handler to prevent default key down behavior (if needed)
+  // Handle key down events if necessary
   const handleKeyDown = useCallback((e) => {
     // Implement any key down logic if necessary
   }, []);
 
-  // Modified input change handler to update inputValue
+  // Handle input value change
   const onSearchInputValueChange = useCallback((event) => {
     setInputValue(event.target.value);
   }, []);
@@ -331,7 +346,6 @@ export default function Search() {
     removeState(SEARCH_RESULTS_STATE_NAME);
     removeState(SEARCH_TYPE_STATE_NAME);
     setInputValue(""); // Reset inputValue
-    // Navigate to home
     navigate("/");
   }, [navigate]);
 
@@ -349,7 +363,7 @@ export default function Search() {
     [navigate, searchTerm, searchType]
   );
 
-  // Load more results
+  // Handle "Load More" functionality
   const onLoadMore = useCallback(
     async (event) => {
       if (event) event.preventDefault();
@@ -361,7 +375,7 @@ export default function Search() {
           ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=${newOffset}&query=${encodedSearchTerm}`
           : `${API_URLS.OTHER}${searchType}&limit=${limit}&offset=${newOffset}&query=${encodedSearchTerm}`;
       
-      // Set isSearching to true to show the LoadingSkeleton
+      // Show loading indicator
       dispatch({ type: "SET_IS_SEARCHING", payload: true });
 
       // Capture the current scroll position
@@ -391,10 +405,10 @@ export default function Search() {
           dispatch({ type: "SET_OFFSET", payload: newOffset });
         }
 
-        // Hide LoadingSkeleton after fetching
+        // Hide loading indicator
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
 
-        // Restore the scroll position to where it was before loading more
+        // Restore scroll position
         window.scrollTo(0, currentScrollY);
       } catch (error) {
         console.error("Load more error:", error);
@@ -403,7 +417,15 @@ export default function Search() {
         dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
       }
     },
-    [offset, limit, searchType, searchTerm, parseSemanticResults, parseNonSemanticResults, searchResults]
+    [
+      offset, 
+      limit, 
+      searchType, 
+      searchTerm, 
+      parseSemanticResults, 
+      parseNonSemanticResults, 
+      searchResults
+    ]
   );
 
   // Handle search type change
@@ -436,14 +458,14 @@ export default function Search() {
       .catch((err) => console.error("Failed to copy text: ", err));
   }, []);
 
-  // Memoized Search Results
+  // Memoize rendered search results
   const renderedSearchResults = useMemo(() => {
     return searchResults.map((result, index) => (
       <SearchResultItem
         key={`${result.sermonDate}-${result.paragraph}-${index}`}
         result={result}
         onReadMessage={() => onReadMessage(result.sermonDate, result.paragraph)}
-        onCopyParagraph={onCopyParagraphClick}
+        onCopyParagraph={() => onCopyParagraphClick(result)}
         searchType={searchType}
         wordsToHighlight={wordsToHighlight}
       />
@@ -484,10 +506,10 @@ export default function Search() {
         )}
         */}
 
-        {/* Prioritize LoadingSkeleton when searching */}
-        {isSearching ? 
+        {/* Display Loading Skeleton */}
+        {isSearching ? (
           <LoadingSkeleton />
-         : noResultsFound ? (
+        ) : noResultsFound ? (
           <div className="no-results-found">
             <Lottie animationData={noResultsAnimation} className="no-results-animation" />
             <Typography variant="h4">No results found</Typography>
@@ -499,38 +521,39 @@ export default function Search() {
               {renderedSearchResults}
             </ul>
             {/* Load More Button for Semantic Searches */}
-            {searchTerm &&
-              searchResults.length > 0 &&
-              searchType === SEMANTIC_SEARCH_TYPE && (
-                <Button
-                  className="load-more-button"
-                  size="medium"
-                  variant="contained"
-                  aria-label="load more results"
-                  onClick={onLoadMore}
-                  endIcon={<GetAppIcon />}
-                  sx={{
-                    marginBottom: "100px",
-                    backgroundColor: 'var(--text-color)',
-                    color: 'var(--border-color)',
-                    opacity: isSearching ? 0.6 : 1,
-                    pointerEvents: isSearching ? 'none' : 'auto',
-                  }}
-                  disabled={isSearching}
-                  ref={loadMoreButtonRef}
-                >
-                  {isSearching ? "Loading..." : "Load more"}
-                </Button>
-              )}
+            {searchTerm && searchResults.length > 0 && searchType === SEMANTIC_SEARCH_TYPE && (
+              <Button
+                className="load-more-button"
+                size="medium"
+                variant="contained"
+                aria-label="load more results"
+                onClick={onLoadMore}
+                endIcon={<GetAppIcon />}
+                sx={{
+                  marginBottom: "100px",
+                  backgroundColor: 'var(--text-color)',
+                  color: 'var(--border-color)',
+                  opacity: isSearching ? 0.6 : 1,
+                  pointerEvents: isSearching ? 'none' : 'auto',
+                }}
+                disabled={isSearching}
+                ref={loadMoreButtonRef}
+              >
+                {isSearching ? "Loading..." : "Load more"}
+              </Button>
+            )}
           </>
         )}
 
+        {/* Scroll to Top Button */}
         <ScrollToTop showUnder={260}>
           <ScrollUpButton aria-label="scroll up" />
         </ScrollToTop>
       </div>
 
       <Footer />
+
+      {/* Error Alert */}
       <ErrorAlert
         open={alertOpen}
         onClose={() => dispatch({ type: "SET_ALERT_OPEN", payload: false })}
