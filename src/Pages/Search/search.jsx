@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useCallback, useMemo, useState, useRef } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { GetApp as GetAppIcon } from "@mui/icons-material";
 import ScrollToTop from "react-scroll-up";
 import "./search.scss";
@@ -127,8 +127,6 @@ export default function Search() {
   }, []);
 
   const parseNonSemanticResults = useCallback((results) => {
-    // Adjust based on actual API response structure for non-semantic searches
-    // Example assumption: results is an array of objects
     return Array.isArray(results) ? results : [];
   }, []);
 
@@ -165,8 +163,6 @@ export default function Search() {
         } else {
           dispatch({ type: "SET_SEARCH_RESULTS", payload: parsedResults });
           dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: parsedResults });
-          saveState(SEARCH_TERM_STATE_NAME, searchTerm);
-          saveState(SEARCH_RESULTS_STATE_NAME, parsedResults);
           dispatch({ type: "SET_IS_ACTIVE", payload: true });
           dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
         }
@@ -196,7 +192,6 @@ export default function Search() {
       resetStateFields();
       if (typeOfSearch) {
         dispatch({ type: "SET_SEARCH_TYPE", payload: typeOfSearch });
-        saveState(SEARCH_TYPE_STATE_NAME, typeOfSearch);
       }
       const encodedSearchTerm = encodeURIComponent(term);
       const url =
@@ -281,21 +276,7 @@ export default function Search() {
 
         setInputValue(query);
 
-        const storedResults = getState(SEARCH_RESULTS_STATE_NAME);
-        const storedTerm = getState(SEARCH_TERM_STATE_NAME);
-        const storedType = getState(SEARCH_TYPE_STATE_NAME);
-
-        if (
-          storedResults?.length > 0 &&
-          query === storedTerm &&
-          type === storedType
-        ) {
-          dispatch({ type: "SET_SEARCH_RESULTS", payload: storedResults });
-          dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: storedResults });
-          dispatch({ type: "SET_IS_ACTIVE", payload: true });
-        } else {
-          onSearch(null, type, query);
-        }
+        onSearch(null, type, query);
       }
     }
     window.scrollTo(0, 0);
@@ -407,7 +388,6 @@ export default function Search() {
           const updatedResults = [...searchResults, ...parsedResults];
           dispatch({ type: "SET_SEARCH_RESULTS", payload: updatedResults });
           dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: updatedResults });
-          saveState(SEARCH_RESULTS_STATE_NAME, updatedResults);
           dispatch({ type: "SET_OFFSET", payload: newOffset });
         }
 
@@ -440,7 +420,6 @@ export default function Search() {
 
       console.log(`Changing search type to: ${newSearchType}`);
       dispatch({ type: "SET_SEARCH_TYPE", payload: newSearchType });
-      saveState(SEARCH_TYPE_STATE_NAME, newSearchType);
 
       if (searchTerm) {
         onSearch(null, newSearchType, searchTerm);
@@ -511,7 +490,8 @@ export default function Search() {
          : noResultsFound ? (
           <div className="no-results-found">
             <Lottie animationData={noResultsAnimation} className="no-results-animation" />
-            <h4>No results found. Please try a different search.</h4>
+            <Typography variant="h4">No results found</Typography>
+            <Typography variant="body1">Please try a different search</Typography>
           </div>
         ) : (
           <>
