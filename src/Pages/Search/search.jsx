@@ -1,6 +1,13 @@
-import React, { useEffect, useReducer, useCallback, useMemo, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useReducer,
+  useCallback,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 import { GetApp as GetAppIcon } from "@mui/icons-material";
 import ScrollToTop from "react-scroll-up";
 import "./search.scss";
@@ -29,8 +36,6 @@ import Footer from "../../Components/footer/footer";
 import Hints from "../../Components/hints/hints";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Lottie from 'lottie-react';
-import noResultsAnimation from '../../assets/animation.json'; 
 
 // Initial state for the reducer
 const initialState = {
@@ -91,14 +96,16 @@ function reducer(state, action) {
 export default function Search() {
   // Initialize reducer
   const [state, dispatch] = useReducer(reducer, initialState);
-  
+
   // Local state for input value
   const [inputValue, setInputValue] = useState(state.searchTerm);
-  
+
   // Local states for hint card visibility
   const [hintCardVisible, setHintCardVisible] = useState(false);
-  const [showHintButton, setShowHintButton] = useState(!getState(HINTS_STATE_NAME));
-  
+  const [showHintButton, setShowHintButton] = useState(
+    !getState(HINTS_STATE_NAME)
+  );
+
   // React Router hooks
   const navigate = useNavigate();
   const location = useLocation();
@@ -121,16 +128,18 @@ export default function Search() {
 
   // Parse semantic search results
   const parseSemanticResults = useCallback((results) => {
-    return results?.searchSamples?.map((entry) => {
-      const sermonInfo = entry?.externalId?.split("/");
-      return {
-        sermonTitle: sermonInfo[1],
-        sermonDate: sermonInfo[0],
-        section: entry.data,
-        paragraph: sermonInfo[2],
-        ...entry,
-      };
-    }) || [];
+    return (
+      results?.searchSamples?.map((entry) => {
+        const sermonInfo = entry?.externalId?.split("/");
+        return {
+          sermonTitle: sermonInfo[1],
+          sermonDate: sermonInfo[0],
+          section: entry.data,
+          paragraph: sermonInfo[2],
+          ...entry,
+        };
+      }) || []
+    );
   }, []);
 
   // Parse non-semantic search results
@@ -191,7 +200,10 @@ export default function Search() {
             dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
           } else {
             dispatch({ type: "SET_SEARCH_RESULTS", payload: parsedResults });
-            dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: parsedResults });
+            dispatch({
+              type: "SET_DEFAULT_SEARCH_RESULTS",
+              payload: parsedResults,
+            });
             dispatch({ type: "SET_IS_ACTIVE", payload: true });
             dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
           }
@@ -218,7 +230,13 @@ export default function Search() {
         dispatch({ type: "SET_IS_LOADING_MORE", payload: false });
       }
     },
-    [parseSemanticResults, parseNonSemanticResults, searchTerm, searchResults, state.offset]
+    [
+      parseSemanticResults,
+      parseNonSemanticResults,
+      searchTerm,
+      searchResults,
+      state.offset,
+    ]
   );
 
   // Handle search action
@@ -226,7 +244,7 @@ export default function Search() {
     (event, typeOfSearch = state.searchType, term = inputValue) => {
       if (event) event.preventDefault();
       resetStateFields();
-      
+
       if (typeOfSearch) {
         dispatch({ type: "SET_SEARCH_TYPE", payload: typeOfSearch });
       }
@@ -236,7 +254,7 @@ export default function Search() {
         typeOfSearch === SEMANTIC_SEARCH_TYPE
           ? `${API_URLS.SEMANTIC}?limit=20&offset=0&query=${encodedSearchTerm}`
           : `${API_URLS.OTHER}${typeOfSearch}&limit=20&offset=0&query=${encodedSearchTerm}`;
-      
+
       fetchSearchResults(url, typeOfSearch, false);
 
       const currentQ = searchParams.get("q") || "";
@@ -261,10 +279,10 @@ export default function Search() {
   // Initialize AOS for animations
   useEffect(() => {
     AOS.init({
-      duration: 800, 
-      easing: "ease-in-out", 
-      once: true, 
-      mirror: false, 
+      duration: 800,
+      easing: "ease-in-out",
+      once: true,
+      mirror: false,
     });
   }, []);
 
@@ -281,9 +299,8 @@ export default function Search() {
   // Update words to highlight based on search term and type
   useEffect(() => {
     if (searchTerm) {
-      const highlightWords = searchType === "exact" 
-        ? [searchTerm] 
-        : searchTerm.split(" ");
+      const highlightWords =
+        searchType === "exact" ? [searchTerm] : searchTerm.split(" ");
       dispatch({
         type: "SET_WORDS_TO_HIGHLIGHT",
         payload: highlightWords,
@@ -328,7 +345,7 @@ export default function Search() {
   useEffect(() => {
     if (!getState(HINTS_STATE_NAME)) {
       const timer = setTimeout(() => {
-        setHintCardVisible(true); 
+        setHintCardVisible(true);
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -348,7 +365,7 @@ export default function Search() {
 
   // Handle showing the hint card
   const handleShowHintCard = () => {
-    setHintCardVisible(true); 
+    setHintCardVisible(true);
     setShowHintButton(false);
   };
 
@@ -386,6 +403,12 @@ export default function Search() {
     [navigate, searchTerm, searchType]
   );
 
+  const openEmailClient = useCallback(() => {
+    window.open(
+      "mailto:themessagesearch@gmail.com?subject=Contact%20regarding%20website"
+    );
+  }, []);
+
   // Handle "Load More" functionality
   const onLoadMore = useCallback(
     async (event) => {
@@ -394,9 +417,13 @@ export default function Search() {
       const encodedSearchTerm = encodeURIComponent(searchTerm);
       const url =
         searchType === SEMANTIC_SEARCH_TYPE
-          ? `${API_URLS.SEMANTIC}?limit=${state.offset + 10}&offset=0&query=${encodedSearchTerm}`
-          : `${API_URLS.OTHER}${searchType}&limit=${state.offset + 10}&offset=0&query=${encodedSearchTerm}`;
-      
+          ? `${API_URLS.SEMANTIC}?limit=${
+              state.offset + 10
+            }&offset=0&query=${encodedSearchTerm}`
+          : `${API_URLS.OTHER}${searchType}&limit=${
+              state.offset + 10
+            }&offset=0&query=${encodedSearchTerm}`;
+
       // Show loading indicator for loading more
       dispatch({ type: "SET_IS_LOADING_MORE", payload: true });
 
@@ -411,12 +438,7 @@ export default function Search() {
         dispatch({ type: "SET_IS_LOADING_MORE", payload: false });
       }
     },
-    [
-      state.offset,
-      searchType,
-      searchTerm,
-      fetchSearchResults,
-    ]
+    [state.offset, searchType, searchTerm, fetchSearchResults]
   );
 
   // Handle search type change
@@ -471,7 +493,7 @@ export default function Search() {
 
   return (
     <div className="search-container">
-      <Hints 
+      <Hints
         hintCardVisible={hintCardVisible}
         onCloseHintCard={handleCloseHintCard}
         showHintButton={showHintButton}
@@ -481,7 +503,7 @@ export default function Search() {
       <div className="search__container" onKeyDown={handleKeyDown}>
         <SearchBar
           searchTerm={inputValue}
-          onSearch={(event) => onSearch(event, searchType, inputValue)} 
+          onSearch={(event) => onSearch(event, searchType, inputValue)}
           onSearchInputValueChange={onSearchInputValueChange}
           onClearInput={onClearInput}
           searchType={searchType}
@@ -490,16 +512,43 @@ export default function Search() {
         />
 
         {/* Display Initial Loading Skeleton */}
-        {state.isSearching && searchResults.length === 0 && (
-          <LoadingSkeleton />
-        )}
+        {state.isSearching && searchResults.length === 0 && <LoadingSkeleton />}
 
         {/* Display No Results Found */}
         {!state.isSearching && state.noResultsFound && (
-          <div className="no-results-found">
-            <Lottie animationData={noResultsAnimation} className="no-results-animation" />
-            <Typography variant="h4">No results found</Typography>
-            <Typography variant="body1">Please try a different search</Typography>
+          <div className="no-results-container">
+            <div className="no-results-message">
+              <h2>No results found</h2>
+              <p>
+                We couldn't find any results for your search. Here are some tips
+                that might help:
+              </p>
+
+              <ol className="search-tips">
+                <li>
+                  Ensure you're using the correct search type.
+                </li>
+                <li>
+                  Double-check your spelling for typos or errors.
+                </li>
+                <li>Try using fewer keywords or a broader search term for "Exact match" and
+                  "All words" search.</li>
+                <li>Try using more keywords or a narrower search term for "AI search".</li>
+                <li>Use synonyms or related words to refine your search.</li>
+              </ol>
+
+              <div className="help-link">
+                <p style={{fontSize: "15px"}}>
+                  Still need help? Send us an{" "}
+                  <span
+                    onClick={openEmailClient}
+                  >
+                    email
+                  </span>{" "}
+                  for more guidance.
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
@@ -511,32 +560,34 @@ export default function Search() {
         )}
 
         {/* Display Loading More Skeleton */}
-        {state.isLoadingMore && (
-          <LoadingSkeleton />
-        )}
+        {state.isLoadingMore && <LoadingSkeleton />}
 
         {/* Load More Button for Semantic Searches */}
-        {!state.isSearching && !state.isLoadingMore && searchTerm && searchResults.length > 0 && searchType === SEMANTIC_SEARCH_TYPE && (
-          <Button
-            className="load-more-button"
-            size="medium"
-            variant="contained"
-            aria-label="load more results"
-            onClick={onLoadMore}
-            endIcon={<GetAppIcon />}
-            sx={{
-              marginBottom: "100px",
-              backgroundColor: 'var(--text-color)',
-              color: 'var(--border-color)',
-              opacity: state.isLoadingMore ? 0.6 : 1,
-              pointerEvents: state.isLoadingMore ? 'none' : 'auto',
-            }}
-            disabled={state.isLoadingMore}
-            ref={loadMoreButtonRef}
-          >
-            {state.isLoadingMore ? "Loading..." : "Load more"}
-          </Button>
-        )}
+        {!state.isSearching &&
+          !state.isLoadingMore &&
+          searchTerm &&
+          searchResults.length > 0 &&
+          searchType === SEMANTIC_SEARCH_TYPE && (
+            <Button
+              className="load-more-button"
+              size="medium"
+              variant="contained"
+              aria-label="load more results"
+              onClick={onLoadMore}
+              endIcon={<GetAppIcon />}
+              sx={{
+                marginBottom: "100px",
+                backgroundColor: "var(--text-color)",
+                color: "var(--border-color)",
+                opacity: state.isLoadingMore ? 0.6 : 1,
+                pointerEvents: state.isLoadingMore ? "none" : "auto",
+              }}
+              disabled={state.isLoadingMore}
+              ref={loadMoreButtonRef}
+            >
+              {state.isLoadingMore ? "Loading..." : "Load more"}
+            </Button>
+          )}
 
         {/* Scroll to Top Button */}
         <ScrollToTop showUnder={260}>
