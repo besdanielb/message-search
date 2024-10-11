@@ -84,7 +84,7 @@ export default function Home() {
       <div className="home-background">
       </div>
       <div className="home-content">
-        <TypingTitle text="Search The Message" speed={150} />
+        <TypingTitle text="Search The Message" speed={100} />
         <SearchBar
           searchTerm={searchTerm}
           onSearch={handleSearch}

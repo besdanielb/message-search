@@ -68,15 +68,15 @@ export default function SearchResultItem({
   // Function to get tooltip text based on mapped distance
   const getTooltipText = (mappedDistance) => {
     if (mappedDistance >= 65) {
-      return "This is a good result!";
+      return "This is a very relevant result";
     } else if (mappedDistance >= 55) {
-      return "This is an ok result.";
+      return "This is a relevant result";
     } else if (mappedDistance >= 50) {
-      return "This result is not very good.";
+      return "This result may not be relevant.";
     } else if (mappedDistance >= 30) {
-      return "This result is not good, maybe try a different search.";
+      return "This result is not very relevant to your prompt, maybe try a different search.";
     } else {
-      return "This result is bad, try a different search or add more words to your search text.";
+      return "This result is not relevant to your prompt, try a different search or add more words to your search text.";
     }
   };
 

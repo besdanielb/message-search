@@ -39,9 +39,10 @@ const initialState = {
   searchResults: [],
   defaultSearchResults: [],
   isSearching: false,
+  isLoadingMore: false, // New state property
   isActive: false,
-  limit: 20,
-  offset: 0,
+  limit: 20, // Initial limit
+  offset: 20, // Initial offset for the first load more (20 already fetched)
   searchType: SEMANTIC_SEARCH_TYPE,
   noResultsFound: false,
   alertOpen: false,
@@ -62,6 +63,8 @@ function reducer(state, action) {
       return { ...state, defaultSearchResults: action.payload };
     case "SET_IS_SEARCHING":
       return { ...state, isSearching: action.payload };
+    case "SET_IS_LOADING_MORE": // New case
+      return { ...state, isLoadingMore: action.payload };
     case "SET_IS_ACTIVE":
       return { ...state, isActive: action.payload };
     case "SET_LIMIT":
@@ -106,19 +109,15 @@ export default function Search() {
     searchTerm,
     wordsToHighlight,
     searchResults,
-    isSearching,
     isActive,
-    limit,
-    offset,
     searchType,
-    noResultsFound,
     alertOpen,
     searchClicked,
   } = state;
 
   // Refs for list and load more button
   const listRef = useRef(null);
-  const loadMoreButtonRef = useRef(null);
+  const loadMoreButtonRef = useRef(null); // Ref for "Load More" button
 
   // Parse semantic search results
   const parseSemanticResults = useCallback((results) => {
@@ -147,12 +146,12 @@ export default function Search() {
     dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
     dispatch({ type: "SET_SEARCH_CLICKED", payload: true });
     dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
-    dispatch({ type: "SET_OFFSET", payload: 0 });
+    dispatch({ type: "SET_OFFSET", payload: 20 }); // Reset to initial offset
   }, []);
 
   // Fetch search results from the API
   const fetchSearchResults = useCallback(
-    async (url, typeOfSearch) => {
+    async (url, typeOfSearch, isLoadMore = false) => {
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -167,20 +166,43 @@ export default function Search() {
           parsedResults = parseNonSemanticResults(results);
         }
 
-        if (parsedResults.length === 0) {
-          dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
-          dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: [] });
-          dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
+        if (isLoadMore) {
+          // Append only the new 10 items
+          const newItems = parsedResults.slice(state.offset, state.offset + 10);
+          if (newItems.length === 0) {
+            dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
+          } else {
+            dispatch({
+              type: "SET_SEARCH_RESULTS",
+              payload: [...searchResults, ...newItems],
+            });
+            dispatch({
+              type: "SET_DEFAULT_SEARCH_RESULTS",
+              payload: [...searchResults, ...newItems],
+            });
+            dispatch({ type: "SET_OFFSET", payload: state.offset + 10 });
+          }
+          dispatch({ type: "SET_IS_LOADING_MORE", payload: false }); // Stop loading more
         } else {
-          dispatch({ type: "SET_SEARCH_RESULTS", payload: parsedResults });
-          dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: parsedResults });
-          dispatch({ type: "SET_IS_ACTIVE", payload: true });
-          dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
+          // Initial search
+          if (parsedResults.length === 0) {
+            dispatch({ type: "SET_SEARCH_RESULTS", payload: [] });
+            dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: [] });
+            dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
+          } else {
+            dispatch({ type: "SET_SEARCH_RESULTS", payload: parsedResults });
+            dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: parsedResults });
+            dispatch({ type: "SET_IS_ACTIVE", payload: true });
+            dispatch({ type: "SET_NO_RESULTS_FOUND", payload: false });
+          }
+          dispatch({ type: "SET_IS_SEARCHING", payload: false }); // Stop initial searching
         }
 
         // Delay to ensure LoadingSkeleton is visible
         setTimeout(() => {
-          dispatch({ type: "SET_IS_SEARCHING", payload: false });
+          if (!isLoadMore) {
+            dispatch({ type: "SET_IS_SEARCHING", payload: false });
+          }
         }, 300); // 300ms delay
 
         // Log the search event
@@ -193,9 +215,10 @@ export default function Search() {
         dispatch({ type: "SET_ALERT_OPEN", payload: true });
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
         dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
+        dispatch({ type: "SET_IS_LOADING_MORE", payload: false });
       }
     },
-    [parseSemanticResults, parseNonSemanticResults, searchTerm]
+    [parseSemanticResults, parseNonSemanticResults, searchTerm, searchResults, state.offset]
   );
 
   // Handle search action
@@ -211,10 +234,10 @@ export default function Search() {
       const encodedSearchTerm = encodeURIComponent(term);
       const url =
         typeOfSearch === SEMANTIC_SEARCH_TYPE
-          ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=0&query=${encodedSearchTerm}`
-          : `${API_URLS.OTHER}${typeOfSearch}&limit=${limit}&offset=0&query=${encodedSearchTerm}`;
+          ? `${API_URLS.SEMANTIC}?limit=20&offset=0&query=${encodedSearchTerm}`
+          : `${API_URLS.OTHER}${typeOfSearch}&limit=20&offset=0&query=${encodedSearchTerm}`;
       
-      fetchSearchResults(url, typeOfSearch);
+      fetchSearchResults(url, typeOfSearch, false);
 
       const currentQ = searchParams.get("q") || "";
       const currentType = searchParams.get("type") || SEMANTIC_SEARCH_TYPE;
@@ -227,7 +250,6 @@ export default function Search() {
     },
     [
       fetchSearchResults,
-      limit,
       resetStateFields,
       setSearchParams,
       inputValue,
@@ -285,13 +307,14 @@ export default function Search() {
       if (query !== state.searchTerm || type !== state.searchType) {
         dispatch({ type: "SET_SEARCH_TERM", payload: query });
         dispatch({ type: "SET_SEARCH_TYPE", payload: type });
+        dispatch({ type: "SET_OFFSET", payload: 20 }); // Reset offset for new search
 
         setInputValue(query);
 
         onSearch(null, type, query);
       }
     }
-    window.scrollTo(0, 0);
+    // Removed window.scrollTo(0, 0);
   }, [
     location.search,
     navigate,
@@ -368,63 +391,31 @@ export default function Search() {
     async (event) => {
       if (event) event.preventDefault();
 
-      const newOffset = offset + limit;
       const encodedSearchTerm = encodeURIComponent(searchTerm);
       const url =
         searchType === SEMANTIC_SEARCH_TYPE
-          ? `${API_URLS.SEMANTIC}?limit=${limit}&offset=${newOffset}&query=${encodedSearchTerm}`
-          : `${API_URLS.OTHER}${searchType}&limit=${limit}&offset=${newOffset}&query=${encodedSearchTerm}`;
+          ? `${API_URLS.SEMANTIC}?limit=${state.offset + 10}&offset=0&query=${encodedSearchTerm}`
+          : `${API_URLS.OTHER}${searchType}&limit=${state.offset + 10}&offset=0&query=${encodedSearchTerm}`;
       
-      // Show loading indicator
-      dispatch({ type: "SET_IS_SEARCHING", payload: true });
-
-      // Capture the current scroll position
-      const currentScrollY = window.scrollY;
+      // Show loading indicator for loading more
+      dispatch({ type: "SET_IS_LOADING_MORE", payload: true });
 
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-        const results = await response.json();
-        let parsedResults = [];
-
-        if (searchType === SEMANTIC_SEARCH_TYPE) {
-          parsedResults = parseSemanticResults(results);
-        } else if (searchType === "exact" || searchType === "allwords") {
-          parsedResults = parseNonSemanticResults(results);
-        }
-
-        if (parsedResults.length === 0) {
-          // No more results to load
-          dispatch({ type: "SET_NO_RESULTS_FOUND", payload: true });
-        } else {
-          const updatedResults = [...searchResults, ...parsedResults];
-          dispatch({ type: "SET_SEARCH_RESULTS", payload: updatedResults });
-          dispatch({ type: "SET_DEFAULT_SEARCH_RESULTS", payload: updatedResults });
-          dispatch({ type: "SET_OFFSET", payload: newOffset });
-        }
-
-        // Hide loading indicator
-        dispatch({ type: "SET_IS_SEARCHING", payload: false });
-
-        // Restore scroll position
-        window.scrollTo(0, currentScrollY);
+        // Pass isLoadMore=true to handle appending
+        await fetchSearchResults(url, searchType, true);
       } catch (error) {
         console.error("Load more error:", error);
         dispatch({ type: "SET_ALERT_OPEN", payload: true });
         dispatch({ type: "SET_IS_SEARCHING", payload: false });
         dispatch({ type: "SET_SEARCH_CLICKED", payload: false });
+        dispatch({ type: "SET_IS_LOADING_MORE", payload: false });
       }
     },
     [
-      offset, 
-      limit, 
-      searchType, 
-      searchTerm, 
-      parseSemanticResults, 
-      parseNonSemanticResults, 
-      searchResults
+      state.offset,
+      searchType,
+      searchTerm,
+      fetchSearchResults,
     ]
   );
 
@@ -498,51 +489,53 @@ export default function Search() {
           showBackButton={searchClicked || searchResults.length > 0}
         />
 
-        {/* Optional: Uncomment if you implement sort options
-        {searchTerm && searchClicked && (
-          <div className="info-div">
-            <SortOptions sortBy={sortBy} handleSortChange={handleSortChange} />
-          </div>
-        )}
-        */}
-
-        {/* Display Loading Skeleton */}
-        {isSearching ? (
+        {/* Display Initial Loading Skeleton */}
+        {state.isSearching && searchResults.length === 0 && (
           <LoadingSkeleton />
-        ) : noResultsFound ? (
+        )}
+
+        {/* Display No Results Found */}
+        {!state.isSearching && state.noResultsFound && (
           <div className="no-results-found">
             <Lottie animationData={noResultsAnimation} className="no-results-animation" />
             <Typography variant="h4">No results found</Typography>
             <Typography variant="body1">Please try a different search</Typography>
           </div>
-        ) : (
-          <>
-            <ul className={isActive ? "transition" : ""} ref={listRef}>
-              {renderedSearchResults}
-            </ul>
-            {/* Load More Button for Semantic Searches */}
-            {searchTerm && searchResults.length > 0 && searchType === SEMANTIC_SEARCH_TYPE && (
-              <Button
-                className="load-more-button"
-                size="medium"
-                variant="contained"
-                aria-label="load more results"
-                onClick={onLoadMore}
-                endIcon={<GetAppIcon />}
-                sx={{
-                  marginBottom: "100px",
-                  backgroundColor: 'var(--text-color)',
-                  color: 'var(--border-color)',
-                  opacity: isSearching ? 0.6 : 1,
-                  pointerEvents: isSearching ? 'none' : 'auto',
-                }}
-                disabled={isSearching}
-                ref={loadMoreButtonRef}
-              >
-                {isSearching ? "Loading..." : "Load more"}
-              </Button>
-            )}
-          </>
+        )}
+
+        {/* Display Search Results */}
+        {!state.isSearching && !state.noResultsFound && (
+          <ul className={isActive ? "transition" : ""} ref={listRef}>
+            {renderedSearchResults}
+          </ul>
+        )}
+
+        {/* Display Loading More Skeleton */}
+        {state.isLoadingMore && (
+          <LoadingSkeleton />
+        )}
+
+        {/* Load More Button for Semantic Searches */}
+        {!state.isSearching && !state.isLoadingMore && searchTerm && searchResults.length > 0 && searchType === SEMANTIC_SEARCH_TYPE && (
+          <Button
+            className="load-more-button"
+            size="medium"
+            variant="contained"
+            aria-label="load more results"
+            onClick={onLoadMore}
+            endIcon={<GetAppIcon />}
+            sx={{
+              marginBottom: "100px",
+              backgroundColor: 'var(--text-color)',
+              color: 'var(--border-color)',
+              opacity: state.isLoadingMore ? 0.6 : 1,
+              pointerEvents: state.isLoadingMore ? 'none' : 'auto',
+            }}
+            disabled={state.isLoadingMore}
+            ref={loadMoreButtonRef}
+          >
+            {state.isLoadingMore ? "Loading..." : "Load more"}
+          </Button>
         )}
 
         {/* Scroll to Top Button */}

@@ -9,7 +9,7 @@ const TypingTitle = ({ text, speed = 150 }) => {
     if (currentIndex < text.length) {
       const timeoutId = setTimeout(() => {
         setDisplayedText((prev) => prev + text.charAt(currentIndex));
-        setCurrentIndex(currentIndex + 1);
+        setCurrentIndex((prevIndex) => prevIndex + 1); 
       }, speed);
       return () => clearTimeout(timeoutId);
     }

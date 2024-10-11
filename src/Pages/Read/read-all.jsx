@@ -142,7 +142,7 @@ export default function ReadAll() {
          initialState={{
           columns: {
             columnVisibilityModel: {
-              date: !isMobile,
+              read: !isMobile,
             },
           },
         }}
@@ -167,6 +167,7 @@ export default function ReadAll() {
           localeText={{
             noRowsLabel: "No Messages found",
           }}
+          onRowClick={onReadMessage}
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? "even-row" : "odd-row"
           }
