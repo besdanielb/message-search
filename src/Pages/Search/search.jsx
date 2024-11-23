@@ -126,6 +126,27 @@ export default function Search() {
   const listRef = useRef(null);
   const loadMoreButtonRef = useRef(null); // Ref for "Load More" button
 
+  const handleCopy = (e) => {
+    // Get the selected text
+    const selectedText = window.getSelection().toString();
+
+    // Modify the copied text to be plain black text
+    e.clipboardData.setData("text/plain", selectedText);
+
+    // Prevent default copy behavior
+    e.preventDefault();
+  };
+
+  React.useEffect(() => {
+    // Add event listener for the copy event
+    document.addEventListener("copy", handleCopy);
+
+    // Cleanup the event listener
+    return () => {
+      document.removeEventListener("copy", handleCopy);
+    };
+  }, []);
+
   // Parse semantic search results
   const parseSemanticResults = useCallback((results) => {
     return (
