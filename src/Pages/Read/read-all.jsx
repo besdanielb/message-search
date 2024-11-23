@@ -1,29 +1,42 @@
 import "./read-all.scss";
-import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import MenuBookIcon from "@material-ui/icons/MenuBook";
-import IconButton from "@material-ui/core/IconButton";
-import { DataGrid } from "@material-ui/data-grid";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import { DataGrid } from "@mui/x-data-grid";
 import QuickSearchToolbar from "../../Components/quick-search-toolbar";
 import { saveState, getState } from "../../Providers/localStorageProvider";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "../../index";
+import { ReadMore } from "@mui/icons-material";
+import { Tooltip, useMediaQuery, useTheme } from "@mui/material";
 
-const escapeRegExp = (value) => {
-  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-};
+// Utility function to escape RegExp special characters
+const escapeRegExp = (value) => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 
 export default function ReadAll() {
-  const [messages, setMessages] = React.useState([]);
-  const [rows, setRows] = React.useState([]);
-  const [rowsCopy, setRowsCopy] = React.useState(rows);
-  const [width, setWidth] = React.useState(window.innerWidth);
-  const [searchText, setSearchText] = React.useState("");
-  const [hasCache, setHasCache] = React.useState();
-  let isMobile = width <= 768;
-  const history = useHistory();
+  const theme = useTheme();
+  const [messages, setMessages] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); 
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const MESSAGES_STATE_NAME = "messages";
-  const TABLE_COLUMNS = [
+
+  const onReadMessage = useCallback((params) => {
+   
+    const { date, paragraph } = params.row;
+
+    // Ensure both date and paragraph are present
+    if (date) {
+      console.log(`/read/${date}${paragraph ? "/"+paragraph : ""}`);
+      navigate(`/read/${date}${paragraph ? "/"+paragraph : ""}`);
+    } else {
+      console.error("Missing date or paragraph information for navigation.");
+    }
+  }, [navigate]);
+
+  // Define table columns using useMemo
+  const TABLE_COLUMNS = useMemo(() => [
     {
       field: "title",
       headerName: "Title",
@@ -34,134 +47,132 @@ export default function ReadAll() {
       field: "date",
       headerName: "Date",
       sortable: true,
-      hide: isMobile,
       flex: 1,
     },
     {
       field: "read",
-      headerName: " ",
+      headerName: "Read",
       sortable: false,
-      width: 60,
+      width: 90,
       disableColumnMenu: true,
       disableClickEventBubbling: true,
-      renderCell: (params) => {
-        return (
-          <IconButton
-            aria-label="read message"
-            color="default"
-            onClick={() => {
-              onReadMessage(params);
-            }}
-          >
-            <MenuBookIcon />
-          </IconButton>
-        );
-      },
+      renderCell: (params) => (
+        <Tooltip title="Read Message" placement="top" >
+        <IconButton
+          aria-label="read message"
+          onClick={() => onReadMessage(params)}
+        >
+          <ReadMore sx={{color: 'var(--text-color)', fontSize: "30px"}}/>
+        </IconButton>
+        </Tooltip>
+      ),
     },
-  ];
+  ], [onReadMessage]);
 
-  useEffect(() => {
-    setRowsCopy(rows);
-  }, [rows]);
-
-  useEffect(() => {
-    logEvent(analytics, "read-allpage_visited");
-  });
-
-  useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    if (getState(MESSAGES_STATE_NAME)?.length > 0) {
-      setHasCache(true);
-      setMessages(getState(MESSAGES_STATE_NAME));
-    }
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  }, []);
-
-  useEffect(() => {
-    saveState(MESSAGES_STATE_NAME, messages);
-    setHasCache(true);
-    let tableData = messages.map((message, index) => {
-      return {
-        id: index,
-        title: message.sermonTitle,
-        date: message.sermonDate,
-      };
-    });
-    setRows(tableData);
+  // Memoize rows based on messages
+  const rows = useMemo(() => {
+    return messages.map((message, index) => ({
+      id: index,
+      title: message.sermonTitle,
+      date: message.sermonDate,
+      paragraph: message.paragraph,
+    }));
   }, [messages]);
 
+  // Memoize filtered rows based on searchText
+  const filteredRows = useMemo(() => {
+    if (!searchText) return rows;
+    const searchRegex = new RegExp(escapeRegExp(searchText), "i");
+    return rows.filter((row) => {
+      return Object.keys(row).some((field) =>
+        searchRegex.test(row[field]?.toString())
+      );
+    });
+  }, [rows, searchText]);
+
+  // Fetch messages from API or load from localStorage
   useEffect(() => {
-    let isMounted = true;
-    const url =
-      "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/listsermons";
-
-    if (messages?.length === 0 && !hasCache) {
-      fetch(url)
-        .then((response) => response.json())
-        .then(
-          (result) => {
-            if (isMounted) {
-              setMessages(result);
-            }
-          },
-          (error) => {
-            console.log("error: " + error);
+    const fetchMessages = async () => {
+      const cachedMessages = getState(MESSAGES_STATE_NAME);
+      if (cachedMessages?.length > 0) {
+        setMessages(cachedMessages);
+        logEvent(analytics, "read-allpage_loaded_from_cache");
+      } else {
+        try {
+          const response = await fetch(
+            "https://bsaj8zf1se.execute-api.us-east-2.amazonaws.com/prod/listsermons"
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        );
-    }
-    return () => {
-      isMounted = false;
+          const data = await response.json();
+          setMessages(data);
+          logEvent(analytics, "read-allpage_loaded_from_api");
+        } catch (err) {
+          console.error("Failed to fetch messages:", err);
+          setError("Failed to load messages. Please try again later.");
+          logEvent(analytics, "read-allpage_fetch_error");
+        }
+      }
     };
-    // eslint-disable-next-line
-  }, [messages?.length]);
 
-  const onReadMessage = (params) => {
-    history.push({
-      pathname: "/read",
-      state: { date: params.row?.date },
-    });
-  };
+    fetchMessages();
+  }, []);
 
-  const requestSearch = (searchValue) => {
-    setSearchText(searchValue);
-    const searchRegex = new RegExp(escapeRegExp(searchValue), "i");
-    const filteredRows = rows.filter((row) => {
-      return Object.keys(row).some((field) => {
-        return searchRegex.test(row[field].toString());
-      });
-    });
-    setRowsCopy(filteredRows);
-  };
+  // Save messages to localStorage when messages state changes
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveState(MESSAGES_STATE_NAME, messages);
+    }
+  }, [messages]);
 
-  const handleWindowSizeChange = () => {
-    setWidth(window.innerWidth);
-  };
+  // Log page visit
+  useEffect(() => {
+    logEvent(analytics, "read-allpage_visited");
+  }, []);
 
   return (
-    <div className="container center">
-      <div className="title">
-        <h1>Read a Message</h1>
-        <p>
-          Read the full sermons of William Branham. You can also sort the
-          sermons by title or date.
-        </p>
+    <div className="read-all-container">
+      <div className="title-section">
+        {error && <div className="error-message">{error}</div>}
       </div>
-      <DataGrid
-        rows={rowsCopy}
-        columns={TABLE_COLUMNS}
-        disableSelectionOnClick
-        loading={messages.length === 0}
-        components={{ Toolbar: QuickSearchToolbar }}
-        componentsProps={{
-          toolbar: {
-            value: searchText,
-            onChange: (event) => requestSearch(event.target.value),
-            clearSearch: () => requestSearch(""),
+      
+      <div className="data-grid-container">
+        <DataGrid
+         initialState={{
+          columns: {
+            columnVisibilityModel: {
+              read: !isMobile,
+            },
           },
         }}
-      />
+          disableRowSelectionOnClick
+          rows={filteredRows}
+          columns={TABLE_COLUMNS}
+          disableSelectionOnClick
+          loading={messages.length === 0 && !error}
+          slots={{
+            toolbar: QuickSearchToolbar,
+          }}
+          slotProps={{
+            toolbar: {
+              value: searchText,
+              onChange: (event) => setSearchText(event.target.value),
+              clearSearch: () => setSearchText(""),
+            },
+          }}
+          pagination
+          pageSize={25}
+          rowsPerPageOptions={[25, 50, 100]}
+          localeText={{
+            noRowsLabel: "No Messages found",
+          }}
+          onRowClick={onReadMessage}
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? "even-row" : "odd-row"
+          }
+        />
+      </div>
     </div>
   );
 }

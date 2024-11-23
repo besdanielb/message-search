@@ -1,21 +1,14 @@
-import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
-import Fab from "@material-ui/core/Fab";
-
-const useStyles = makeStyles((theme) => ({
-  margin: {
-    margin: theme.spacing(1),
-    position: "fixed",
-    right: "3em",
-    bottom: "7em",
-  },
-}));
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import Fab from "@mui/material/Fab";
 
 export default function ScrollUpButton() {
-  const classes = useStyles();
   return (
-    <Fab aria-label="scroll up" className={classes.margin}>
+    <Fab aria-label="scroll up" sx={{ margin: {
+      margin: 1,
+      position: "fixed",
+      right: "3em",
+      bottom: "7em",
+    },}}>
       <KeyboardArrowUpIcon fontSize="large" />
     </Fab>
   );

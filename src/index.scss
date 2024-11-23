@@ -1,14 +1,41 @@
 :root {
-  --yellow-color: #ffe44a;
-  --dark-color: #333333;
-  --gray-color: #f5f5f5;
-  --secondary-color: #b0b0b0;
-  overflow-x: hidden;
+  // Light Theme Colors
+  --background-color: #F2F4F8;
+  --text-color: #193659;
+  --border-color: #DADDE3;
+  --input-background:  #ECEFF4;
+  --accent-color: #0f5bac;
+  --disabled-color: #9fa6b0;
+  --hover-color: #8cb1d3;
+  --error-color:  #ff4d4f;
+  --nav-bar-1: #19365909;
+  --nav-bar-2: #19365933; 
+  --nav-bar-scrolled: #193659e1;
+  --hover-input: #19365980; 
+  --drawer-2: #19365909;
+  --drawer-1: #19365933; 
 }
 
-mark {
-  background: var(--yellow-color);
-  color: black;
+[data-theme="dark"] {
+  // Dark Theme Colors
+  --background-color: #282828;
+  --text-color: #cacaca;
+  --border-color: #3f3f3f;
+  --input-background: #212121;
+  --accent-color: #57789b;
+  --disabled-color: #757575;
+  --hover-color: #3E517A;
+  --error-color:  #ff4d4f;
+  --nav-bar-1: #282f371f;
+  --nav-bar-2: #19212b8e; 
+  --nav-bar-scrolled: #cacacad5;
+  --hover-input: #121212; 
+  --drawer-1: #212121;
+  --drawer-2: #30333b; 
+}
+
+:root, [data-theme="dark"], body {
+  transition: background-color 0.8s ease, color 0.8s ease; 
 }
 
 body {
@@ -22,6 +49,10 @@ body {
 *::before {
   box-sizing: border-box;
   margin: 0;
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-color);
 }
 
 h1 {

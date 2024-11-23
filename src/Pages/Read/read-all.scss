@@ -1,62 +1,192 @@
-.center {
-  display: block;
-  padding-left: 2.5em;
-  padding-right: 2.5em;
-  padding-bottom: 2em;
-  height: 100vh;
+.read-all-container {
+  background: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 55px 2.5em 2.5em 2em;
+  min-height: 100vh;
+  background-image: url('../../assets/44.png'); 
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed; 
+  overflow-y: auto;
+  transition: background-color 0.8s ease, color 0.8s ease;
 }
 
-.title {
+.title-section {
+  margin-top: 3.5em;
   width: 100%;
-  padding-top: 5em;
+  padding-top: 1em;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   h1 {
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-    text-align: center;
+    margin-bottom: 1.5em;
+    font-size: 50px;
+    color: var(--text-color);
+
+    @media (max-width: 600px) {
+      font-size: 2rem;
+    }
   }
 
-  p {
-    margin-bottom: 3rem;
-    font-size: 20px;
+  .error-message {
+    color: var(--error-color);
+    font-size: 1rem;
+    margin-top: 1rem;
   }
 }
 
-.MuiDataGrid-root {
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.25);
-  height: 65vh !important;
-}
+.data-grid-container {
+  width: 100%;
+  max-width: 1500px;
+  box-shadow: 0px 5px 20px var(--text-color);
+  border-radius: 8px;
+  height: 80vh;
 
-.MuiIconButton-root {
-  color: black !important;
-}
+  @media (min-device-width: 300px) and (max-device-width: 1200px) and (orientation: landscape) {
+    height: 60vmax;
+  }
 
-@media only screen and (min-device-width: 300px) and (max-device-width: 1200px) and (orientation: landscape) {
-  .center {
-    padding-bottom: 5em;
-    height: 100%;
+  @media (max-width: 770px) {
+    height: 60vh;
+  }
+
+  @media (min-width: 2000px) {
+    height: 85vh;
+  }
+
+  .MuiDataGrid-toolbarContainer {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5em;
+    background-color: var(--border-color);
+    border-bottom: 1px solid var(--text-color);
+    height: 50px;
   }
 
   .MuiDataGrid-root {
-    height: 60vmax !important;
+    border: none;
+    border-radius: 8px;
+
+    .MuiInput-root {
+      color: var(--border-color);
+
+      &:hover  {
+        border-bottom: 1px solid var(--border-color);
+      }      
+    }
+
+    .MuiDataGrid-cell:focus {
+      outline: none;
+    }
+
+    .MuiDataGrid-scrollbar--vertical {
+      background-color: var(--border-color);
+    }
+
+    .MuiInput-underline:after {
+      border-bottom: 1px solid var(--border-color) ; 
+    }
+
+    .MuiInput-underline:hover:before {
+      border-bottom: 1px solid var(--text-color) ;
+    }
+
+    .MuiInputBase-root:focus {
+      outline: none;
+    }
+
+    .MuiDataGrid-scrollbarFiller {
+      background-color: var(--text-color);
+    }
+
+    .MuiDataGrid-columnHeader {
+      background-color: var(--text-color); // Replace with your desired color
+      color: var(--border-color); // Header text color
+      font-size: 20px;
+      font-weight: bold;
+      font-family: monospace;
+
+      .MuiIconButton-sizeSmall {
+        color: var(--border-color),
+      }
+    }
+
+    .MuiDataGrid-columnSeparator {
+      color: var(--background-color);
+    }
+  
+    .MuiDataGrid-cell {
+      color: var(--text-color); // Header text color
+      white-space: normal;
+      word-wrap: break-word;
+      font-family: 'Roboto', sans-serif; 
+      font-size: 15px;
+      border-top-color: var(--background-color);
+      font-family: monospace;
+    }
+
+    .MuiDataGrid-row {
+      cursor: pointer;
+      &:hover {
+        background-color: var(--border-color);
+      }
+    }
+
+    .even-row {
+      background-color: var(--background-color);
+    }
+
+    .odd-row {
+      background-color: var(--input-background);
+    }
+
+    .MuiDataGrid-footerContainer {
+      background-color: var(--border-color);
+      color: var(--text-color);
+      border-top: 1px solid var(--border-color);
+    }
+
+    .MuiTablePagination-selectLabel{
+      font-family: monospace;
+    }
+
+    .MuiTablePagination-toolbar {
+      color: var(--text-color);
+    }
+
+    .MuiDataGrid-toolbarContainer {
+      background-color: var(--text-color);
+    }
+
+    .MuiDataGrid-iconButtonContainer {
+      color: var(--text-color);
+    }
   }
 }
 
-@media only screen and (max-width: 770px) {
-  .center {
-    padding-bottom: 5em;
-    height: 100%;
-  }
-}
-
-@media only screen and (min-width: 2000px) {
-  .center {
-    padding-bottom: 5em;
-    height: 100vh;
+@media (max-width: 600px) {
+  .data-grid-container {
+    height: 70vh;
+    max-width: 90vw;
   }
 
-  .MuiDataGrid-root {
-    height: 72vh !important;
+  .title-section {
+    padding-top: 1em;
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
   }
 }

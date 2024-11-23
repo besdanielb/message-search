@@ -1,35 +1,48 @@
 .wrapper {
   display: inline-flex;
-  background: #fff;
   height: 45px;
   line-height: 45px;
   width: 70%;
   align-items: center;
   justify-content: center;
   border-radius: 5px;
-  margin-top: 1.5em;
+  margin-top: 3em;
+  margin-bottom: 1.5em;
+  z-index: 1;
 }
+
 .wrapper .option {
-  background: #fff;
+  background: var(--background-color);
+  min-width: 180px;
   height: 100%;
-  width: 100%;
-  max-width: 175px;
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: flex-start;
   margin: 0 10px;
   border-radius: 5px;
   cursor: pointer;
   padding: 0 10px;
-  border: 2px solid lightgrey;
+  border: 2px solid var(--border-color);
   transition: all 0.3s ease;
+  
+
+  @media screen and (max-width: 760px) {
+    width: 180px;
+  }
 }
+
+.wrapper .option:hover {
+  background-color: var(--input-background);
+  box-shadow: 0px 0px 15px var(--background-color);
+}
+
 .wrapper .option .dot {
   height: 18px;
   width: 18px;
-  background: var(--gray-color);
+  background: var(--border-color);
   border-radius: 50%;
   position: relative;
+  margin: 0px 15px;
 }
 .wrapper .option .dot::before {
   position: absolute;
@@ -38,7 +51,7 @@
   left: 3px;
   width: 12px;
   height: 12px;
-  background: var(--dark-color);
+  background: var(--accent-color);
   border-radius: 50%;
   opacity: 0;
   transform: scale(1.5);
@@ -50,13 +63,13 @@ input[type="radio"] {
 #option-1:checked:checked ~ .option-1,
 #option-2:checked:checked ~ .option-2,
 #option-3:checked:checked ~ .option-3 {
-  border-color: var(--dark-color);
-  background: var(--dark-color);
+  border-color: var(--text-color);
+  background: var(--text-color);
 }
 #option-1:checked:checked ~ .option-1 .dot,
 #option-2:checked:checked ~ .option-2 .dot,
 #option-3:checked:checked ~ .option-3 .dot {
-  background: #fff;
+  background: var(--input-background);
 }
 #option-1:checked:checked ~ .option-1 .dot::before,
 #option-2:checked:checked ~ .option-2 .dot::before,
@@ -66,26 +79,26 @@ input[type="radio"] {
 }
 .wrapper .option span {
   font-size: 18px;
-  color: var(--dark-color);
+  color: var(--text-color);
 }
 #option-1:checked:checked ~ .option-1 span,
 #option-2:checked:checked ~ .option-2 span,
 #option-3:checked:checked ~ .option-3 span {
-  color: #fff;
+  color: var(--input-background);
 }
 
-@media (max-width: 660px) {
+@media (max-width: 760px) {
   .wrapper {
     display: flex;
     flex-direction: column;
     height: 25%;
     width: 90%;
-    margin-top: 0.5em;
+    margin-top: 2.3em;
   }
 
   .wrapper .option {
     justify-content: flex-start;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .wrapper .option .dot {

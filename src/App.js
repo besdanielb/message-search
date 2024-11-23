@@ -1,69 +1,57 @@
 import "./App.scss";
-import React from "react";
-import { Route, Link, Redirect } from "react-router-dom";
-import { Router } from "react-router-dom";
+import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
+import Home from "./Pages/Home/home";
 import Search from "./Pages/Search/search";
 import Read from "./Pages/Read/read";
 import ReadAll from "./Pages/Read/read-all";
-import { createBrowserHistory } from "history";
-import MenuIcon from "@material-ui/icons/Menu";
-import { makeStyles } from "@material-ui/core/styles";
 import { logEvent } from "firebase/analytics";
 import { analytics } from "./index";
 import withClearCache from "./ClearCache";
-
-const useStyles = makeStyles({
-  menuIcon: {
-    display: "flex",
-    justifyContent: "center",
-    color: "var(--gray-color)",
-    fontSize: "12.5vmin",
-    transition: "0.5s ease-in-out",
-    width: "100%",
-  },
-});
+import Navbar from "./Components/navbar";
+import { ThemeProvider } from "./Providers/themeContext";
+import ErrorBoundary from "./Components/errorBoundary/error-boundary";
 
 const ClearCacheComponent = withClearCache(MainApp);
 
 function App() {
-  return <ClearCacheComponent />;
+  return (
+    <ThemeProvider>
+      <ClearCacheComponent />
+    </ThemeProvider>
+  );
 }
 
 function MainApp(props) {
-  const classes = useStyles();
   logEvent(analytics, "homepage_visited");
   let vh = window.innerHeight * 0.01;
-  const history = createBrowserHistory();
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 
   return (
-    <Router history={history}>
-      <div id="menu" className="menu">
-        <nav className="nav-bar">
-          <ul>
-            <li className="nav-bar__link">
-              <Link to="/search">Search</Link>
-            </li>
-            <li className="nav-bar__link">
-              <Link to="/read-all">Read</Link>
-            </li>
-          </ul>
-        </nav>
-        <div className="menu__logo">
-          <img
-            width="65%"
-            height="100%"
-            src="/logo-highres.png"
-            alt="website logo"
-          />
-        </div>
-        <MenuIcon className={classes.menuIcon} id="menuIcon"></MenuIcon>
-      </div>
-      <Route exact path="/search" component={Search} />
-      <Route exact path="/read" component={Read} />
-      <Route exact path="/read-all" component={ReadAll} />
-      <Redirect to="/search"></Redirect>
-    </Router>
+    <BrowserRouter>
+      <Navbar />
+      <ErrorBoundary>
+      <Routes>
+        {/* Home route with just the search input and related components */}
+        <Route path="/" element={<Home />} />
+
+        {/* Search results route */}
+        <Route path="/search" element={<Search />} />
+
+        {/* Dynamic Read route with date and ref parameters */}
+        <Route path="/read/:date/:ref" element={<Read />} />
+
+        {/* Dynamic Read route with only date parameter */}
+        <Route path="/read/:date" element={<Read />} />
+
+        {/* ReadAll route */}
+        <Route path="/read-all" element={<ReadAll />} />
+
+        {/* Fallback route redirects to Home */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      </ErrorBoundary>
+    </BrowserRouter>
   );
 }
+
 export default App;

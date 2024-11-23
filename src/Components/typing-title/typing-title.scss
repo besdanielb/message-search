@@ -1,0 +1,37 @@
+.typing-title {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: clamp(7vmin, 8vmin, 40px);
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  color: var(--text-color);
+  margin-bottom: 0;
+}
+
+.cursor {
+  display: inline-block;
+  background-color: var(--text-color);
+  width: 7px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 760px), (hover: none) {
+  .typing-title {
+    white-space: wrap;
+    font-size: 4.8vh;
+    height: 14vmax;
+    width: 85%;
+  }
+
+  .cursor {
+    width: 8px;
+    margin-left: 1px;
+    animation: blink 1s step-end infinite;
+  }
+}

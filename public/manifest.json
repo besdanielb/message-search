@@ -1,20 +1,15 @@
 {
   "short_name": "Message Search",
   "name": "Message Search App",
-  "description": "Search and read the Message",
+  "description": "Search and read the Message using AI",
   "icons": [
     {
       "src": "/logo.png",
       "type": "image/png",
       "sizes": "120x120"
-    },
-    {
-      "src": "/logo-highres.png",
-      "type": "image/png",
-      "sizes": "1200x1200"
     }
   ],
-  "start_url": "/serch",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
