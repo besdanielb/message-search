@@ -107,7 +107,7 @@ export default function Navbar(props) {
                   color: scrolled
                     ? "var(--background-color)"
                     : "var(--text-color)",
-                  fontSize: "clamp(20px, 1.2vmax, 30px)",
+                  fontSize: "clamp(20px, 1vmax, 30px)",
                   marginLeft: 2,
                   textTransform: "capitalize",
                   padding: "6px 12px",
@@ -142,7 +142,7 @@ export default function Navbar(props) {
                   color: scrolled
                     ? "var(--background-color)"
                     : "var(--text-color)",
-                  fontSize: "clamp(20px, 1.2vmax, 30px)",
+                  fontSize: "clamp(20px, 1vmax, 30px)",
                   marginLeft: 2,
                   textTransform: "capitalize",
                   padding: "6px 12px",
